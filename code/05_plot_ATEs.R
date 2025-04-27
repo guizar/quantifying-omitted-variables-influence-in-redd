@@ -186,10 +186,3 @@ plot_out <- ggplot(comp_meths, aes(x = proj_id, y = ate_yr, color = method)) +
 # export ggplot
 ggsave(file_meth_strat,plot_out, width=8, height=11, units='in', dpi=300)
 
-# Copy the plot to Overleaf directory for integration into the document
-tryCatch({
-file.copy(from = file_meth_strat,
-            to = file.path(overleaf_plot_dir, filename_out),
-          overwrite = TRUE)
-}, error = function(e) {
-})

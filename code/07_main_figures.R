@@ -423,13 +423,6 @@ theme_bw() +
 
 ggsave(file_main_plot, gg_out, width=10, height=10, units='in', dpi=300)
 
-# Copy the plot to Overleaf directory for integration into the document
-tryCatch({
-  file.copy(from = file_main_plot,
-            to = file.path(overleaf_plot_dir, filename_out),
-            overwrite = TRUE)
-}, error = function(e) {
-})
 
 # ---------------------------------------------------
 # Condense proj info data and generate Supp table 

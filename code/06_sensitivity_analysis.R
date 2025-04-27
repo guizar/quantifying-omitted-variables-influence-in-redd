@@ -272,11 +272,6 @@ gg_out <- plt_1 / pl_out  +  plot_layout(
 
 ggsave(file_curr,gg_out, width=12, height=12, units='in', dpi=300)
 
-# Copy plot to Overleaf directory
-tryCatch({
-  file.copy(from = file_curr, 
-  to = file.path(overleaf_plot_dir, "sensitivity_analysis_main.png"), overwrite = TRUE)
-}, error = function(e) {})
 
 # -----------------------------------
 # Suppl. - sensitivity plots
@@ -343,11 +338,6 @@ gg_out <- plt_1 / pl_out  +  plot_layout(
 
 ggsave(file_curr,gg_out, width=12, height=12, units='in', dpi=300)
 
-# Copy plot to Overleaf directory
-tryCatch({
-  file.copy(from = file_curr, 
-  to = file.path(overleaf_plot_dir, "sensitivity_analysis_SI.png"), overwrite = TRUE)
-}, error = function(e) {})
 
 # -------------------------------------------------
 # Produce individual plots, stored in a list object for patchwork
