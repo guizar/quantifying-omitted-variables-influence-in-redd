@@ -14,7 +14,7 @@ SERVER_PATH <- NA # Defaults to PATH_FROM_HOME. Don't change unless you're proce
 
 setup_paths <- function() {
   
-  project_folder <- "redd-hidden-conf"
+  project_folder <- "quantifying-omitted-variables-influence-in-redd"
 
   # Get base home directory based on platform
   home_dir <- if (.Platform$OS.type == "windows") {

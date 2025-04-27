@@ -8,11 +8,13 @@ This project is hosted on the OSF platform: https://osf.io/r9ygh/
 
 **Reproducing the analyses**
 
-1. Download the data [zip](https://osf.io/r9ygh/files/osfstorage/680251c8f9c5af4839d5655d) file. Create a new folder `quantifying-omitted-variables-influence-in-redd /data/full_data_2024-08-11/` and place the contents of this file inside the newly created folder. it.
+1. Clone this repo
+
+1. Download the data [zip](https://osf.io/r9ygh/files/osfstorage/680251c8f9c5af4839d5655d) file. Create a new folder `quantifying-omitted-variables-influence-in-redd /data/full_data_2024-08-11/`;  place the contents of the zip file inside the newly created folder.
 
 2. Edit the `00_wrapper.R` script: Before running this script, you'll need to specify the location of the project GitHub folder on your machine. This is done by defining the `PATH_FROM_HOME` variable. This variable indicates the directory where the GitHub folder is located, starting from either the HOME (Unix) or USERPROFILE (Windows) folder.
 
-For example, if the project folder (`quantifying-omitted-variables-influence-in-redd `) is located in `home/Documents/Github`, you would define `PATH_FROM_HOME` as:
+For example, if the project folder (`quantifying-omitted-variables-influence-in-redd`) is located in `home/Documents/Github`, you would define `PATH_FROM_HOME` as:
 
 ```R
 PATH_FROM_HOME <- c('Documents', 'Github')
