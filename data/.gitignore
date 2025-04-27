@@ -1,0 +1,6 @@
+*
+# All except this file
+!.gitignore
+!*.zip
+!*.csv
+!*.yaml

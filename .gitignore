@@ -1,0 +1,14 @@
+Untitled.ipynb
+.ipynb_checkpoints
+.DS_Store
+.httr-oauth
+.env
+__pycache__
+client_secret.json
+google_secret.json
+.config
+tmp*
+*_.md
+*.Rhistory
+*.Rproj.user
+*.Rproj
