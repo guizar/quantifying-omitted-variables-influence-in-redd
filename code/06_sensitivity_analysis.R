@@ -144,7 +144,9 @@ for (proj in proj_comp$proj_id) {
             claimed_ate = ate_yr_to_compare,
             adjusted_est_no_offset = est_curr + ate_yr_to_compare,
             adjusted_ci_low = adjusted_est_no_offset - ci_mult * se_curr,
-            adjusted_ci_upp = adjusted_est_no_offset + ci_mult * se_curr
+            adjusted_ci_upp = adjusted_est_no_offset + ci_mult * se_curr,
+            r2yz_dx = r2yz.dx_use,
+            r2dz_x = r2dz.x_use
           )
         }
         
@@ -337,6 +339,55 @@ gg_out <- plt_1 / pl_out  +  plot_layout(
   plot_annotation(tag_levels = 'a')
 
 ggsave(file_curr,gg_out, width=12, height=12, units='in', dpi=300)
+
+
+# ------------------------------------------------
+# R2 plots
+# ------------------------------------------------
+df_r2_plot <- res_plot_filt2 %>% 
+filter(Covariate != 'None') %>% 
+mutate(
+  projects_with_low_matched_prop = proj_id %in% projects_with_low_matched_prop, 
+  strength_col = fct_cross(as.factor(k), as.factor(projects_with_low_matched_prop))
+)
+
+# define cols
+col_darks <- rev(generate_palette('black', modification = "go_lighter", n_colours = 3, view_palette = F))
+col_greens <- rev(generate_palette(axis_text_color_dimmed, modification = "go_lighter", n_colours = 3, view_palette = F))
+scatter_cols <- c(col_darks,col_greens)
+
+# plot
+pl_out <- ggplot(df_r2_plot, aes(x = r2yz_dx, y = r2dz_x, colour = strength_col)) +
+  geom_point() +
+  scale_colour_manual(values = scatter_cols) +
+  theme_minimal() +
+  labs(
+    x = "R² (Y ~ Z | X)",
+    y = "R² (D ~ Z | X)",
+    colour = "Strength of Confounder"
+  ) + 
+  facet_wrap(.~Covariate, ncol=2, nrow=2) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 10, face = "bold", hjust = 0.5), 
+    legend.position = "none",
+    strip.background = element_blank(), strip.text = element_text(face = "bold"),
+    # plot.margin = unit(c(0.01,0.01,0.01,0.01), "in"),
+          # legend.margin=margin(0.1,0.1,0.1,0.1),
+          # legend.box.spacing = unit(0.001, "in"),
+          axis.text.x.top = element_blank(),  # Remove top x-axis text
+          axis.ticks.x.top = element_blank()
+  )
+
+# Save the plot
+ggsave(
+  filename = file.path(dir_figures, "sensitivity_analysis_r2_plot.png"),
+  plot = pl_out,
+  width = 8,
+  height = 6,
+  dpi = 300
+)
+
 
 
 # -------------------------------------------------

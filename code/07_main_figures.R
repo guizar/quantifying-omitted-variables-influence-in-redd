@@ -1,8 +1,5 @@
-library(rcartocolor)
-library(monochromeR)
 library(patchwork)
 library(ggbreak)
-library(boot)
 
 # --- For consistency we will build for the objects constructed int he previous exploratory plots
 source(file.path(pth, "code", "05_plot_ATEs.R"), echo=TRUE)
@@ -18,9 +15,6 @@ d_guizar %<>% mutate(guizar = 0-(rate_diff*100))
 comp_meths$vcs_id <- str_extract(comp_meths$proj_id, "_.*")
 comp_meths$vcs_id <- sub("_", "", comp_meths$vcs_id)
 comp_meths %<>% left_join(d_guizar %>% select(vcs_id,guizar))
-
-# Add labels according to project's inclusion in this study
-inclusion_lab = c('<80% evergreen forest cover','Insufficient temporal\n records', 'Not\nmatched', '<80% of plots matched','Included')
 
 # compute additional metrics
 comp_meths <-  comp_meths %>% left_join(proj_tab %>% select(vcs_id=project, area_ha))
@@ -40,19 +34,12 @@ mutate(proj_id = paste0(iso3, "_", vcs_id))
 base_col= carto_pal(7, "Temps")[c(3,1,5,7)] # c("#38293", "#3B5249", "#519872", "#A4B494")
 col_palette = generate_palette(base_col[1], modification = "go_darker", n_colours = length(levels(comp_meths$method)), view_palette = F)
 
-#  -- map colors
-# Map classes
-map_cols= carto_pal(5, "Vivid")
-map_cols[5] <- '#000000'
-names(map_cols) <- inclusion_lab
-
+#  -- maps colors
+# Loaded in 00_preamble.R: Declare project labels according to project's inclusion in this study
 # scales::show_col(map_cols)
 # scales::show_col(col_palette)
 
-under_80_label <- inclusion_lab[4]
-
 guizar_colour <- "#1c1c1c" 
-axis_text_color_dimmed <- map_cols[under_80_label]
 grey_color <- "#1e1e1e"
 red_color <- "#c34242"
 
