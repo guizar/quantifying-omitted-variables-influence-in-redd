@@ -37,7 +37,7 @@ setup_paths <- function() {
   # return lists
   list(
     PATH = base_dir,
-    SERVER_PATH = server_dir,
+    SERVER_PATH = if (is.na(SERVER_PATH)) NA else server_dir
   )
 }
 
