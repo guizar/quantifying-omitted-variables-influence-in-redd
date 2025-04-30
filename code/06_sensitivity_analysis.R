@@ -22,7 +22,7 @@ ordl <- readRDS(file = file.path(dir_output, "ordl.RDS"))
 match_prop_tab <- ordl[[dist_use]][[as.character(alpha_use)]]
 
 # Save matched proportion table to CSV
-write.csv(match_prop_tab, file = file.path(pth_data, "tmp_matched_prop.csv"))
+write.csv(match_prop_tab, file = file.path(pth, "tmp_matched_prop.csv"))
 
 # Filter projects with low matching proportions
 projects_with_low_matched_prop <- match_prop_tab %>%
