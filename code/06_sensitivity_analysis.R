@@ -227,7 +227,7 @@ plt_1 <- ggplot(
   geom_bar(stat = 'identity', position = position_dodge2(width = 0.9, preserve = "single"), width = 0.8) +
   scale_shape_manual(values = c(21, 25)) +
   xlab("Strength of hidden confounder\n(x times strength of observed covariate)") +
-  ylab("Projects exceeding VCS\nclaimed ATE") +
+  ylab("Percent of projects exceeding VCS\nclaimed ATE") +
   theme_bw() +
   theme(strip.background = element_blank(), strip.text = element_text(face = "bold")) +
   scale_color_manual(values = col_palette[-1], name = "")  + 
@@ -293,7 +293,7 @@ plt_1 <- ggplot(
   geom_bar(stat = 'identity', position = position_dodge2(width = 0.9, preserve = "single"), width = 0.8) +
   scale_shape_manual(values = c(21, 25)) +
   xlab("Strength of hidden confounder\n(x times strength of observed covariate)") +
-  ylab ("Projects exceeding VCS\nclaimed ATE") +
+  ylab("Percent of projects exceeding VCS\nclaimed ATE") +x
   theme_bw() +
   theme(strip.background = element_blank(), strip.text = element_text(face = "bold")) +
   scale_color_manual(values = col_palette[-1], name = "")  + 
@@ -348,7 +348,16 @@ df_r2_plot <- res_plot_filt2 %>%
 filter(Covariate != 'None') %>% 
 mutate(
   projects_with_low_matched_prop = proj_id %in% projects_with_low_matched_prop, 
-  strength_col = fct_cross(as.factor(k), as.factor(projects_with_low_matched_prop))
+  strength_col = fct_cross(as.factor(k), as.factor(projects_with_low_matched_prop)),
+  strength_col = fct_recode(
+    strength_col,
+    "Included (x1)" = "1:FALSE",
+    "Included (x2)" = "2:FALSE",
+    "Included (x3)" = "3:FALSE",
+    "<80% of plots\nmatched (x1)" = "1:TRUE",
+    "<80% of plots\nmatched (x2)" = "2:TRUE",
+    "<80% of plots\nmatched (x3)" = "3:TRUE"
+  )
 )
 
 # define cols
@@ -359,31 +368,34 @@ scatter_cols <- c(col_darks,col_greens)
 # plot
 pl_out <- ggplot(df_r2_plot, aes(x = r2yz_dx, y = r2dz_x, colour = strength_col)) +
   geom_point() +
-  scale_colour_manual(values = scatter_cols) +
+  scale_colour_manual(values = scatter_cols, name = "") +
   theme_minimal() +
   labs(
-    x = "R² (Y ~ Z | X)",
+    x = "R² (Y ~ Z | D,X)",
     y = "R² (D ~ Z | X)",
     colour = "Strength of Confounder"
   ) + 
   facet_wrap(.~Covariate, ncol=2, nrow=2) +
+  xlim(0,1) +
   theme_bw() +
   theme(
     plot.title = element_text(size = 10, face = "bold", hjust = 0.5), 
-    legend.position = "none",
-    strip.background = element_blank(), strip.text = element_text(face = "bold"),
-    # plot.margin = unit(c(0.01,0.01,0.01,0.01), "in"),
-          # legend.margin=margin(0.1,0.1,0.1,0.1),
-          # legend.box.spacing = unit(0.001, "in"),
-          axis.text.x.top = element_blank(),  # Remove top x-axis text
-          axis.ticks.x.top = element_blank()
-  )
+    legend.position = "bottom",
+    legend.box = "horizontal", 
+    legend.box.just = "center", 
+    legend.spacing.y = unit(0.2, "cm"), 
+    strip.background = element_blank(), 
+    strip.text = element_text(face = "bold"),
+    axis.text.x.top = element_blank(),  
+    axis.ticks.x.top = element_blank()
+  ) +
+  guides(colour = guide_legend(nrow = 2, byrow = TRUE)) 
 
 # Save the plot
 ggsave(
   filename = file.path(dir_figures, "sensitivity_analysis_r2_plot.png"),
   plot = pl_out,
-  width = 8,
+  width = 6,
   height = 6,
   dpi = 300
 )
