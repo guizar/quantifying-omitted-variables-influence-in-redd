@@ -223,11 +223,11 @@ col_palette= rev(carto_pal(5, "ag_Sunset"))
 col_palette[1] = "#B7B7B7"
 
 plt_1 <- ggplot(
-  df_plot_sensitivity_sub %>% filter(k>0), aes(x = factor(paste0(k, "x")), y = is_larger, fill = Covariate, color = Covariate)) +
+  df_plot_sensitivity_sub %>% filter(k>0), aes(x = factor(paste0(k, "x")), y = perc_is_larger, fill = Covariate, color = Covariate)) +
   geom_bar(stat = 'identity', position = position_dodge2(width = 0.9, preserve = "single"), width = 0.8) +
   scale_shape_manual(values = c(21, 25)) +
   xlab("Strength of hidden confounder\n(x times strength of observed covariate)") +
-  ylab("Percent of projects exceeding VCS\nclaimed ATE") +
+  ylab("Projects exceeding\nVCS claimed ATE (%)") +
   theme_bw() +
   theme(strip.background = element_blank(), strip.text = element_text(face = "bold")) +
   scale_color_manual(values = col_palette[-1], name = "")  + 
@@ -289,15 +289,16 @@ col_palette[1] = "#B7B7B7"
 # palette_check(col_palette, plot = TRUE)
 
 plt_1 <- ggplot(
-  df_plot_sensitivity %>% filter(k>0), aes(x = factor(paste0(k, "x")), y = is_larger, fill = Covariate, color = Covariate)) +
-  geom_bar(stat = 'identity', position = position_dodge2(width = 0.9, preserve = "single"), width = 0.8) +
-  scale_shape_manual(values = c(21, 25)) +
+  df_plot_sensitivity %>% filter(k>0), aes(x = factor(paste0(k, "x")), y = perc_is_larger, fill = Covariate, color = Covariate)) +
+  geom_bar(stat = 'identity', position = position_dodge2(width = 0.9), width = 0.8) +
+  # scale_shape_manual(values = c(21, 25)) +
   xlab("Strength of hidden confounder\n(x times strength of observed covariate)") +
-  ylab("Percent of projects exceeding VCS\nclaimed ATE") +x
+  ylab("Projects exceeding\nVCS claimed ATE (%)") +
   theme_bw() +
   theme(strip.background = element_blank(), strip.text = element_text(face = "bold")) +
   scale_color_manual(values = col_palette[-1], name = "")  + 
   scale_fill_manual(values = col_palette[-1], name = "") + 
+  # scale_y_continuous(limits = c(0, 15))  +
   theme(legend.position="none")
 
 # file_curr <- file.path(dir_figures) 
@@ -370,11 +371,9 @@ pl_out <- ggplot(df_r2_plot, aes(x = r2yz_dx, y = r2dz_x, colour = strength_col)
   geom_point() +
   scale_colour_manual(values = scatter_cols, name = "") +
   theme_minimal() +
-  labs(
-    x = "R² (Y ~ Z | D,X)",
-    y = "R² (D ~ Z | X)",
-    colour = "Strength of Confounder"
-  ) + 
+  labs(colour = "Strength of Confounder") + 
+  xlab(expression(R[ y %~% z * "|" * d * "," * bold(x) ]^2)) +
+  ylab(expression(R[ d %~% z * "|" * bold(x) ]^2)) +
   facet_wrap(.~Covariate, ncol=2, nrow=2) +
   xlim(0,1) +
   theme_bw() +
