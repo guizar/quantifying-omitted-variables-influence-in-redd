@@ -345,26 +345,24 @@ ggsave(file_curr,gg_out, width=12, height=12, units='in', dpi=300)
 # ------------------------------------------------
 # R2 plots
 # ------------------------------------------------
-df_r2_plot <- res_plot_filt2 %>% 
-filter(Covariate != 'None') %>% 
-mutate(
-  projects_with_low_matched_prop = proj_id %in% projects_with_low_matched_prop, 
-  strength_col = fct_cross(as.factor(k), as.factor(projects_with_low_matched_prop)),
-  strength_col = fct_recode(
-    strength_col,
-    "Included (x1)" = "1:FALSE",
-    "Included (x2)" = "2:FALSE",
-    "Included (x3)" = "3:FALSE",
-    "<80% of plots\nmatched (x1)" = "1:TRUE",
-    "<80% of plots\nmatched (x2)" = "2:TRUE",
-    "<80% of plots\nmatched (x3)" = "3:TRUE"
-  )
+recode_map <- setNames(
+  c("1:FALSE", "1:TRUE"),
+  c(inclusion_lab[5], inclusion_lab[4])
 )
 
+df_r2_plot <- res_plot_filt2 %>% 
+  filter(Covariate != 'None') %>% 
+  filter(k == 1) %>% 
+  mutate(
+    projects_with_low_matched_prop = proj_id %in% projects_with_low_matched_prop, 
+    strength_col = fct_cross(as.factor(k), as.factor(projects_with_low_matched_prop)),
+    strength_col = fct_recode(strength_col, !!!recode_map)
+  )
+
 # define cols
-col_darks <- rev(generate_palette('black', modification = "go_lighter", n_colours = 3, view_palette = F))
-col_greens <- rev(generate_palette(axis_text_color_dimmed, modification = "go_lighter", n_colours = 3, view_palette = F))
-scatter_cols <- c(col_darks,col_greens)
+# col_darks <- rev(generate_palette('black', modification = "go_lighter", n_colours = 3, view_palette = F))
+# col_greens <- rev(generate_palette(axis_text_color_dimmed, modification = "go_lighter", n_colours = 3, view_palette = F))
+scatter_cols <- c(map_cols[5],map_cols[4])
 
 # plot
 pl_out <- ggplot(df_r2_plot, aes(x = r2yz_dx, y = r2dz_x, colour = strength_col)) +
@@ -375,7 +373,7 @@ pl_out <- ggplot(df_r2_plot, aes(x = r2yz_dx, y = r2dz_x, colour = strength_col)
   xlab(expression(R[ y %~% z * "|" * d * "," * bold(x) ]^2)) +
   ylab(expression(R[ d %~% z * "|" * bold(x) ]^2)) +
   facet_wrap(.~Covariate, ncol=2, nrow=2) +
-  xlim(0,1) +
+  xlim(0,1) + ylim(0,1) +
   theme_bw() +
   theme(
     plot.title = element_text(size = 10, face = "bold", hjust = 0.5), 
