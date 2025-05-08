@@ -1512,13 +1512,8 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "1.0.10",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "utils"
-      ],
-      "Hash": "d0387d5687ec933dd7587efd4cfa2d85"
+      "Version": "1.1.4",
+      "Source": "Repository"
     },
     "reprex": {
       "Package": "reprex",

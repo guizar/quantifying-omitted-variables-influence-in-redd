@@ -76,7 +76,8 @@ for (proj in proj_comp$proj_id) {
     filter(treat == "1")
   
   # Sample control units to match treated units
-  set.seed(1)
+  # Set seed for reproducibility
+  set.seed(1234)
   d_control <- d_qc %>%
     filter(treat == "0") %>%
     sample_n(size = nrow(d_treat), replace = FALSE)

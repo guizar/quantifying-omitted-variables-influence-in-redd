@@ -3,7 +3,8 @@ source(file.path("code", "00_preamble.R"), echo = TRUE)
 
 # Set multi-core processing option and create a parallel cluster
 multi_core <- TRUE
-cl <- parallel::makePSOCKcluster(ifelse(multi_core, 20, 1))  # Create cluster with 20 cores if multi_core is TRUE, otherwise use 1 core
+n_cores <- if (multi_core) min(25, parallel::detectCores()) else 1 # Use max cores available (or 25 max) if multi_core is TRUE, otherwise 1 core
+cl <- parallel::makePSOCKcluster(n_cores)  
 doParallel::registerDoParallel(cl)  # Register the parallel backend for foreach
 
 # Perform parallel processing on rows of do_tab

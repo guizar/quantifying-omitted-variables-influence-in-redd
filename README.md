@@ -106,7 +106,7 @@ mkdir data/full_data_2024-08-11
 For reproducibility and ease of use across all platforms (Windows, macOS, Linux):
 
 1.  Open **RStudio**.
-2.  Go to `File > Open Project` and open the `.Rproj` file located in the root of this repository (e.g., `quantifying-omitted-variables-influence-in-redd.Rproj`).
+2.  Go to `File > Open Project` and open the `.Rproj` file located in the root of this repository (i.e., `quantifying-omitted-variables-influence-in-redd.Rproj`).
 3.  This will automatically set the working directory to the project root, enabling all scripts to run with **relative paths**.
 
 If you're not using RStudio, you can manually navigate to the cloned directory in your terminal and start R from there:
@@ -125,8 +125,14 @@ This project uses [`renv`](https://rstudio.github.io/renv/) for reproducible pac
 To initialize the correct package environment:
 
 ``` r
-install.packages("renv")
-renv::restore()
+# Install renv if not already installed
+if (!requireNamespace("renv", quietly = TRUE)) {
+  install.packages("renv")
+}
+
+# Activate and restore the environment
+renv::activate()
+renv::restore(prompt = FALSE)
 ```
 
 This will install all required packages as recorded in the `renv.lock` file.
