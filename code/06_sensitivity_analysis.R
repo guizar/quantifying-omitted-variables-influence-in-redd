@@ -144,7 +144,9 @@ for (proj in proj_comp$proj_id) {
             claimed_ate = ate_yr_to_compare,
             adjusted_est_no_offset = est_curr + ate_yr_to_compare,
             adjusted_ci_low = adjusted_est_no_offset - ci_mult * se_curr,
-            adjusted_ci_upp = adjusted_est_no_offset + ci_mult * se_curr
+            adjusted_ci_upp = adjusted_est_no_offset + ci_mult * se_curr,
+            r2yz_dx = r2yz.dx_use,
+            r2dz_x = r2dz.x_use
           )
         }
         
@@ -221,11 +223,11 @@ col_palette= rev(carto_pal(5, "ag_Sunset"))
 col_palette[1] = "#B7B7B7"
 
 plt_1 <- ggplot(
-  df_plot_sensitivity_sub %>% filter(k>0), aes(x = factor(paste0(k, "x")), y = is_larger, fill = Covariate, color = Covariate)) +
+  df_plot_sensitivity_sub %>% filter(k>0), aes(x = factor(paste0(k, "x")), y = perc_is_larger, fill = Covariate, color = Covariate)) +
   geom_bar(stat = 'identity', position = position_dodge2(width = 0.9, preserve = "single"), width = 0.8) +
   scale_shape_manual(values = c(21, 25)) +
   xlab("Strength of hidden confounder\n(x times strength of observed covariate)") +
-  ylab("Projects exceeding VCS\nclaimed ATE") +
+  ylab("Projects exceeding\nVCS claimed ATE (%)") +
   theme_bw() +
   theme(strip.background = element_blank(), strip.text = element_text(face = "bold")) +
   scale_color_manual(values = col_palette[-1], name = "")  + 
@@ -287,15 +289,16 @@ col_palette[1] = "#B7B7B7"
 # palette_check(col_palette, plot = TRUE)
 
 plt_1 <- ggplot(
-  df_plot_sensitivity %>% filter(k>0), aes(x = factor(paste0(k, "x")), y = is_larger, fill = Covariate, color = Covariate)) +
-  geom_bar(stat = 'identity', position = position_dodge2(width = 0.9, preserve = "single"), width = 0.8) +
-  scale_shape_manual(values = c(21, 25)) +
+  df_plot_sensitivity %>% filter(k>0), aes(x = factor(paste0(k, "x")), y = perc_is_larger, fill = Covariate, color = Covariate)) +
+  geom_bar(stat = 'identity', position = position_dodge2(width = 0.9), width = 0.8) +
+  # scale_shape_manual(values = c(21, 25)) +
   xlab("Strength of hidden confounder\n(x times strength of observed covariate)") +
-  ylab ("Projects exceeding VCS\nclaimed ATE") +
+  ylab("Projects exceeding\nVCS claimed ATE (%)") +
   theme_bw() +
   theme(strip.background = element_blank(), strip.text = element_text(face = "bold")) +
   scale_color_manual(values = col_palette[-1], name = "")  + 
   scale_fill_manual(values = col_palette[-1], name = "") + 
+  # scale_y_continuous(limits = c(0, 15))  +
   theme(legend.position="none")
 
 # file_curr <- file.path(dir_figures) 
@@ -337,6 +340,63 @@ gg_out <- plt_1 / pl_out  +  plot_layout(
   plot_annotation(tag_levels = 'a')
 
 ggsave(file_curr,gg_out, width=12, height=12, units='in', dpi=300)
+
+
+# ------------------------------------------------
+# R2 plots
+# ------------------------------------------------
+recode_map <- setNames(
+  c("1:FALSE", "1:TRUE"),
+  c(inclusion_lab[5], inclusion_lab[4])
+)
+
+df_r2_plot <- res_plot_filt2 %>% 
+  filter(Covariate != 'None') %>% 
+  filter(k == 1) %>% 
+  mutate(
+    projects_with_low_matched_prop = proj_id %in% projects_with_low_matched_prop, 
+    strength_col = fct_cross(as.factor(k), as.factor(projects_with_low_matched_prop)),
+    strength_col = fct_recode(strength_col, !!!recode_map)
+  )
+
+# define cols
+# col_darks <- rev(generate_palette('black', modification = "go_lighter", n_colours = 3, view_palette = F))
+# col_greens <- rev(generate_palette(axis_text_color_dimmed, modification = "go_lighter", n_colours = 3, view_palette = F))
+scatter_cols <- c(map_cols[5],map_cols[4])
+
+# plot
+pl_out <- ggplot(df_r2_plot, aes(x = r2yz_dx, y = r2dz_x, colour = strength_col)) +
+  geom_point() +
+  scale_colour_manual(values = scatter_cols, name = "") +
+  theme_minimal() +
+  labs(colour = "Strength of Confounder") + 
+  xlab(expression(R[ y %~% z * "|" * d * "," * bold(x) ]^2)) +
+  ylab(expression(R[ d %~% z * "|" * bold(x) ]^2)) +
+  facet_wrap(.~Covariate, ncol=2, nrow=2) +
+  xlim(0,1) + ylim(0,1) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 10, face = "bold", hjust = 0.5), 
+    legend.position = "bottom",
+    legend.box = "horizontal", 
+    legend.box.just = "center", 
+    legend.spacing.y = unit(0.2, "cm"), 
+    strip.background = element_blank(), 
+    strip.text = element_text(face = "bold"),
+    axis.text.x.top = element_blank(),  
+    axis.ticks.x.top = element_blank()
+  ) +
+  guides(colour = guide_legend(nrow = 2, byrow = TRUE)) 
+
+# Save the plot
+ggsave(
+  filename = file.path(dir_figures, "sensitivity_analysis_r2_plot.png"),
+  plot = pl_out,
+  width = 6,
+  height = 6,
+  dpi = 300
+)
+
 
 
 # -------------------------------------------------

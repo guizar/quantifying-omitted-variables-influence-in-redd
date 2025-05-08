@@ -18,3 +18,14 @@ install_if_missing <- function(packages) {
 
 
 install_if_missing(required_packages)
+
+
+# List package versions
+package_versions <- sapply(required_packages, function(pkg) {
+  if (requireNamespace(pkg, quietly = TRUE)) {
+    as.character(packageVersion(pkg))
+  }
+})
+
+# Print package versions
+print(package_versions)

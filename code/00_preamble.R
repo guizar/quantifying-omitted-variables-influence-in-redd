@@ -11,8 +11,8 @@ library(arrangements) # for permutations
 library(pander) # to render tables
 library(rcartocolor)
 library(randomForest)
-# library(colorblindcheck)
-
+library(monochromeR)
+library(boot)
 
 # Source custom functions from the "code/functions/" directory
 fn_files_to_source <- list.files(file.path("code", "functions"), full.names = TRUE)
@@ -206,3 +206,13 @@ do_tab_match_init %<>% left_join (proj_tab %>% select(vcs_id, proj_id))
 do_tab_match_init %>% write_csv(file.path("data", "do_tab_match_init.csv"))
 do_tab %>% write_csv(file.path("data", "do_tab.csv"))
 proj_tab %>% write_csv(file.path("data", "proj_tab.csv"))
+
+# -----------------------------------------------------------------
+# Declare project labels according to project's inclusion in this study, declare add label and colour for `80% of plots matched`
+# -----------------------------------------------------------------
+inclusion_lab = c('<80% evergreen forest cover','Insufficient temporal\n records', 'Not\nmatched', '<80% of plots matched','Included')
+map_cols= carto_pal(5, "Vivid")
+map_cols[5] <- '#000000'
+names(map_cols) <- inclusion_lab
+under_80_label <- inclusion_lab[4]
+axis_text_color_dimmed <- map_cols[under_80_label]
