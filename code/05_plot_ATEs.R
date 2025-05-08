@@ -1,5 +1,5 @@
 # Load preamble settings and functions
-source(file.path(pth, "code", "00_preamble.R"), echo=TRUE)
+source(file.path("code", "00_preamble.R"), echo = TRUE)
 
 # Load previously saved model fits and matched data
 fit_spatial <- TRUE  # Control flag for whether spatial models were fitted
@@ -124,7 +124,7 @@ dodge_width <- 0.75
 
 # Save the plot as PNG
 filename_out <- "ATE_by_method.png"
-file_meth_strat <- file.path(pth,"figures", filename_out)
+file_meth_strat <- file.path("figures", filename_out)
 
 # Create a column in comp_meths to mark projects with low matched proportion
 comp_meths <- comp_meths %>%

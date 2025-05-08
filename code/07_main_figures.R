@@ -5,13 +5,13 @@ library(ggbreak)
 library(boot)
 
 # --- For consistency we will build for the objects constructed int he previous exploratory plots
-source(file.path(pth, "code", "05_plot_ATEs.R"), echo=TRUE)
-source(file.path(pth, "code", "06_sensitivity_analysis.R"), echo=TRUE)
+source(file.path("code", "05_plot_ATEs.R"), echo = TRUE)
+source(file.path("code", "06_sensitivity_analysis.R"), echo = TRUE)
 
-setwd(file.path(pth,'figures')) # FOR TESTING
+# setwd(file.path('figures')) # FOR TESTING
 
 # Loads Consbio2022
-d_guizar = read_csv(file.path(pth, "data", "guizar_2022.csv"))
+d_guizar = read_csv(file.path("data", "guizar_2022.csv"))
 d_guizar %<>% mutate(guizar = 0-(rate_diff*100))
 
 # list projects analysed in this study (all)
@@ -32,7 +32,7 @@ comp_meths <- comp_meths %>% mutate(guizar_ha = area_ha*(guizar*5)*0.01)
 comp_meths <-  comp_meths %>% left_join(proj_comp %>% select(vcs_id=project, implied_ate))
 
 # Loads project info
-proj_info <- read_csv(file = file.path(pth, "data", "vcs-info.csv")) %>% filter(inclusion_status!= 'Unavailable\ngeospatial data') %>% 
+proj_info <- read_csv(file = file.path("data", "vcs-info.csv")) %>% filter(inclusion_status!= 'Unavailable\ngeospatial data') %>% 
 mutate(proj_id = paste0(iso3, "_", vcs_id))
 
 # --- Generate palettes
@@ -64,7 +64,7 @@ dodge_width <- 0.7
 
 # Output file params
 filename_out <- "SI_effect_sizes_fig.png"
-file_main_plot <- file.path(pth, "figures", filename_out)
+file_main_plot <- file.path("figures", filename_out)
 
 # TOP -----------
 
@@ -262,7 +262,7 @@ ggsave(file_main_plot, gg_out, width=12, height=12, units='in', dpi=300)
 
 # Output file params
 filename_out <- "Main_effect_sizes_fig.png"
-file_main_plot <- file.path(pth, "figures", filename_out)
+file_main_plot <- file.path("figures", filename_out)
 
 # Subset file
 comp_meths_sub <- comp_meths %>% filter(!proj_id %in% projects_with_low_matched_prop)
@@ -449,14 +449,14 @@ ggsave(file_main_plot, gg_out, width=10, height=10, units='in', dpi=300)
 # proj_info$inclusion_status = factor(proj_info$inclusion_status, levels=inclusion_lab)
 
 # # Write updated file 
-# write_csv(proj_info %>% filter(!is.na(inclusion_status)), file = file.path(pth, "data", "vcs-info.csv"))
+# write_csv(proj_info %>% filter(!is.na(inclusion_status)), file = file.path("data", "vcs-info.csv"))
 
 
 #-----------------------------------------------------
 # Covariate summaries of projects included/excluded
 # ----------------------------------------------------
 
-proj_covar_sums <- read_csv(file.path(pth, "data", "proj_covar_sums.csv"))
+proj_covar_sums <- read_csv(file.path("data", "proj_covar_sums.csv"))
 
 proj_covar_sums <- proj_covar_sums %>% mutate(type = 
 case_when(proj_id %in% order_vcs ~ 'Included',
@@ -509,15 +509,15 @@ colnames(out_table) = cls
 
 # render as md
 md_table <- capture.output(pandoc.table(out_table, style='multiline',split.table = Inf, digits=3))
-writeLines(md_table, file.path(pth, "tables", "Covariate_differences.md"))
+writeLines(md_table, file.path("tables", "Covariate_differences.md"))
 
-# system(paste0("pandoc ", file.path(pth, "tables", "Covariate_differences.md"), " -o ", file.path(pth, "tables", "SuppTable_2.docx")))
+# system(paste0("pandoc ", file.path("tables", "Covariate_differences.md"), " -o ", file.path("tables", "SuppTable_2.docx")))
 
 
 # Render table to Latex
 tex_table <- capture.output(kable(out_table, format = "latex", booktabs = TRUE, caption = ""))
 
-writeLines(tex_table, file.path(pth, "tables", "Covariate_differences.tex"))
+writeLines(tex_table, file.path("tables", "Covariate_differences.tex"))
 
 # ------------------
 # Construct SI table 
@@ -530,7 +530,7 @@ design_tab <- ordl[[dist_use]][[as.character(alpha_use)]]
 proj_info <- proj_info %>% left_join(design_tab)
 
 # Load N samples
-proj_samples <- read_csv(file.path(pth, "tables", "proj_treat_counts.csv"))
+proj_samples <- read_csv(file.path("tables", "proj_treat_counts.csv"))
 proj_samples <- proj_samples %>% mutate(samples_str = paste0(treat,'= ',n)) %>%
 select(proj_id,samples_str) %>% 
 group_by(proj_id) %>% summarise(samples_str = paste0(samples_str, collapse=', '))
@@ -562,14 +562,14 @@ colnames(out_table) = cls
 
 # Render table to MD
 md_table <- capture.output(pandoc.table(out_table, style='multiline',split.table = Inf, digits=3))
-writeLines(md_table, file.path(pth, "tables", "project_summaries.md"))
+writeLines(md_table, file.path("tables", "project_summaries.md"))
 
 # Render table to Latex
 # tex_table <- capture.output(kable(out_table, format = "latex", booktabs = TRUE, caption = ""))
-# writeLines(tex_table, file.path(pth, "tables", "project_summaries.tex"))
+# writeLines(tex_table, file.path("tables", "project_summaries.tex"))
 
 # Render MD to Docx (requires Pandoc)
-system(paste0("pandoc ", file.path(pth, "tables", "project_summaries.md"), " -o ", file.path(pth, "tables", "SuppTable_1.docx")))
+system(paste0("pandoc ", file.path("tables", "project_summaries.md"), " -o ", file.path("tables", "SuppTable_1.docx")))
 
 
 # ---------------
@@ -725,4 +725,4 @@ mp = ggplot() +
           legend.margin=margin(0.1,0.1,0.1,0.1),
           legend.box.spacing = unit(0.001, "in"))
 
-ggsave(filename=file.path(pth, "figures", "sites-map-moll.png"), plot=mp, width=10, dpi=300)
+ggsave(filename=file.path("figures", "sites-map-moll.png"), plot=mp, width=10, dpi=300)

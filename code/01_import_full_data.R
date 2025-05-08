@@ -1,5 +1,5 @@
 # Load preamble settings and functions
-source(file.path(pth, "code", "00_preamble.R"), echo=TRUE)
+source(file.path("code", "00_preamble.R"), echo = TRUE)
 
 # Set up multi-core processing
 multi_core <- TRUE
@@ -146,5 +146,5 @@ d_counts <- d_qc %>% group_by(treat) %>% tally() %>% mutate(proj_id=proj_id)
 d_sum_counts <- bind_rows(d_sum_counts,d_counts)
 }
 
-d_sum %>% write_csv(file.path(pth, "data", "proj_covar_sums.csv"))
-d_sum_counts %>% write_csv(file.path(pth, "data", "proj_treat_counts.csv"))
+d_sum %>% write_csv(file.path("data", "proj_covar_sums.csv"))
+d_sum_counts %>% write_csv(file.path("data", "proj_treat_counts.csv"))

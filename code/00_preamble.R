@@ -10,37 +10,38 @@ library(broom)
 library(arrangements) # for permutations
 library(pander) # to render tables
 library(rcartocolor)
+library(randomForest)
 # library(colorblindcheck)
 
 
 # Source custom functions from the "code/functions/" directory
-fn_files_to_source <- list.files(file.path(pth, "code", "functions"), full.names = TRUE)
+fn_files_to_source <- list.files(file.path("code", "functions"), full.names = TRUE)
 for (file_curr in fn_files_to_source) {
   source(file_curr)  # Source each function file
 }
 
 # Define pth to data directory and retrieve list of filenames (without extensions)
-filenames <- list.files(file.path(pth, "data", "matched_sets"), full.names = FALSE)
+filenames <- list.files(file.path("data", "matched_sets"), full.names = FALSE)
 filenames <- str_remove(filenames, "\\.csv")  # Remove .csv extension
 
 # define directories -- defining here as separate data paths for the server
-design_out_dir <- file.path(pth_server, "data", "output", "design_out_dir")
-dir_qc_data <- file.path(pth_server, "data", "output", "post_qc_unmatched")
-dir_ps <- file.path(pth_server, "data", "output", "stage1_propensity_score_results")
-dir_matched_data <- file.path(pth_server, "data", "output", "post_qc_matched")
-d_matched_dir <- file.path(pth_server, "data", "output", "design_out_dir", "d_matched")
-prop_score_dir <- file.path(pth_server, "data", "output", "design_out_dir", "prop_score_model")
-match_out_dir <- file.path(pth_server, "data", "output", "design_out_dir", "matchit_out")
-dir_analysis_outputs <- file.path(pth_server, "data", "analysis_outputs")
+design_out_dir <- file.path("data", "output", "design_out_dir")
+dir_qc_data <- file.path("data", "output", "post_qc_unmatched")
+dir_ps <- file.path("data", "output", "stage1_propensity_score_results")
+dir_matched_data <- file.path("data", "output", "post_qc_matched")
+d_matched_dir <- file.path("data", "output", "design_out_dir", "d_matched")
+prop_score_dir <- file.path("data", "output", "design_out_dir", "prop_score_model")
+match_out_dir <- file.path("data", "output", "design_out_dir", "matchit_out")
+dir_analysis_outputs <- file.path("data", "output", "analysis_outputs")
 
 # specific to the initial matching exploration:
-match_out_init_dir <- file.path(pth_server, "data", "output", "design_out_dir", "matchit_out_init")
-match_dd_dir <- file.path(pth_server, "data", "output", "design_out_dir", "matchit_dd_init")
+match_out_init_dir <- file.path("data", "output", "design_out_dir", "matchit_out_init")
+match_dd_dir <- file.path("data", "output", "design_out_dir", "matchit_dd_init")
 
 # define local directories -- files small in size that don't need to be stored in the server
-dir_output <- file.path(pth, "data", "output")
-dir_figures <- file.path(pth, "figures")
-dir_tables <- file.path(pth, "tables")
+dir_output <- file.path("data", "output")
+dir_figures <- file.path("figures")
+dir_tables <- file.path("tables")
 
 # Create necessary directories if they don't exist
 dir.create(d_matched_dir, showWarnings = FALSE, recursive = TRUE)
@@ -58,8 +59,8 @@ dir.create(match_out_init_dir, showWarnings = FALSE, recursive = TRUE)
 dir.create(match_dd_dir, showWarnings = FALSE, recursive = TRUE)
 
 # Set full data directory (update based on the version of data being used)
-full_data_dir <- file.path(pth_server, "data", "full_data_2024-08-11")
-proj_tab_file <- file.path(pth_server, "data", "proj_tab.RDS")
+full_data_dir <- file.path("data", "full_data_2024-08-11")
+proj_tab_file <- file.path("data", "proj_tab.RDS")
 
 # If project table does not exist, create it from full data
 if (!file.exists(proj_tab_file)) {
@@ -83,7 +84,7 @@ if (!file.exists(proj_tab_file)) {
   proj_tab = proj_tab %>% filter(proj_id!='data_full')
 
   # Merge additional project information from vcs-info.csv
-  proj_info <- read_csv(file = file.path(pth, "data", "vcs-info.csv")) %>%
+  proj_info <- read_csv(file = file.path("data", "vcs-info.csv")) %>%
     mutate(project = vcs_id)
   proj_tab %<>%
     left_join(proj_info %>% select(c("project", "area_ha", "project_name", "syear")), by = "project")
@@ -202,6 +203,6 @@ do_tab_match_init$id  = 1:nrow(do_tab_match_init)
 do_tab_match_init %<>% left_join (proj_tab %>% select(vcs_id, proj_id))
 
 # WRITE REFERENCE CSVS
-do_tab_match_init %>% write_csv(file.path(pth, "data", "do_tab_match_init.csv"))
-do_tab %>% write_csv(file.path(pth, "data", "do_tab.csv"))
-proj_tab %>% write_csv(file.path(pth, "data", "proj_tab.csv"))
+do_tab_match_init %>% write_csv(file.path("data", "do_tab_match_init.csv"))
+do_tab %>% write_csv(file.path("data", "do_tab.csv"))
+proj_tab %>% write_csv(file.path("data", "proj_tab.csv"))
