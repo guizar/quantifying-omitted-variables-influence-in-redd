@@ -14,6 +14,11 @@ library(randomForest)
 library(monochromeR)
 library(boot)
 
+# Set RNG kind and seed for reproducibility
+set.seed(1234)
+RNGkind(kind = "L'Ecuyer-CMRG")  # For reproducible parallel and sequential RNG
+# We will set the seed before each stochastic function
+
 # Source custom functions from the "code/functions/" directory
 fn_files_to_source <- list.files(file.path("code", "functions"), full.names = TRUE)
 for (file_curr in fn_files_to_source) {

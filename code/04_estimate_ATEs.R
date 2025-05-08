@@ -27,8 +27,9 @@ if (run_models) {
   # Load required library for parallel processing
   library(doParallel)
   
-  # Set up parallel cluster with 20 cores if fitting spatial models, otherwise 1 core
-  cl <- parallel::makePSOCKcluster(ifelse(fit_spatial, 20, 1))
+  # Set up parallel cluster with max available cores (or 20 max) if fitting spatial models, otherwise 1 core
+  n_cores <- if (fit_spatial) min(20, parallel::detectCores()) else 1
+  cl <- parallel::makePSOCKcluster(n_cores)  
   doParallel::registerDoParallel(cl)  # Register parallel backend
   
   # Run the models in parallel for each project
