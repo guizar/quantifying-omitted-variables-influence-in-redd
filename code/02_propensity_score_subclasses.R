@@ -51,6 +51,8 @@ ps_subclass_outl <- foreach::foreach(
     calipers <- rep(caliper_val, length(cov_terms))  # Set calipers for each covariate
     names(calipers) <- cov_terms  # Assign names to the calipers
     
+    # Set seed for reproducibility
+    set.seed(1234)
     # Perform matching using nearest neighbor with replacement and caliper restrictions
     match_out_dist <- MatchIt::matchit(formula = ps_score_form,
                                       data = d_qc,
@@ -93,6 +95,8 @@ ps_subclass_outl <- foreach::foreach(
     full_model <- glm(formula = treat ~ .*., data = d_matched[, all_terms], family = "binomial")  # Full model with interactions
     null_model <- glm(formula = treat ~ ., data = d_matched[, all_terms], family = "binomial")  # Null model without interactions
     
+    # Set seed for reproducibility
+    set.seed(1234)
     # Perform stepwise model selection based on AIC to get the final propensity score model
     step_model <- MASS::stepAIC(object = null_model,
                                 direction = "forward",
