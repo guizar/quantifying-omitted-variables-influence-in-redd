@@ -1,5 +1,5 @@
 # Load preamble settings and functions
-source(file.path(pth, "code", "00_preamble.R"), echo=TRUE)
+source(file.path("code", "00_preamble.R"), echo = TRUE)
 
 # Set multi-core processing option and create a parallel cluster
 multi_core <- TRUE
@@ -268,7 +268,7 @@ do_tab$match_out_dir =  file.exists(file.path(match_out_dir, do_tab$file_name))
 
 do_tab %>% 
   select(-file_name) %>% 
-  write_csv(file.path(pth, "data", "02_propensity_score_subclasses_outputs_tracker.csv"))
+  write_csv(file.path("data", "02_propensity_score_subclasses_outputs_tracker.csv"))
 
 # Stop the parallel cluster
 stopCluster(cl)

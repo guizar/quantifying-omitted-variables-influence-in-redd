@@ -1,5 +1,5 @@
 # Load preamble settings and functions
-source(file.path(pth, "code", "00_preamble.R"), echo=TRUE)
+source(file.path("code", "00_preamble.R"), echo = TRUE)
 
 # Load matched data with specified alpha
 d <- readRDS(file = file.path(dir_output, paste0("all_dat_matched_alpha_", alpha_use, ".RDS")))

@@ -1,5 +1,5 @@
 # Load required preamble
-source(file.path(pth, "code", "00_preamble.R"), echo=TRUE)
+source(file.path("code", "00_preamble.R"), echo = TRUE)
 
 library(ggplot2) 
 
@@ -8,7 +8,7 @@ d <- readRDS(file = file.path(dir_output, paste0("all_dat_matched_alpha_", alpha
 combined_lm_ps_weight_adj_results <- readRDS(file = file.path(dir_output, "combined_lm_ps_weight_adj_results.RDS"))
 
 # Load claims data and join to project table
-claims <- read_csv(file = file.path(pth, "data", "avoided-defor-ha.csv")) %>%
+claims <- read_csv(file = file.path("data", "avoided-defor-ha.csv")) %>%
   mutate(project = as.character(vcs_id))
 
 # Join claims data with project table, calculate implied ATE, and sort
@@ -22,7 +22,7 @@ ordl <- readRDS(file = file.path(dir_output, "ordl.RDS"))
 match_prop_tab <- ordl[[dist_use]][[as.character(alpha_use)]]
 
 # Save matched proportion table to CSV
-write.csv(match_prop_tab, file = file.path(pth, "tmp_matched_prop.csv"))
+write.csv(match_prop_tab, file = file.path(dir_output, "tmp_matched_prop.csv"))
 
 # Filter projects with low matching proportions
 projects_with_low_matched_prop <- match_prop_tab %>%

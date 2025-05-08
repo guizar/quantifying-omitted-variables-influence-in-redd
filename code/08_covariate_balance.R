@@ -1,12 +1,12 @@
 library(MatchIt)
 
-setwd(file.path(pth,'figures')) # FOR TESTING
+# setwd(file.path('figures')) # FOR TESTING
 
 # Load required preamble
-source(file.path(pth, "code", "00_preamble.R"), echo=TRUE)
+source(file.path("code", "00_preamble.R"), echo = TRUE)
 # --- For consistency we will build for the objects constructed int he previous exploratory plots
-source(file.path(pth, "code", "05_plot_ATEs.R"), echo=TRUE)
-source(file.path(pth, "code", "06_sensitivity_analysis.R"), echo=TRUE)
+source(file.path("code", "05_plot_ATEs.R"), echo = TRUE)
+source(file.path("code", "06_sensitivity_analysis.R"), echo = TRUE)
 
 # change match_prop_tab  to %
 match_prop_tab <- match_prop_tab %>% mutate(perc_matched = eval(parse(text = paste0('prop_matched_alpha_', as.character(alpha_use)))) * 100)
@@ -302,7 +302,7 @@ colnames(out_table) = cls
 
 # Render table to MD
 md_table <- capture.output(pandoc.table(out_table, style='multiline',split.table = Inf, digits=3))
-writeLines(md_table, file.path(pth, "tables", "covariate_diff_summaries.md"))
+writeLines(md_table, file.path("tables", "covariate_diff_summaries.md"))
 
 # Render MD to Docx (requires Pandoc)
-# system(paste0("pandoc ", file.path(pth, "tables", "covariate_diff_summaries.md"), " -o ", file.path(pth, "tables", "SuppTable_2.docx")))
+# system(paste0("pandoc ", file.path("tables", "covariate_diff_summaries.md"), " -o ", file.path("tables", "SuppTable_2.docx")))

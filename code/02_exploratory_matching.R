@@ -1,5 +1,5 @@
 # Load preamble settings and functions
-source(file.path(pth, "code", "00_preamble.R"), echo=TRUE)
+source(file.path("code", "00_preamble.R"), echo = TRUE)
 
 # Load necessary libraries
 suppressPackageStartupMessages(library(tidyverse))
@@ -176,7 +176,7 @@ do_tab_match_init$match_out_init_dir =  file.exists(file.path(match_out_init_dir
 do_tab_match_init$match_dd_dir =  file.exists(file.path(match_dd_dir, do_tab_match_init$file_name))
 
 do_tab_match_init %>%  select(-file_name) %>% 
-  write_csv(file.path(pth, "data", "02_exploratory_matching_tracker.csv"))
+  write_csv(file.path("data", "02_exploratory_matching_tracker.csv"))
 
 stopCluster(cl)
 
@@ -185,7 +185,7 @@ stopCluster(cl)
 # --------------------------
 
 ## READ DATA & CREATE RDSBs
-dd_summaries_file <- file.path(pth,"data","output","matching_init_summaries_dd.csv")
+dd_summaries_file <- file.path("data","output","matching_init_summaries_dd.csv")
 
 if (!file.exists(dd_summaries_file)) {
   
@@ -215,7 +215,7 @@ dd_summaries <- dd_summaries[match(unique(dd_summaries$id), dd_summaries$id),]
 }
 
 # load matching params
-d_match_init <- read_csv(file.path(pth, 'data','do_tab_match_init.csv'), col_type = cols(vcs_id = col_character()))
+d_match_init <- read_csv(file.path('data','do_tab_match_init.csv'), col_type = cols(vcs_id = col_character()))
 d = dd_summaries %>% left_join(d_match_init)
 
 # Define factors
@@ -278,4 +278,4 @@ ggp =  ggplot(d_fact, aes(factor,n, fill=param)) +
   axis.line = element_blank()) + xlab("") + ylab("")
   #   axis.text.x  = element_text(angle=45,hjust=0.95,vjust=0.2)
 
-ggsave(file.path(pth, 'figures', 'barchart-matching-factors.png'), ggp, width=6, height=8, units='in')
+ggsave(file.path('figures', 'barchart-matching-factors.png'), ggp, width=6, height=8, units='in')
