@@ -147,4 +147,4 @@ d_sum_counts <- bind_rows(d_sum_counts,d_counts)
 }
 
 d_sum %>% write_csv(file.path(pth, "data", "proj_covar_sums.csv"))
-d_sum_counts %>% write_csv(file.path(pth, "data", "proj_treat_counts.csv"))
+d_sum_counts %>% write_csv(file.path(pth, "tables", "proj_treat_counts.csv"))

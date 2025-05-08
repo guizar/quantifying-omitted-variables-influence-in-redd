@@ -4,9 +4,9 @@
 
 # Declare path to project folder from either HOME (Unix) or USERPROFILE (Windows) where the GitHub folder is located
 
-PATH_FROM_HOME <- c("vlab")  # should follow the file.path() convention, where folders are provided in a character vector format; e.g. c('folder','subfolder'). Leave empty if the GitHub folder is located directly inside your (HOME/USERPROFILE) folder
+PATH_FROM_HOME <- c("vlab")  # Should follow the `file.path()` convention, where folders are provided in a character vector format, e.g., `c('folder', 'subfolder')`. Leave empty if the GitHub folder is located directly inside your `(HOME/USERPROFILE)` folder.
 
-SERVER_PATH <- NA # Defaults to PATH_FROM_HOME. Don't change unless you're processing the data in a diferent directory
+SERVER_PATH <- NA # Defaults to `PATH_FROM_HOME`. This effectively defines an alternative path for the project folder. It's set up for situations where the raw data is located in a different directory other than `PATH_FROM_HOME`. For most cases this should be left as NA
 
 # ---------------------------------------
 # 2. Declare consistent dir paths funtions
@@ -23,21 +23,26 @@ setup_paths <- function() {
     Sys.getenv('HOME')
   }
 
-  # Build base directory consistently across platforms
-  base_dir <- file.path(home_dir, PATH_FROM_HOME, project_folder)
-  
-  # Set data directory (same as base by default)
-  server_dir <- base_dir
+  # Define GITHUB folder
+  if (length(PATH_FROM_HOME) == 1) {
+    PATH <- file.path(home_dir,PATH_FROM_HOME,project_folder)} else {
+    PATH <- file.path(home_dir,
+        do.call(file.path,as.list(PATH_FROM_HOME)),
+        project_folder)
+}
   
   # adjust data path (server processing)
-  if (!is.na(SERVER_PATH)) {
-    server_dir <- file.path(SERVER_PATH,project_folder)
-  }
+  if (!any(is.na(SERVER_PATH)))  {
+  SERVER_PATH <- file.path(
+    do.call(file.path,as.list(SERVER_PATH)),
+    project_folder)} else {
+    SERVER_PATH <- PATH
+    }
   
   # return lists
   list(
-    PATH = base_dir,
-    SERVER_PATH = if (is.na(SERVER_PATH)) base_dir else server_dir
+    PATH = normalizePath(PATH),
+    SERVER_PATH = normalizePath(SERVER_PATH)
   )
 }
 
