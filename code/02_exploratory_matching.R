@@ -12,7 +12,7 @@ library(MatchIt)
 
 
 multi_core <- TRUE
-n_cores <- if (multi_core) min(25, parallel::detectCores()) else 1 # Use max cores available (or 25 max) if multi_core is TRUE, otherwise 1 core
+n_cores <- if (multi_core) min(20, parallel::detectCores()) else 1 # Use max cores available (or 25 max) if multi_core is TRUE, otherwise 1 core
 cl <- parallel::makePSOCKcluster(n_cores)  
 doParallel::registerDoParallel(cl)
 
