@@ -21,9 +21,9 @@ proj_tab <- proj_tab %>%
 ordl <- readRDS(file = file.path(dir_output, "ordl.RDS"))
 match_prop_tab <- ordl[[dist_use]][[as.character(alpha_use)]]
 
-# ####
+# # ####
 # 
-# tmp <- match_prop_tab %>% 
+# tmp <- match_prop_tab %>%
 #   arrange(prop_matched_alpha_0.00113636363636364) %>%
 #   select(proj_id, prop_matched_alpha_0.00113636363636364)
 # 
@@ -37,7 +37,7 @@ match_prop_tab <- ordl[[dist_use]][[as.character(alpha_use)]]
 # 
 # pdf("figures/compare.pdf", width = 9, height = 9)
 # plot(ge[, 2, drop = T], ge[, 3, drop = T], ty = "p", pch = 19, cex = .7,
-#      xlab = "quantifying-omitted-variables-influence-in-redd", 
+#      xlab = "quantifying-omitted-variables-influence-in-redd",
 #      ylab = "redd-sens",
 #      main = "Comparing proportion treated units matched across code versions")
 # abline(0, 1)
@@ -48,7 +48,7 @@ match_prop_tab <- ordl[[dist_use]][[as.character(alpha_use)]]
 # 
 # # BRA_1094, PER_1067, MDG_1047
 # 
-# ######
+# # ######
 
 # Save matched proportion table to CSV
 write.csv(match_prop_tab, file = file.path(dir_output, "tmp_matched_prop.csv"))

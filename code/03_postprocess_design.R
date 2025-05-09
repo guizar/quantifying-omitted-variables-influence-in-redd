@@ -1,3 +1,4 @@
+rm(list = ls())
 # Load preamble settings and functions
 source(file.path("code", "00_preamble.R"), echo = TRUE)
 
