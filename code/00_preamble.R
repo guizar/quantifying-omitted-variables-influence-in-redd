@@ -1,4 +1,5 @@
 # Load necessary libraries
+rm(list = ls())
 suppressPackageStartupMessages(library(tidyverse))
 library(dplyr)
 library(knitr)

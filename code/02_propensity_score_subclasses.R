@@ -4,14 +4,13 @@ source(file.path("code", "00_preamble.R"), echo = TRUE)
 # Set multi-core processing option and create a parallel cluster
 multi_core <- TRUE
 n_cores <- if (multi_core) min(20, parallel::detectCores()) else 1 # Use max cores available (or 20 max) if multi_core is TRUE, otherwise 1 core
-cl <- parallel::makePSOCKcluster(n_cores)  
-doParallel::registerDoParallel(cl)  # Register the parallel backend for foreach
+registerDoParallel(cores = n_cores)
 
 # Perform parallel processing on rows of do_tab
 ps_subclass_outl <- foreach::foreach(
-  j = 1:nrow(do_tab),  # Loop through each row of the do_tab dataset
+  j = nrow(do_tab),  # Loop through each row of the do_tab dataset
   .verbose = TRUE,  # Print progress information during execution
-  .packages = c("tidyverse", "dplyr", "magrittr", "qqplotr", "ggplot2", "randomForest"),  # Load necessary packages
+  .packages = c("tidyverse", "dplyr", "magrittr", "qqplotr", "ggplot2", "randomForest", "ranger"),  # Load necessary packages
   .errorhandling = "pass"  # Continue execution even if an error occurs
 ) %dopar% {
   
@@ -26,18 +25,6 @@ ps_subclass_outl <- foreach::foreach(
   
     file_name <- paste0("design_proj_", proj_id, "_caliper_", caliper_val, "_dist_", dist_use, "_replace_", match_w_replacement, ".RDS")
 
-    # Check if any output files do not exist
-    # ls -l . | egrep -c '^-'
-    if (!all(file.exists(file.path(d_matched_dir, file_name)), 
-            file.exists(file.path(prop_score_dir, file_name)), 
-            file.exists(file.path(match_out_dir, file_name)))) {
-      cat(sprintf("Not all files exist for project %s. Proceeding with further examination.\n", proj_id))
-      # Your code for further examination
-    } else {
-      cat(sprintf("All files exist for project %s. Skipping.\n", proj_id))
-      return(NULL)
-    }
-    
     # Load the pre-processed quality-controlled data for the current project
     d_qc <- readRDS(file = file.path(dir_qc_data, paste0("qc_data_", proj_id, ".RDS")))
     # 'reinforce' treat as a binary variable
@@ -52,17 +39,32 @@ ps_subclass_outl <- foreach::foreach(
     calipers <- rep(caliper_val, length(cov_terms))  # Set calipers for each covariate
     names(calipers) <- cov_terms  # Assign names to the calipers
     
-    # Set seed for reproducibility
+    
+    # install.packages("ranger")
+    # library(ranger)
+    rf_model <- ranger::ranger(
+      formula = ps_score_form,
+      data = d_qc,
+      probability = TRUE,     # needed for propensity scores
+      num.trees = 500,        # default in MatchIt
+      min.node.size = 10,     # default for classification in ranger
+      seed = 1234         # set for reproducibility
+    )
+    
+    # Extract predicted propensity scores:
+    ps_rf <- rf_model$predictions[, "1"]  
+    
+     # Set seed for reproducibility
     set.seed(1234)
     # Perform matching using nearest neighbor with replacement and caliper restrictions
     match_out_dist <- MatchIt::matchit(formula = ps_score_form,
-                                      data = d_qc,
-                                      method = "nearest", 
-                                      distance = dist_use,
-                                      replace = match_w_replacement,  # Matching with or without replacement
-                                      caliper = calipers,
-                                      estimand = "ATT")  # Estimate ATT (average treatment effect on treated)
-    
+                                       data = d_qc,
+                                       method = "nearest", 
+                                       distance = ps_rf,
+                                       replace = match_w_replacement,  # Matching with or without replacement
+                                       caliper = calipers,
+                                       estimand = "ATT")  # Estimate ATT (average treatment effect on treated)
+
     # Process matched data and record the number of times each control unit was matched
     match_matrix <- match_out_dist$match.matrix  # Retrieve match matrix
     duplicated_controls_by_row <- table(match_matrix)  # Count how often each control unit was used
@@ -250,18 +252,17 @@ ps_subclass_outl <- foreach::foreach(
     # Store outputs including matched data, z-stats, and QQ plot
     d_matched_out <- list(d_matched = d_matched,
                           z_stats = z_stats,
-                          subclass_remove_list = subclass_remove_list,
-                          qq_plot = plt)
+                          subclass_remove_list = subclass_remove_list)
     
     # Save outputs as RDS files
     
     file_name <- paste0("design_proj_", proj_id, "_caliper_", caliper_val, "_dist_", dist_use, "_replace_", match_w_replacement, ".RDS")
     saveRDS(d_matched_out, file = file.path(d_matched_dir, file_name))
-    saveRDS(step_model, file = file.path(prop_score_dir, file_name))
-    saveRDS(match_out_dist, file = file.path(match_out_dir, file_name))
+    sm <- summary(match_out_dist)
+    saveRDS(sm, file = file.path(match_out_dir, file_name))
   })
   
-  return(try_output)  # Return the result of the try block
+  return(NULL)  # Return the result of the try block
 }
 
 # Make a control table to list successful/pending runs
@@ -274,6 +275,3 @@ do_tab$match_out_dir =  file.exists(file.path(match_out_dir, do_tab$file_name))
 do_tab %>% 
   select(-file_name) %>% 
   write_csv(file.path("data", "02_propensity_score_subclasses_outputs_tracker.csv"))
-
-# Stop the parallel cluster
-stopCluster(cl)

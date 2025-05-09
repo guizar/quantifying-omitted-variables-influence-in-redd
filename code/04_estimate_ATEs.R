@@ -29,8 +29,7 @@ if (run_models) {
   
   # Set up parallel cluster with max available cores (or 20 max) if fitting spatial models, otherwise 1 core
   n_cores <- if (fit_spatial) min(20, parallel::detectCores()) else 1
-  cl <- parallel::makePSOCKcluster(n_cores)  
-  doParallel::registerDoParallel(cl)  # Register parallel backend
+  registerDoParallel(cores = n_cores)
   
   # Run the models in parallel for each project
   outl <- foreach::foreach(proj_id_curr = proj_id_unique,
@@ -110,10 +109,7 @@ if (run_models) {
     saveRDS(out, file = file.path(dir_analysis_outputs, paste0("model_fits_spatial_", fit_spatial, "_", proj_id_curr, ".RDS")))
     return(out)  # Return the results for the current project
   }
-  
-  # Stop the parallel cluster after processing
-  parallel::stopCluster(cl)
-  
+
   # Save all model results
   saveRDS(outl, file = file.path(dir_output, paste0("model_fits_spatial_", fit_spatial, ".RDS")))
   

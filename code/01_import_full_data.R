@@ -4,8 +4,7 @@ source(file.path("code", "00_preamble.R"), echo = TRUE)
 # Set up multi-core processing
 multi_core <- TRUE
 n_cores <- if (multi_core) min(20, parallel::detectCores()) else 1 # Use max cores available (or 25 max) if multi_core is TRUE, otherwise 1 core
-cl <- parallel::makePSOCKcluster(n_cores)  
-doParallel::registerDoParallel(cl)  # Register the parallel backend for foreach
+registerDoParallel(cores = n_cores)
 
 # Perform parallel processing over all projects in proj_tab
 outl <- foreach::foreach(j = 1:nrow(proj_tab),
@@ -93,9 +92,6 @@ outl <- foreach::foreach(j = 1:nrow(proj_tab),
   saveRDS(d_qc, file = file.path(dir_qc_data, paste0("qc_data_", proj_tab$proj_id[j], ".RDS")))
   
 }
-
-# Stop the parallel processing cluster
-stopCluster(cl)
 
 
 # --------------------------------------
