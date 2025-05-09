@@ -151,8 +151,8 @@ plot_out <- ggplot(comp_meths, aes(x = proj_id, y = ate_yr, color = method)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels
         legend.title = element_text(size = 12), 
         legend.position = "right", 
-        axis.title.x = element_text(margin = margin(t = 20)),
-        axis.title.y = element_text(margin = margin(r = 20))) +  # Adjust text and legend
+        axis.title.x = element_text(margin = ggplot2::margin(t = 20)),
+        axis.title.y = element_text(margin = ggplot2::margin(r = 20))) +  # Adjust text and legend
   
   # Custom coloring for the x-axis labels
   scale_x_discrete(limits = order_vcs,  # Maintain project order on x-axis
@@ -173,8 +173,8 @@ plot_out <- ggplot(comp_meths, aes(x = proj_id, y = ate_yr, color = method)) +
         legend.box = "vertical",
         legend.direction = "vertical",
         legend.spacing.x = unit(0.2, "cm"),
-        axis.title.x = element_text(margin = margin(t = 1)),
-        axis.title.y = element_text(margin = margin(r = 1)),
+        axis.title.x = element_text(margin = ggplot2::margin(t = 1)),
+        axis.title.y = element_text(margin = ggplot2::margin(r = 1)),
         axis.text.x.top = element_blank(),  # Remove top x-axis text
         axis.ticks.x.top = element_blank(),
         axis.text.x = element_text(

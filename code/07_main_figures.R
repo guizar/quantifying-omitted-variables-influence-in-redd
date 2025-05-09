@@ -71,10 +71,10 @@ ylab("Difference in forest loss (%"~yr^-1*')') +
         legend.title=element_blank(),
         axis.line = element_blank(), 
         legend.position = "bottom", 
-        axis.title.x = element_text(margin = margin(t = 1)),
-        axis.title.y = element_text(margin = margin(r = 1)),
+        axis.title.x = element_text(margin = ggplot2::margin(t = 1)),
+        axis.title.y = element_text(margin = ggplot2::margin(r = 1)),
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
-        legend.margin=margin(0.1,0.1,0.1,0.1),
+        legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
         legend.box.spacing = unit(0.001, "in"),
         ) +  
   
@@ -115,10 +115,10 @@ ylab("Difference in forest loss (Ha)") +
         legend.title=element_blank(),
         axis.line = element_blank(), 
         legend.position = "bottom", 
-        axis.title.x = element_text(margin = margin(t = 1)),
-        axis.title.y = element_text(margin = margin(r = 1)),
+        axis.title.x = element_text(margin = ggplot2::margin(t = 1)),
+        axis.title.y = element_text(margin = ggplot2::margin(r = 1)),
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
-        legend.margin=margin(0.1,0.1,0.1,0.1),
+        legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
         legend.box.spacing = unit(0.001, "in"),
         ) +  
   
@@ -166,11 +166,11 @@ theme_bw() +
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
         legend.title=element_blank(),
-        # axis.text.y = element_text(margin = margin(r = 1)),
+        # axis.text.y = element_text(margin = ggplot2::margin(r = 1)),
         axis.line = element_blank(), 
         legend.position = "bottom", 
-        axis.title.x = element_text(margin = margin(t = 1)),
-        axis.title.y = element_text(margin = margin(r = 1)),
+        axis.title.x = element_text(margin = ggplot2::margin(t = 1)),
+        axis.title.y = element_text(margin = ggplot2::margin(r = 1)),
         axis.text.x.top = element_blank(),  # Remove top x-axis text
         axis.ticks.x.top = element_blank(),
         axis.text.x = element_text(
@@ -209,11 +209,11 @@ theme_bw() +
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
         legend.title=element_blank(),
-        # axis.text.y = element_text(margin = margin(r = 1)),
+        # axis.text.y = element_text(margin = ggplot2::margin(r = 1)),
         axis.line = element_blank(), 
         legend.position = "bottom", 
-        axis.title.x = element_text(margin = margin(t = 1)),
-        axis.title.y = element_text(margin = margin(r = 1)),
+        axis.title.x = element_text(margin = ggplot2::margin(t = 1)),
+        axis.title.y = element_text(margin = ggplot2::margin(r = 1)),
         axis.text.x.top = element_blank(),  # Remove top x-axis text
         axis.ticks.x.top = element_blank(),
         axis.text.x = element_text(
@@ -235,7 +235,7 @@ theme_bw() +
     plot.title = element_text(size = 10, face = "bold", hjust = 0.5), 
     legend.position = "bottom",
     plot.margin = unit(c(0.01,0.01,0.01,0.01), "in"),
-          legend.margin=margin(0.1,0.1,0.1,0.1),
+          legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
           legend.box.spacing = unit(0.001, "in"),
           axis.text.x.top = element_blank(),  # Remove top x-axis text
           axis.ticks.x.top = element_blank()
@@ -271,10 +271,10 @@ ylab("Difference in forest loss (%"~yr^-1*')') +
         legend.title=element_blank(),
         axis.line = element_blank(), 
         legend.position = "bottom", 
-        axis.title.x = element_text(margin = margin(t = 1)),
-        axis.title.y = element_text(margin = margin(r = 1)),
+        axis.title.x = element_text(margin = ggplot2::margin(t = 1)),
+        axis.title.y = element_text(margin = ggplot2::margin(r = 1)),
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
-        legend.margin=margin(0.1,0.1,0.1,0.1),
+        legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
         legend.box.spacing = unit(0.001, "in"),
         ) +  
   
@@ -303,10 +303,10 @@ ylab("Difference in forest loss (Ha)") +
         legend.title=element_blank(),
         axis.line = element_blank(), 
         legend.position = "bottom", 
-        axis.title.x = element_text(margin = margin(t = 1)),
-        axis.title.y = element_text(margin = margin(r = 1)),
+        axis.title.x = element_text(margin = ggplot2::margin(t = 1)),
+        axis.title.y = element_text(margin = ggplot2::margin(r = 1)),
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
-        legend.margin=margin(0.1,0.1,0.1,0.1),
+        legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
         legend.box.spacing = unit(0.001, "in"),
         ) +  
   
@@ -340,11 +340,11 @@ theme_bw() +
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
         legend.title=element_blank(),
-        # axis.text.y = element_text(margin = margin(r = 1)),
+        # axis.text.y = element_text(margin = ggplot2::margin(r = 1)),
         axis.line = element_blank(), 
         legend.position = "bottom", 
-        axis.title.x = element_text(margin = margin(t = 1)),
-        axis.title.y = element_text(margin = margin(r = 1)),
+        axis.title.x = element_text(margin = ggplot2::margin(t = 1)),
+        axis.title.y = element_text(margin = ggplot2::margin(r = 1)),
         axis.text.x.top = element_blank(),  # Remove top x-axis text
         axis.ticks.x.top = element_blank(),
         axis.text.x = element_text(
@@ -377,11 +377,11 @@ theme_bw() +
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
         legend.title=element_blank(),
-        # axis.text.y = element_text(margin = margin(r = 1)),
+        # axis.text.y = element_text(margin = ggplot2::margin(r = 1)),
         axis.line = element_blank(), 
         legend.position = "bottom", 
-        axis.title.x = element_text(margin = margin(t = 1)),
-        axis.title.y = element_text(margin = margin(r = 1)),
+        axis.title.x = element_text(margin = ggplot2::margin(t = 1)),
+        axis.title.y = element_text(margin = ggplot2::margin(r = 1)),
         axis.text.x.top = element_blank(),  # Remove top x-axis text
         axis.ticks.x.top = element_blank(),
         axis.text.x = element_text(
@@ -402,7 +402,7 @@ theme_bw() +
     plot.title = element_text(size = 10, face = "bold", hjust = 0.5), 
     legend.position = "bottom",
     plot.margin = unit(c(0.01,0.01,0.01,0.01), "in"),
-          legend.margin=margin(0.1,0.1,0.1,0.1),
+          legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
           legend.box.spacing = unit(0.001, "in"),
           axis.text.x.top = element_blank(),  # Remove top x-axis text
           axis.ticks.x.top = element_blank()
@@ -458,7 +458,7 @@ proj_covar_sums <- proj_covar_sums %>%
     mean_matched = mean(data[[1]]$val[data[[1]]$type == 'Included']),
     mean_unmatched = mean(data[[1]]$val[data[[1]]$type == under_80_label]),
     mean_diff = mean_matched - mean_unmatched,
-    test = map(data, ~ wilcox.test(val ~ type, data = .x, paired = FALSE, conf.int = TRUE)))
+    test = map(data, ~ wilcox.test(val ~ type, data = .x, conf.int = TRUE)))
 
 # condense
 proj_covar_sums <- proj_covar_sums %>% 
@@ -709,7 +709,7 @@ mp = ggplot() +
           legend.position = "bottom",
           legend.text = element_text(angle = 0, size=11),
           plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
-          legend.margin=margin(0.1,0.1,0.1,0.1),
+          legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
           legend.box.spacing = unit(0.001, "in"))
 
 ggsave(filename=file.path("figures", "sites-map-moll.png"), plot=mp, width=10, dpi=300)

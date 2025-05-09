@@ -138,7 +138,7 @@ unadjusted_outcome_form <- reformulate(response = "outcome_prop", termlabels = "
 
 # Define matching parameters and thresholds
 caliper_val_vec <- c(0.1, 0.2, 0.5, 1)  # Different caliper values for matching
-dist_use_vec <- c("glm", "mahalanobis", "randomforest")  # Distance metrics for matching
+dist_use_vec <- c("glm", "mahalanobis", "randomforest")[3]  # Distance metrics for matching
 is_match_w_replacement <- TRUE  # Allow matching with replacement
 qqplot_alpha_vec <- c(0.05, 0.05 / nrow(proj_tab))  # Alpha values for QQ plots
 alpha_use <- 0.05 / nrow(proj_tab)  # Alpha level adjusted for multiple comparisons

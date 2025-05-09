@@ -276,10 +276,10 @@ ggp <- ggplot(d_tests_sum, aes(covariate, y_lab, fill = significance)) +
         legend.title=element_blank(),
         axis.line = element_blank(), 
         legend.position = "bottom", 
-        axis.title.x = element_text(margin = margin(t = 1)),
-        axis.title.y = element_text(margin = margin(r = 1)),
+        axis.title.x = element_text(margin = ggplot2::margin(t = 1)),
+        axis.title.y = element_text(margin = ggplot2::margin(r = 1)),
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
-        legend.margin=margin(0.1,0.1,0.1,0.1),
+        legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
         legend.box.spacing = unit(0.001, "in"),
         )
   
