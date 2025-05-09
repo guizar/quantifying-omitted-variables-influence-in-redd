@@ -168,6 +168,8 @@ outl <- foreach::foreach(
   
   return(NULL)  # Return the result of the try block
 }
+doParallel::stopImplicitCluster()
+gc()
 
 # Make a control table to list successful/pending runs
 do_tab_match_init$file_name <- paste0("id_",do_tab_match_init$id,"_design_proj_",do_tab_match_init$proj_id, "_caliper_",do_tab_match_init$caliper_val, "_dist_",do_tab_match_init$dist_use, "_replace_",do_tab_match_init$match_w_replacement, ".RDS")

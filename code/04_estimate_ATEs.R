@@ -109,6 +109,8 @@ if (run_models) {
     saveRDS(out, file = file.path(dir_analysis_outputs, paste0("model_fits_spatial_", fit_spatial, "_", proj_id_curr, ".RDS")))
     return(out)  # Return the results for the current project
   }
+  doParallel::stopImplicitCluster()
+  gc()
 
   # Save all model results
   saveRDS(outl, file = file.path(dir_output, paste0("model_fits_spatial_", fit_spatial, ".RDS")))

@@ -93,6 +93,8 @@ outl <- foreach::foreach(j = 1:nrow(proj_tab),
   
 }
 
+doParallel::stopImplicitCluster()
+gc()
 
 # --------------------------------------
 # Summarise project-level covar values 

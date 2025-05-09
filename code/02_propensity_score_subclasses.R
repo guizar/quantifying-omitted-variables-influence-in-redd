@@ -8,7 +8,7 @@ registerDoParallel(cores = n_cores)
 
 # Perform parallel processing on rows of do_tab
 ps_subclass_outl <- foreach::foreach(
-  j = nrow(do_tab),  # Loop through each row of the do_tab dataset
+  j = 1:nrow(do_tab),  # Loop through each row of the do_tab dataset
   .verbose = TRUE,  # Print progress information during execution
   .packages = c("tidyverse", "dplyr", "magrittr", "qqplotr", "ggplot2", "randomForest", "ranger"),  # Load necessary packages
   .errorhandling = "pass"  # Continue execution even if an error occurs
@@ -39,9 +39,6 @@ ps_subclass_outl <- foreach::foreach(
     calipers <- rep(caliper_val, length(cov_terms))  # Set calipers for each covariate
     names(calipers) <- cov_terms  # Assign names to the calipers
     
-    
-    # install.packages("ranger")
-    # library(ranger)
     rf_model <- ranger::ranger(
       formula = ps_score_form,
       data = d_qc,
@@ -264,6 +261,8 @@ ps_subclass_outl <- foreach::foreach(
   
   return(NULL)  # Return the result of the try block
 }
+doParallel::stopImplicitCluster()
+gc()
 
 # Make a control table to list successful/pending runs
 do_tab$file_name <- paste0("design_proj_", do_tab$proj_id, "_caliper_", do_tab$caliper_val, "_dist_", do_tab$dist_use, "_replace_", do_tab$match_w_replacement, ".RDS")
