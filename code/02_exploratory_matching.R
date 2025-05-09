@@ -13,8 +13,7 @@ library(MatchIt)
 
 multi_core <- TRUE
 n_cores <- if (multi_core) min(20, parallel::detectCores()) else 1 # Use max cores available (or 25 max) if multi_core is TRUE, otherwise 1 core
-cl <- parallel::makePSOCKcluster(n_cores)  
-doParallel::registerDoParallel(cl)
+registerDoParallel(cores = n_cores)
 
 # j=742 | PL1218 | Mahalanobis
 # j=1030 | 1400| Mahalanobis
@@ -167,8 +166,10 @@ outl <- foreach::foreach(
   saveRDS(d_matched_sum, file = file.path(match_dd_dir, file_name))
   })
   
-  return(try_output)  # Return the result of the try block
+  return(NULL)  # Return the result of the try block
 }
+doParallel::stopImplicitCluster()
+gc()
 
 # Make a control table to list successful/pending runs
 do_tab_match_init$file_name <- paste0("id_",do_tab_match_init$id,"_design_proj_",do_tab_match_init$proj_id, "_caliper_",do_tab_match_init$caliper_val, "_dist_",do_tab_match_init$dist_use, "_replace_",do_tab_match_init$match_w_replacement, ".RDS")
@@ -178,8 +179,6 @@ do_tab_match_init$match_dd_dir =  file.exists(file.path(match_dd_dir, do_tab_mat
 
 do_tab_match_init %>%  select(-file_name) %>% 
   write_csv(file.path("data", "02_exploratory_matching_tracker.csv"))
-
-stopCluster(cl)
 
 # -----------------------
 # Post matching validation

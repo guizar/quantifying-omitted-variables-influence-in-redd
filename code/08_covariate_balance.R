@@ -30,8 +30,9 @@ if (!file.exists(file.path(match_out_dir, file_name))) {
   } else {
 
 # read matching diagnostics
-matching_out <- readRDS(file = file.path(match_out_dir, file_name))
-sm <- summary(matching_out)
+# matching_out <- readRDS(file = file.path(match_out_dir, file_name))
+sm <- readRDS(file = file.path(match_out_dir, file_name))
+# sm <- summary(matching_out)
 sum.matched= as_tibble(sm[['sum.matched']])
 sum.matched$variable= row.names(sm[['sum.matched']])
 sum.matched = sum.matched %>%

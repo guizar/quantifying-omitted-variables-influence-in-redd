@@ -185,4 +185,5 @@ plot_out <- ggplot(comp_meths, aes(x = proj_id, y = ate_yr, color = method)) +
 
 # export ggplot
 ggsave(file_meth_strat,plot_out, width=8, height=11, units='in', dpi=300)
+saveRDS(comp_meths, file = file.path(dir_analysis_outputs, "comp_meths.RDS"))
 

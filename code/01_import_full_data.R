@@ -1,11 +1,11 @@
+rm(list = ls())
 # Load preamble settings and functions
 source(file.path("code", "00_preamble.R"), echo = TRUE)
 
 # Set up multi-core processing
 multi_core <- TRUE
 n_cores <- if (multi_core) min(20, parallel::detectCores()) else 1 # Use max cores available (or 25 max) if multi_core is TRUE, otherwise 1 core
-cl <- parallel::makePSOCKcluster(n_cores)  
-doParallel::registerDoParallel(cl)  # Register the parallel backend for foreach
+registerDoParallel(cores = n_cores)
 
 # Perform parallel processing over all projects in proj_tab
 outl <- foreach::foreach(j = 1:nrow(proj_tab),
@@ -94,9 +94,8 @@ outl <- foreach::foreach(j = 1:nrow(proj_tab),
   
 }
 
-# Stop the parallel processing cluster
-stopCluster(cl)
-
+doParallel::stopImplicitCluster()
+gc()
 
 # --------------------------------------
 # Summarise project-level covar values 
