@@ -136,7 +136,7 @@ order_vcs <- plot_df %>%
   pull(proj_id)
 
 # Define text colour for projs <80% matched
-axis_text_color_dimmed <- '#99C945'
+# axis_text_color_dimmed <- '#99C945'
 
 # Create the plot: ATE estimates by method across projects
 library(ggplot2)

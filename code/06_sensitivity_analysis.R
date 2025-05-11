@@ -377,7 +377,7 @@ ggsave(file_curr,gg_out, width=12, height=12, units='in', dpi=300)
 # ------------------------------------------------
 recode_map <- setNames(
   c("1:FALSE", "1:TRUE"),
-  c(inclusion_lab[5], inclusion_lab[4])
+  c(included_label, under_80_label)
 )
 
 df_r2_plot <- res_plot_filt2 %>% 
