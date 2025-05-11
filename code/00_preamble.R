@@ -213,11 +213,16 @@ do_tab %>% write_csv(file.path("data", "do_tab.csv"))
 proj_tab %>% write_csv(file.path("data", "proj_tab.csv"))
 
 # -----------------------------------------------------------------
-# Declare project labels according to project's inclusion in this study, declare add label and colour for `80% of plots matched`
+# Declare project labels according to project's inclusion in this study
 # -----------------------------------------------------------------
-inclusion_lab = c('<80% evergreen forest cover','Insufficient temporal\n records', 'Not\nmatched', '<80% of plots matched','Included')
-map_cols= carto_pal(5, "Vivid")
-map_cols[5] <- '#000000'
+inclusion_lab = c('<80% evergreen forest cover','Insufficient temporal\n records', '<80% of plots matched','Included')
+under_80_label <- inclusion_lab[3]
+included_label <- inclusion_lab[4]
+
+map_cols= carto_pal(4, "Vivid")
 names(map_cols) <- inclusion_lab
-under_80_label <- inclusion_lab[4]
+map_cols[included_label] <- '#000000'
+map_cols[under_80_label] <- '#99C945'
+
+# Define text colour for projs <80% matched
 axis_text_color_dimmed <- map_cols[under_80_label]
