@@ -98,7 +98,7 @@ order_vcs <- comp_meths %>%
   select(proj_id, ate_ha) %>%
   group_by(proj_id) %>%  summarise(ate_ha = mean(ate_ha)) %>%
   arrange(ate_ha) %>%
-  pull(proj_id)
+  pull(proj_id)  %>% as.character()
 
 middle_panel <- ggplot(comp_meths, aes(x = proj_id, y = ate_ha, color = method)) +
   geom_hline(lwd = 0.5, yintercept = 0) +  
@@ -142,7 +142,7 @@ order_vcs <- comp_meths %>%
   select(proj_id, ate_yr) %>%
   group_by(proj_id) %>%  summarise(ate_yr = mean(ate_yr)) %>%
   arrange(ate_yr) %>%
-  pull(proj_id)
+  pull(proj_id)  %>% as.character()
 
 bottom_left <- ggplot(comp_meths %>% filter(method==methnames$lm_simple), aes(x = proj_id, y = ate_yr)) +
   geom_hline(lwd = 0.5, yintercept = 0) +  
@@ -186,7 +186,7 @@ order_vcs <- comp_meths %>%
   select(proj_id, ate_ha) %>%
   group_by(proj_id) %>% summarise(ate_ha = mean(ate_ha)) %>%
   arrange(ate_ha) %>%
-  pull(proj_id)
+  pull(proj_id)  %>% as.character()
 
 bottom_right <- ggplot(comp_meths %>% filter(method==methnames$lm_simple), aes(x = proj_id, y = ate_ha)) +
   geom_hline(lwd = 0.5, yintercept = 0) +  
@@ -287,7 +287,7 @@ ylab("Difference in forest loss (%"~yr^-1*')') +
 order_vcs <- comp_meths %>%
   select(proj_id, ate_ha) %>%
   group_by(proj_id) %>%  summarise(ate_ha = mean(ate_ha)) %>%
-  arrange(ate_ha) %>% mutate(proj_id = as.character(proj_id)) %>% filter(!proj_id %in% projects_with_low_matched_prop) %>%  pull(proj_id) 
+  arrange(ate_ha) %>% mutate(proj_id = as.character(proj_id)) %>% filter(!proj_id %in% projects_with_low_matched_prop) %>%  pull(proj_id)  %>% as.character() 
 
 middle_panel <- ggplot(comp_meths_sub, aes(x = proj_id, y = ate_ha, color = method)) +
   geom_hline(lwd = 0.5, yintercept = 0) +  
@@ -321,7 +321,7 @@ order_vcs <- comp_meths_sub %>%
   filter(method==methnames$lm_simple) %>%
   select(proj_id, ate_yr) %>%
   group_by(proj_id) %>%  summarise(ate_yr = mean(ate_yr)) %>%
-  arrange(ate_yr) %>% mutate(proj_id = as.character(proj_id)) %>% filter(!proj_id %in% projects_with_low_matched_prop) %>%  pull(proj_id) 
+  arrange(ate_yr) %>% mutate(proj_id = as.character(proj_id)) %>% filter(!proj_id %in% projects_with_low_matched_prop) %>%  pull(proj_id)  %>% as.character() 
 
 bottom_left <- ggplot(comp_meths_sub %>% filter(method==methnames$lm_simple), aes(x = proj_id, y = ate_yr)) +
   geom_hline(lwd = 0.5, yintercept = 0) +  
@@ -359,7 +359,7 @@ order_vcs <- comp_meths_sub %>%
   select(proj_id, ate_ha) %>%
   group_by(proj_id) %>% summarise(ate_ha = mean(ate_ha)) %>%
   arrange(ate_ha) %>%
-  pull(proj_id)
+  pull(proj_id)  %>% as.character()
 
 bottom_right <- ggplot(comp_meths_sub %>% filter(method==methnames$lm_simple), aes(x = proj_id, y = ate_ha)) +
   geom_hline(lwd = 0.5, yintercept = 0) +  

@@ -392,7 +392,7 @@ df_r2_plot <- res_plot_filt2 %>%
 # define cols
 # col_darks <- rev(generate_palette('black', modification = "go_lighter", n_colours = 3, view_palette = F))
 # col_greens <- rev(generate_palette(axis_text_color_dimmed, modification = "go_lighter", n_colours = 3, view_palette = F))
-scatter_cols <- c(map_cols[5],map_cols[4])
+scatter_cols <- c(map_cols[included_label],map_cols[under_80_label])
 
 # plot
 pl_out <- ggplot(df_r2_plot, aes(x = r2yz_dx, y = r2dz_x, colour = strength_col)) +
