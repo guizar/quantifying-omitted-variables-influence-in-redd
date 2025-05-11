@@ -43,7 +43,7 @@ if (repop_do_tab) {
     for (alpha in qqplot_alpha_vec) {
       subclass_remove <- design_in$subclass_remove_list[[as.character(alpha)]]  # Subclasses removed for current alpha
       d_matched$removed <- d_matched$subclass %in% subclass_remove  # Mark removed subclasses
-      do_tab[j, paste0("n_treat_ok_alpha_", alpha)] <- sum(d_matched$treat == 1 & !d_matched$removed)  # Count remaining treated units
+      do_tab[j, paste0("n_treat_ok_alpha_", alpha)] <- d_matched %>% filter(treat == 1 & !removed) %>% distinct(gid) %>%  nrow()  # Count remaining treated units
       do_tab[j, paste0("prop_matched_alpha_", alpha)] <- do_tab[j, paste0("n_treat_ok_alpha_", alpha)] / do_tab$n_treat_tot[j]  # Calculate proportion
     }
   }
