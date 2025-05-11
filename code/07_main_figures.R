@@ -412,28 +412,21 @@ ggsave(file_main_plot, gg_out, width=10, height=10, units='in', dpi=300)
 
 
 # ---------------------------------------------------
-# Condense proj info data and generate Supp table 
+# Relabel projects according to their inclusion status in the paper: The outputs of this relabellig are already reflected in the vcs-info.csv file, so it's commented 
 # ---------------------------------------------------
 
-# # flag projs with low matching samples (below threshold)
-# vcs_in_low_prop <- str_extract(projects_with_low_matched_prop, "_.*")
-# vcs_in_low_prop <- sub("_", "", vcs_in_low_prop)
 
-# -- label projects according to whether they've been included in the analysis:
-# -- projs: first all projects for which we have an fx size; then adjust label to flag those undersampled
-# vcs_in <-comp_meths %>% select(vcs_id) %>% distinct() %>% .$vcs_id
-# proj_info <- proj_info %>% mutate(inclusion_status = ifelse(vcs_id %in% vcs_in, "Inlcuded",inclusion_status))
-# proj_info <- proj_info %>% mutate(inclusion_status = ifelse(vcs_id %in% vcs_in_low_prop, '<80% of plots matched',inclusion_status))
+# # -- label projects according to their inclusion in the analysis
+# proj_in <-comp_meths %>% select(proj_id) %>% distinct() %>% .$proj_id %>% levels()
+# proj_not_examined <- proj_info %>% filter(inclusion_status %in% inclusion_lab[1:2]) %>% .$proj_id
 
-# VCS not examined
-# vcs_out <- proj_info %>% filter(inclusion_status %in% inclusion_lab[1:2]) %>% .$vcs_id
-
-# The reining project (1477) did not meet the the proportional matched requirement in the subclasses analysis (based on propensity scores)
-# proj_info <- proj_info %>% mutate(inclusion_status = ifelse(
-#     !vcs_id %in% vcs_in & !vcs_id %in% vcs_out, "Not\nmatched",inclusion_status))
-
-# Relabel projs according to their inclusion into this analysis
-# proj_info$inclusion_status = factor(proj_info$inclusion_status, levels=inclusion_lab)
+# proj_info <- proj_info %>% mutate(
+#     inclusion_status = case_when(
+#         !proj_id %in% projects_with_low_matched_prop & !proj_id %in% proj_not_examined & proj_id %in% proj_in ~ included_label,
+#         proj_id %in% projects_with_low_matched_prop & !proj_id %in% proj_not_examined  ~ under_80_label,
+#         TRUE ~ inclusion_status
+#     )
+# )
 
 # # Write updated file 
 # write_csv(proj_info %>% filter(!is.na(inclusion_status)), file = file.path("data", "vcs-info.csv"))
@@ -444,21 +437,17 @@ ggsave(file_main_plot, gg_out, width=10, height=10, units='in', dpi=300)
 # ----------------------------------------------------
 
 proj_covar_sums <- read_csv(file.path("data", "proj_covar_sums.csv"))
-
-proj_covar_sums <- proj_covar_sums %>% mutate(type = 
-case_when(proj_id %in% order_vcs ~ 'Included',
-          proj_id %in% projects_with_low_matched_prop ~ under_80_label)) %>%
-          filter(proj_id != 'IDN_1477')
+proj_covar_sums <- proj_covar_sums %>% left_join(proj_info %>% select(proj_id,inclusion_status))
 
 
 proj_covar_sums <- proj_covar_sums %>% 
-  gather(var, val, -c(type, proj_id)) %>%
+  gather(var, val, -c(inclusion_status, proj_id)) %>%
   group_by(var) %>% nest() %>%
   mutate(
-    mean_matched = mean(data[[1]]$val[data[[1]]$type == 'Included']),
-    mean_unmatched = mean(data[[1]]$val[data[[1]]$type == under_80_label]),
+    mean_matched = mean(data[[1]]$val[data[[1]]$inclusion_status == included_label]),
+    mean_unmatched = mean(data[[1]]$val[data[[1]]$inclusion_status == under_80_label]),
     mean_diff = mean_matched - mean_unmatched,
-    test = map(data, ~ wilcox.test(val ~ type, data = .x, conf.int = TRUE)))
+    test = map(data, ~ wilcox.test(val ~ inclusion_status, data = .x, conf.int = TRUE)))
 
 # condense
 proj_covar_sums <- proj_covar_sums %>% 
@@ -473,7 +462,7 @@ proj_covar_sums <- proj_covar_sums %>%
   select(-c(data, test, statistic))
 
 # --- Export table
-cls = c('Covariate','Mean\nmatched (n=33)','Mean\nunmatched (n=10)','Mean\ndifference')
+cls = c('Covariate','Mean\nmatched (n=36)','Mean\nunmatched (n=8)','Mean\ndifference')
 
 var_fcts = c(
   dist_degra = 'Mean plot level\ndist. to recently defor. (m)',
@@ -500,10 +489,8 @@ writeLines(md_table, file.path("tables", "Covariate_differences.md"))
 
 # system(paste0("pandoc ", file.path("tables", "Covariate_differences.md"), " -o ", file.path("tables", "SuppTable_2.docx")))
 
-
 # Render table to Latex
 tex_table <- capture.output(kable(out_table, format = "latex", booktabs = TRUE, caption = ""))
-
 writeLines(tex_table, file.path("tables", "Covariate_differences.tex"))
 
 # ------------------
@@ -531,7 +518,7 @@ out_table <- proj_info %>% left_join(
   )
 
 cls = c('Project ID','Project Name','Area (km^2^)','Effect size [95% CI] (%/yr^-1^), for projects where we could not estimate the effect size, reason for exclusion is give','Sample size','Percentage matched in treatment','Included in ​Guizar-Coutiño et al.,(2022)​')
-out_table = out_table %>%
+out_print = out_table %>%
       mutate(
       estimate_char = paste0(round(ate_yr,2),' [',round(conf_low,2),' ', round(conf_high,2),']'),
       km = round(area_ha*0.01,2),
@@ -539,20 +526,20 @@ out_table = out_table %>%
       perc_matched = eval(parse(text = paste0('prop_matched_alpha_', as.character(alpha_use)))) * 100,
       ) %>% 
       mutate(
-        estimate_char = ifelse(!inclusion_status %in% c('Included',under_80_label),inclusion_status,estimate_char),
-        guizar_2022 = ifelse(vcs_id %in% d_guizar$vcs_id,'X','')
+        estimate_char = ifelse(!inclusion_status %in% c(included_label,under_80_label),inclusion_status,estimate_char),
+        guizar_2022 = ifelse(vcs_id %in% d_guizar$vcs_id,'Y','X')
       ) %>%
       left_join(proj_samples) %>%
       arrange(country) %>%
-    select(id,project_name,km,estimate_char,samples_str,perc_matched,guizar_2022)
-colnames(out_table) = cls
+    select(proj_id,project_name,km,estimate_char,samples_str,perc_matched,guizar_2022)
+colnames(out_print) = cls
 
 # Render table to MD
-md_table <- capture.output(pandoc.table(out_table, style='multiline',split.table = Inf, digits=3))
+md_table <- capture.output(pandoc.table(out_print, style='multiline',split.table = Inf, digits=3))
 writeLines(md_table, file.path("tables", "project_summaries.md"))
 
 # Render table to Latex
-# tex_table <- capture.output(kable(out_table, format = "latex", booktabs = TRUE, caption = ""))
+# tex_table <- capture.output(kable(out_print, format = "latex", booktabs = TRUE, caption = ""))
 # writeLines(tex_table, file.path("tables", "project_summaries.tex"))
 
 # Render MD to Docx (requires Pandoc)
@@ -572,43 +559,40 @@ comp_meths %>%
   select(vcs_id) %>% distinct() %>%
   left_join(proj_info %>% select(vcs_id, inclusion_status)) %>% group_by(inclusion_status) %>% tally()
 
+# 1 <80% of plots matched     3
+# 2 Included                 23
+
 proj_info %>% group_by(inclusion_status) %>% tally()
 # inclusion_status                         n
-#   <fct>                                <int>
-#  "Forest type excluded"                  22
-#  "Insufficient temporal\n records"        5
-#  "Not\nmatched"                           1
-#  "<80% of plots matched"    10
-#  "Included"                      33
-
+# 1 "<80% evergreen forest cover"        22
+# 2 "Insufficient temporal\n records"     5
+# 3 "<80% of plots matched"               8
+# 4 "Included"                           36
 
 # ---- Count of projects examined
-proj_info %>% filter(inclusion_status %in% c("Included","<80% of plots matched","Not\nmatched")) %>% group_by(continent) %>% tally()
+proj_info %>% filter(inclusion_status %in% c(included_label,under_80_label)) %>% group_by(continent) %>% tally()
 # # A tibble: 4 × 2
 #   continent     n
 #   <chr>     <int>
-#  Africa        7
-#  Americas     34
-#  Asia          2
-#  Oceania       1
+# 1 Africa        7
+# 2 Americas     34
+# 3 Asia          2
+# 4 Oceania       1
 
 # ---  Matched below optimal sample size
-proj_info %>% filter(inclusion_status == "<80% of plots matched") %>% group_by(continent) %>% tally()
+proj_info %>% filter(inclusion_status == under_80_label) %>% group_by(continent) %>% tally()
 # # A tibble: 4 × 2
 #   continent     n
-#   <chr>     <int>
-#  Africa        4
-#  Americas      4
-#  Asia          1
-#  Oceania       1
+# 1 Africa        5
+# 2 Americas      1
+# 3 Asia          2
 
 # --- Included
-proj_info %>% filter(inclusion_status == "Included") %>% group_by(continent) %>% tally()
+proj_info %>% filter(inclusion_status == included_label) %>% group_by(continent) %>% tally()
 # # A tibble: 2 × 2
-#   continent     n
-#   <chr>     <int>
-#  Africa        3
-#  Americas     30
+# 1 Africa        2
+# 2 Americas     33
+# 3 Oceania       1
 
 
 # COMPARISON VS GUIZAR 2022 AND VERRA
