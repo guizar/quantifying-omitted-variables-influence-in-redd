@@ -23,21 +23,14 @@ summs <- d %>%
 mu_pri_mn <- mean(summs$mu_est, na.rm = TRUE)
 mu_pri_sd <- sd(summs$mu_est, na.rm = TRUE)
 
-# If running models, proceed with parallel processing
+# If running models, proceed with processing
 if (run_models) {
-  # Load required library for parallel processing
-  library(doParallel)
-  
-  # Set up parallel cluster with max available cores (or 20 max) if fitting spatial models, otherwise 1 core
-  n_cores <- if (fit_spatial) min(20, parallel::detectCores()) else 1
-  registerDoParallel(cores = n_cores)
-  
-  # Run the models in parallel for each project
-  outl <- foreach::foreach(proj_id_curr = proj_id_unique,
-                           .verbose = TRUE,  # Print progress
-                           .packages = c("tidyverse", "dplyr", "magrittr"),
-                           .errorhandling = "pass"  # Continue on error
-  ) %dopar% {
+  # Iterate over each project ID using a simple for loop
+  outl <- list()  # Initialize an empty list to store results
+  for (proj_id_curr in proj_id_unique) {
+    # Print progress
+    cat("Processing project ID:", proj_id_curr, "\n")
+    
     # Filter data for the current project and remove excluded subclasses
     d_sub <- d %>% 
       filter(proj_id == proj_id_curr) %>%
@@ -108,10 +101,8 @@ if (run_models) {
     
     # Save results for the current project
     saveRDS(out, file = file.path(dir_analysis_outputs, paste0("model_fits_spatial_", fit_spatial, "_", proj_id_curr, ".RDS")))
-    return(out)  # Return the results for the current project
+    outl[[proj_id_curr]] <- out  # Store the results in the list
   }
-  doParallel::stopImplicitCluster()
-  gc()
 
   # Save all model results
   saveRDS(outl, file = file.path(dir_output, paste0("model_fits_spatial_", fit_spatial, ".RDS")))
