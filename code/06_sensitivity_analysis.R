@@ -403,7 +403,7 @@ pl_out <- ggplot(df_r2_plot, aes(x = r2yz_dx, y = r2dz_x, colour = strength_col)
   xlab(expression(R[ y %~% z * "|" * d * "," * bold(x) ]^2)) +
   ylab(expression(R[ d %~% z * "|" * bold(x) ]^2)) +
   facet_wrap(.~Covariate, ncol=2, nrow=2) +
-  xlim(0,1) + ylim(0,1) +
+  ylim(0,1) +
   theme_bw() +
   theme(
     plot.title = element_text(size = 10, face = "bold", hjust = 0.5), 
