@@ -45,6 +45,10 @@ red_color <- "#c34242"
 
 dodge_width <- 0.7
 
+# Generate a table with the projects included in the analysis (n=36)
+# for further plotting/examination
+comp_meths_sub <- comp_meths %>% filter(!proj_id %in% projects_with_low_matched_prop)
+
 #############################################
 #  ----------- SI PLOT ---------
 #############################################
@@ -250,9 +254,6 @@ ggsave(file_main_plot, gg_out, width=12, height=12, units='in', dpi=300)
 # Output file params
 filename_out <- "Main_effect_sizes_fig.png"
 file_main_plot <- file.path("figures", filename_out)
-
-# Subset file
-comp_meths_sub <- comp_meths %>% filter(!proj_id %in% projects_with_low_matched_prop)
 
 # TOP -----------
 # Create the plot: ATE estimates by method across projects
@@ -567,7 +568,7 @@ proj_info %>% group_by(inclusion_status) %>% tally()
 # 1 "<80% evergreen forest cover"        22
 # 2 "Insufficient temporal\n records"     5
 # 3 "<80% of plots matched"               8
-# 4 "Included"                           36
+# 4 included_label                           36
 
 # ---- Count of projects examined
 proj_info %>% filter(inclusion_status %in% c(included_label,under_80_label)) %>% group_by(continent) %>% tally()
@@ -606,24 +607,27 @@ spearman_corr <- comp_meths_sub %>% filter(method==methnames$doubly_robust) %>%
 spearman_corr <- comp_meths_sub %>% filter(method==methnames$doubly_robust) %>%
   filter(!is.na(avoided_verra)) %>% 
   left_join(proj_info) %>%
-  filter(inclusion_status == "Included") %>%
+  filter(inclusion_status == included_label) %>%
   {cor.test(.$ate_ha, .$avoided_verra, method = "spearman")}
 
+# ------ Compare avoided deforestation HA between this study and estimated in VCS reports
 comp_meths_sub %>% filter(method==methnames$doubly_robust) %>%
   filter(!is.na(avoided_verra)) %>% 
   left_join(proj_info) %>%
-  filter(inclusion_status == "Included") %>% 
-  summarise (ate_ha = sum(ate_ha), avoided_verra = sum(avoided_verra)) %>%
+  filter(inclusion_status == included_label) %>% 
+  summarise (ate_ha = sum(ate_ha), avoided_verra = sum(avoided_verra)) %>% 
+  mutate(ratio = avoided_verra/ate_ha) %>%
   kable(digits=2)
-  
-# |    ate_ha| avoided_verra| area_ha| perc_avoided| perc_avoided_yr|
-# |---------:|-------------:|-------:|------------:|---------------:|
-# | -19889.83|     -96580.93| 1863487|         1.07|            0.21|
+
+# |   ate_ha| avoided_verra| ratio|
+# |--------:|-------------:|-----:|
+# | -31822.6|     -123099.5|  3.87|
+
 
 # ---- Bootstrap estimates (similar to guizar-coutino et al 2022)
 d_mean_estimates <- comp_meths_sub %>% filter(method==methnames$doubly_robust) %>%
   left_join(proj_info) %>%
-  filter(inclusion_status == "Included") %>% 
+  filter(inclusion_status == included_label) %>% 
   mutate(perc_avoided = (abs(ate_ha)/area_ha)*100, perc_avoided_yr = perc_avoided/5)
 
 # boot CI
@@ -637,20 +641,19 @@ d_mean_estimates %>%
 
 # | mean_estimate| ci_low| ci_upp|
 # |-------------:|------:|------:|
-# |          0.25|   0.16|   0.39|
+# |          0.26|   0.16|   0.42|
 
 # Total avoided deforestation
 comp_meths_sub %>% filter(method==methnames$doubly_robust) %>%
   left_join(proj_info) %>%
-  filter(inclusion_status == "Included") %>% 
+  filter(inclusion_status == included_label) %>% 
   summarise (ate_ha = sum(ate_ha), area_ha = sum(area_ha)) %>% 
   mutate(perc_avoided = (abs(ate_ha)/area_ha)*100, perc_avoided_yr = perc_avoided/5) %>%
   kable(digits=2)
 
 # |    ate_ha| area_ha| perc_avoided| perc_avoided_yr|
 # |---------:|-------:|------------:|---------------:|
-# | -24848.02| 2840961|         0.87|            0.17|
-
+# | -33948.21| 5464973|         0.62|            0.12|
 
 ##---------------------------
 ## Map of proj locations 
