@@ -21,9 +21,6 @@ proj_tab <- proj_tab %>%
 ordl <- readRDS(file = file.path(dir_output, "ordl.RDS"))
 match_prop_tab <- ordl[[dist_use]][[as.character(alpha_use)]]
 
-match_prop_tab %>%
-  filter(proj_id == "MDG_1047")
-
 # Save matched proportion table to CSV
 write.csv(match_prop_tab, file = file.path(dir_output, "tmp_matched_prop.csv"))
 
