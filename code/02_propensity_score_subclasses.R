@@ -57,13 +57,6 @@ ps_subclass_outl <- foreach::foreach(
     # Extract predicted propensity scores:
     ps_rf <- rf_model$predictions[, "1"]  
     
-    ps_rf_alex <- ps_rf
-    identical(ps_rf_alex, ps_rf)
-    
-    cbind(ps_rf_alex, ps_rf)[ps_rf_alex != ps_rf, ]
-    
-    head(ps_rf, 100)
-    head(ps_rf_alex, 100)
     # Set seed for reproducibility
     set.seed(1234)
     # Perform matching using nearest neighbor with replacement and caliper restrictions
