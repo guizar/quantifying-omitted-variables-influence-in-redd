@@ -15,8 +15,8 @@ library(monochromeR)
 library(boot)
 
 # Set RNG kind and seed for reproducibility
-set.seed(1234)
 RNGkind(kind = "L'Ecuyer-CMRG")  # For reproducible parallel and sequential RNG
+set.seed(1234)
 # We will set the seed before each stochastic function
 
 # Source custom functions from the "code/functions/" directory

@@ -40,19 +40,31 @@ ps_subclass_outl <- foreach::foreach(
     calipers <- rep(caliper_val, length(cov_terms))  # Set calipers for each covariate
     names(calipers) <- cov_terms  # Assign names to the calipers
     
+    # Set seed for reproducibility
+    Sys.setlocale("LC_ALL", "C")
+    RNGkind(kind = "L'Ecuyer-CMRG")  # For reproducible parallel and sequential RNG
+    set.seed(1234)
     rf_model <- ranger::ranger(
       formula = ps_score_form,
       data = d_qc,
       probability = TRUE,     # needed for propensity scores
       num.trees = 500,        # default in MatchIt
       min.node.size = 10,     # default for classification in ranger
-      seed = 1234         # set for reproducibility
+      seed = 1234,         # set for reproducibility
+      num.threads = 1
     )
     
     # Extract predicted propensity scores:
     ps_rf <- rf_model$predictions[, "1"]  
     
-     # Set seed for reproducibility
+    ps_rf_alex <- ps_rf
+    identical(ps_rf_alex, ps_rf)
+    
+    cbind(ps_rf_alex, ps_rf)[ps_rf_alex != ps_rf, ]
+    
+    head(ps_rf, 100)
+    head(ps_rf_alex, 100)
+    # Set seed for reproducibility
     set.seed(1234)
     # Perform matching using nearest neighbor with replacement and caliper restrictions
     match_out_dist <- MatchIt::matchit(formula = ps_score_form,
