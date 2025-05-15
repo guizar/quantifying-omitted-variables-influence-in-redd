@@ -97,7 +97,7 @@ for (proj in proj_comp$proj_id) {
       vars_use_curr <- intersect(var_benchmark[[vars_names_curr]], rownames(unmatched_coef_tab))
       
       if (length(vars_use_curr) > 0) {
-        try_error <- try({
+        try_error <- try(silent = TRUE, expr = {
           bounds_out <- sensemakr:::ovb_bounds.lm(
             model = lm_unmatched,
             treatment = "treat",
@@ -195,160 +195,164 @@ order_proj <- proj_tab %>%
   arrange(-implied_ate) %>%
   pull(proj_id)
 
-# res_plot_filt <- res_plot %>%
-#   # filter(claimed_ate > claimed_ate_thresh) %>%
-#   filter(!proj_id %in% projects_with_low_matched_prop) %>%
-#   mutate(k = as.character(k)) %>%
-#   mutate(mn_plot = ifelse(adjusted_est_no_offset < min_y, min_y, adjusted_est_no_offset)) %>%
-#   mutate(adjusted_ci_low = ifelse(adjusted_ci_low < min_y, min_y, adjusted_ci_low)) %>%
-#   mutate(proj_id = factor(proj_id, levels = order_proj))
-
 res_plot_filt2 <- res_plot2 %>%
-  # filter(claimed_ate > claimed_ate_thresh) %>% # this is where the filtering happens
   mutate(k = as.character(k)) %>%
   mutate(mn_plot = adjusted_est_no_offset) %>% # ifelse(adjusted_est_no_offset < min_y, min_y, adjusted_est_no_offset)) %>%
-  # mutate(adjusted_ci_low = ifelse(adjusted_ci_low < min_y, min_y, adjusted_ci_low)) %>%
-  # mutate(adjusted_ci_upp = ifelse(adjusted_ci_upp < min_y, min_y, adjusted_ci_upp)) %>%
   mutate(proj_id = factor(proj_id, levels = order_proj)) %>%
   mutate(Covariate = factor(covariate, levels = var_benchmark_plot_order)) %>%
   mutate(out_of_scale = as.numeric(mn_plot <= min_y)) %>%
   mutate(`Point type` = factor(ifelse(mn_plot <= min_y, paste0("y < ", min_y), "y value plotted"), levels = c("y value plotted", paste0("y < ", min_y))))
 
 # Edit labels
-res_plot_filt2 <- res_plot_filt2  %>% mutate(Covariate = factor(Covariate, labels=c("None", "Distance to degradation", "Slope", "Elevation", "Accessibility")))
+res_plot_filt2 <- res_plot_filt2  %>% 
+  mutate(Covariate = factor(Covariate, labels=c("None", "Distance to degradation", "Slope", "Elevation", "Accessibility")))
 
 # -----------------------------------
 # Fig 6 - sensitivity plots
-# --------------------------------
+# -----------------------------------
 
-#- Summarise the results
-df_plot_sensitivity_sub <- res_plot_filt2 %>% 
-filter(!proj_id %in% projects_with_low_matched_prop) %>%
-mutate (is_larger =  mn_plot < claimed_ate) %>%
-group_by(k,Covariate) %>% summarise(n=n(), is_larger=sum(is_larger)) %>% rowwise() %>%
-mutate(perc_is_larger = (is_larger/n)*100) %>% ungroup()
+df_plot_sensitivity_sub <- res_plot_filt2 %>%
+  filter(!proj_id %in% projects_with_low_matched_prop) %>%
+  mutate(is_larger = mn_plot < claimed_ate) %>%
+  group_by(k, Covariate) %>%
+  summarise(n = n(), is_larger = sum(is_larger), .groups = "drop") %>%
+  mutate(perc_is_larger = 100 * is_larger / n)
 
-col_palette= rev(carto_pal(5, "ag_Sunset"))
-col_palette[1] = "#B7B7B7"
+col_palette <- rev(carto_pal(5, "ag_Sunset"))
+col_palette[1] <- "#B7B7B7"
 
+# Set factor levels to control order of x-axis
+df_plot_sensitivity_sub <- df_plot_sensitivity_sub %>%
+  mutate(k_label = factor(paste0(k, "x"), levels = paste0(0:3, "x")))
+
+# Plot 1
 plt_1 <- ggplot(
-  df_plot_sensitivity_sub %>% filter(k>0), aes(x = factor(paste0(k, "x")), y = perc_is_larger, fill = Covariate, color = Covariate)) +
-  geom_bar(stat = 'identity', position = position_dodge2(width = 0.9, preserve = "single"), width = 0.8) +
-  scale_shape_manual(values = c(21, 25)) +
+  df_plot_sensitivity_sub,
+  aes(x = k_label, y = perc_is_larger, fill = Covariate, color = Covariate)
+) +
+  geom_bar(stat = "identity", position = position_dodge2(width = 0.9, preserve = "single"), width = 0.8) +
+  scale_color_manual(values = col_palette, name = "") +
+  scale_fill_manual(values = col_palette, name = "") +
   xlab("Strength of hidden confounder\n(x times strength of observed covariate)") +
   ylab("Projects exceeding\nVCS claimed ATE (%)") +
   theme_bw() +
-  theme(strip.background = element_blank(), strip.text = element_text(face = "bold")) +
-  scale_color_manual(values = col_palette[-1], name = "")  + 
-  scale_fill_manual(values = col_palette[-1], name = "") + 
-  theme(legend.position="none")
+  theme(
+    strip.background = element_blank(),
+    strip.text = element_text(face = "bold"),
+    legend.position = "none"
+  ) +
+  ylim(0, 100)
 
-# file_curr <- file.path(dir_figures) 
-# ggsave(file_curr,plt_1, width=3, height=3, units='in', dpi=300)
-
-# Produce panel ggplot
-pl_out <- ggplot(res_plot_filt2 %>% filter(!proj_id %in% projects_with_low_matched_prop), aes(x = factor(paste0(k, "x")), y = mn_plot, fill = Covariate, color = Covariate)) +
+# Plot 2
+pl_out <- ggplot(
+  res_plot_filt2 %>%
+    filter(!proj_id %in% projects_with_low_matched_prop) %>%
+    mutate(k_label = factor(paste0(k, "x"), levels = paste0(0:3, "x"))),
+  aes(x = k_label, y = mn_plot, fill = Covariate, color = Covariate)
+) +
   geom_point(position = position_dodge(width = 0.5), size = 2) +
-  scale_shape_manual(values = c(21, 25)) +
   geom_errorbar(aes(ymin = adjusted_ci_low, ymax = adjusted_ci_upp), width = 0, position = position_dodge(width = 0.5)) +
   geom_hline(aes(yintercept = claimed_ate), colour = "red", linetype = "dashed") +
-  geom_hline(aes(yintercept = 0), colour = 1) +
+  geom_hline(yintercept = 0, colour = "black") +
+  scale_color_manual(values = col_palette, name = "") +
+  scale_fill_manual(values = col_palette, name = "") +
   xlab("Strength of hidden confounder\n(x times strength of observed covariate)") +
-  ylab("Difference in forest loss (%"~yr^-1*')') +
+  ylab(expression("Difference in forest loss (% " * yr^{-1} * ")")) +
   theme_bw() +
-  theme(strip.background = element_blank(), strip.text = element_text(face = "bold")) +
-  facet_wrap(~ proj_id, ncol=5, scales='free_y') +
-  # ylim(min_y, 1) +
-  scale_color_manual(values=col_palette, name="")  + scale_fill_manual(values=col_palette, name="") +
+  facet_wrap(~proj_id, ncol = 5, scales = "free_y") +
   theme(
-    plot.title = element_text(size = 10, face = "bold", hjust = 0.5), 
+    strip.background = element_blank(),
+    strip.text = element_text(face = "bold"),
+    plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
     legend.position = "bottom",
-    plot.margin = unit(c(0.01,0.01,0.01,0.01), "in"),
-          # legend.margin=margin(0.1,0.1,0.1,0.1),
-          legend.box.spacing = unit(0.001, "in"),
-          axis.text.x.top = element_blank(),  # Remove top x-axis text
-          axis.ticks.x.top = element_blank()
+    plot.margin = unit(c(0.01, 0.01, 0.01, 0.01), "in"),
+    legend.box.spacing = unit(0.001, "in"),
+    axis.text.x.top = element_blank(),
+    axis.ticks.x.top = element_blank()
   )
 
-# -- combine summary and panels
-library(patchwork)
-file_curr <- file.path(dir_figures, "sensitivity_analysis_main.png") 
-gg_out <- plt_1 / pl_out  +  plot_layout(
-    # guides = "collect", 
-    heights = c(0.16,0.84 ),
-    ncol = 1,  # Ensure layout is vertical
-    nrow = 2   # Specify number of rows
-  ) & 
-  plot_annotation(tag_levels = 'a') # Add tags to panels
+# Combine
+gg_out <- plt_1 / pl_out +
+  plot_layout(heights = c(0.16, 0.84)) &
+  plot_annotation(tag_levels = "a")
 
-ggsave(file_curr,gg_out, width=12, height=12, units='in', dpi=300)
-
+ggsave(
+  filename = file.path(dir_figures, "sensitivity_analysis_main.png"),
+  plot = gg_out,
+  width = 12, height = 12, units = "in", dpi = 300
+)
 
 # -----------------------------------
 # Suppl. - sensitivity plots
-# --------------------------------
+# -----------------------------------
 
-#- Summarise the results
-df_plot_sensitivity <- res_plot_filt2 %>% mutate (is_larger =  mn_plot < claimed_ate) %>%
-group_by(k,Covariate) %>% summarise(n=n(), is_larger=sum(is_larger)) %>% rowwise() %>%
-mutate(perc_is_larger = (is_larger/n)*100) %>% ungroup()
+# Summarise the results
+df_plot_sensitivity <- res_plot_filt2 %>%
+  mutate(is_larger = mn_plot < claimed_ate) %>%
+  group_by(k, Covariate) %>%
+  summarise(n = n(), is_larger = sum(is_larger), .groups = "drop") %>%
+  mutate(
+    perc_is_larger = 100 * is_larger / n,
+    k_label = factor(paste0(k, "x"), levels = paste0(0:3, "x"))
+  )
 
-col_palette= rev(carto_pal(5, "ag_Sunset"))
-col_palette[1] = "#B7B7B7"
-# palette_check(col_palette, plot = TRUE)
+# Colour palette
+col_palette <- rev(carto_pal(5, "ag_Sunset"))
+col_palette[1] <- "#B7B7B7"
 
+# Top panel: summary bar plot (with matched bar width and dodge behaviour)
 plt_1 <- ggplot(
-  df_plot_sensitivity %>% filter(k>0), aes(x = factor(paste0(k, "x")), y = perc_is_larger, fill = Covariate, color = Covariate)) +
-  geom_bar(stat = 'identity', position = position_dodge2(width = 0.9), width = 0.8) +
-  # scale_shape_manual(values = c(21, 25)) +
+  df_plot_sensitivity,
+  aes(x = k_label, y = perc_is_larger, fill = Covariate, color = Covariate)
+) +
+  geom_bar(stat = 'identity', position = position_dodge2(width = 0.9, preserve = "single"), width = 0.8) +
+  scale_color_manual(values = col_palette, name = "") +
+  scale_fill_manual(values = col_palette, name = "") +
   xlab("Strength of hidden confounder\n(x times strength of observed covariate)") +
   ylab("Projects exceeding\nVCS claimed ATE (%)") +
   theme_bw() +
-  theme(strip.background = element_blank(), strip.text = element_text(face = "bold")) +
-  scale_color_manual(values = col_palette[-1], name = "")  + 
-  scale_fill_manual(values = col_palette[-1], name = "") + 
-  # scale_y_continuous(limits = c(0, 15))  +
-  theme(legend.position="none")
+  theme(
+    strip.background = element_blank(),
+    strip.text = element_text(face = "bold"),
+    legend.position = "none"
+  ) +
+  ylim(0, 100)
 
-# file_curr <- file.path(dir_figures) 
-# ggsave(file_curr,plt_1, width=3, height=3, units='in', dpi=300)
-
-# Produce panel ggplot
-pl_out <- ggplot(res_plot_filt2, aes(x = factor(paste0(k, "x")), y = mn_plot, fill = Covariate, color = Covariate,)) +
+# Bottom panel: project-wise estimates
+pl_out <- ggplot(
+  res_plot_filt2 %>%
+    mutate(k_label = factor(paste0(k, "x"), levels = paste0(0:3, "x"))),
+  aes(x = k_label, y = mn_plot, fill = Covariate, color = Covariate)
+) +
   geom_point(position = position_dodge(width = 0.5), size = 2) +
-  scale_shape_manual(values = c(21, 25)) +
   geom_errorbar(aes(ymin = adjusted_ci_low, ymax = adjusted_ci_upp), width = 0, position = position_dodge(width = 0.5)) +
   geom_hline(aes(yintercept = claimed_ate), colour = "red", linetype = "dashed") +
-  geom_hline(aes(yintercept = 0), colour = 1) +
+  geom_hline(yintercept = 0, colour = "black") +
+  scale_color_manual(values = col_palette, name = "") +
+  scale_fill_manual(values = col_palette, name = "") +
   xlab("Strength of hidden confounder\n(x times strength of observed covariate)") +
-  ylab("Difference in forest loss (%"~yr^-1*')') +
+  ylab(expression("Difference in forest loss (% " * yr^{-1} * ")")) +
   theme_bw() +
-  theme(strip.background = element_blank(), strip.text = element_text(face = "bold")) +
-  facet_wrap(~ proj_id, ncol=5, scales='free_y') +
-  # ylim(min_y, 1) +
-  scale_color_manual(values=col_palette, name="")  + scale_fill_manual(values=col_palette, name="")  +
+  facet_wrap(~proj_id, ncol = 5, scales = 'free_y') +
   theme(
-    plot.title = element_text(size = 10, face = "bold", hjust = 0.5), 
+    strip.background = element_blank(),
+    strip.text = element_text(face = "bold"),
+    plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
     legend.position = "bottom",
-    plot.margin = unit(c(0.01,0.01,0.01,0.01), "in"),
-          # legend.margin=margin(0.1,0.1,0.1,0.1),
-          legend.box.spacing = unit(0.001, "in"),
-          axis.text.x.top = element_blank(),  # Remove top x-axis text
-          axis.ticks.x.top = element_blank()
+    plot.margin = unit(c(0.01, 0.01, 0.01, 0.01), "in"),
+    legend.box.spacing = unit(0.001, "in"),
+    axis.text.x.top = element_blank(),
+    axis.ticks.x.top = element_blank()
   )
 
-# -- combine summary and panels
-library(patchwork)
-file_curr <- file.path(dir_figures, "sensitivity_analysis_SI.png") 
-gg_out <- plt_1 / pl_out  +  plot_layout(
-    # guides = "collect", 
-    heights = c(0.16,0.84 ),
-    ncol = 1,  # Ensure layout is vertical
-    nrow = 2   # Specify number of rows
-  ) & 
+# Combine panels using patchwork
+gg_out <- plt_1 / pl_out +
+  plot_layout(heights = c(0.16, 0.84), ncol = 1, nrow = 2) &
   plot_annotation(tag_levels = 'a')
 
-ggsave(file_curr,gg_out, width=12, height=12, units='in', dpi=300)
+# Save output
+file_curr <- file.path(dir_figures, "sensitivity_analysis_SI.png")
+ggsave(file_curr, gg_out, width = 12, height = 12, units = 'in', dpi = 300)
 
 
 # ------------------------------------------------
