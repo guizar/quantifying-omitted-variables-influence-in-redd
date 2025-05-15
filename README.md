@@ -144,7 +144,7 @@ This will install all required packages as recorded in the `renv.lock` file.
 Once the environment is set up, run:
 
 ``` r
-source("00_wrapper.R")
+source("code/00_wrapper.R")
 ```
 
 This wrapper script runs all required analysis scripts in sequence.
