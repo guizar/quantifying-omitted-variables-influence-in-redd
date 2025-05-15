@@ -156,7 +156,7 @@ bottom_left <- ggplot(comp_meths %>% filter(method==methnames$lm_simple), aes(x 
  geom_point(aes(proj_id,implied_ate), color=red_color, shape=19, size=1) + # Adds 4C
 xlab ("") +
 ylab("Difference in forest loss (%"~yr^-1*')') +
-scale_y_break(c(-14, -95)) +
+# scale_y_break(c(-14, -95)) +
 
 # Custom coloring for the x-axis labels
 scale_x_discrete(limits = order_vcs,  # Maintain project order on x-axis
@@ -332,7 +332,7 @@ bottom_left <- ggplot(comp_meths_sub %>% filter(method==methnames$lm_simple), ae
  geom_point(aes(proj_id,implied_ate), color=red_color, shape=19, size=1) + # Adds 4C
 xlab ("") +
 ylab("Difference in forest loss (%"~yr^-1*')') +
-scale_y_break(c(-14, -95)) +
+# scale_y_break(c(-14, -95)) +
   
 scale_x_discrete(limits = order_vcs) +
 
