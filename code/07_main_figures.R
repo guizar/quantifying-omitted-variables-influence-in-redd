@@ -603,6 +603,22 @@ spearman_corr <- comp_meths_sub %>% filter(method==methnames$doubly_robust) %>%
   filter(!is.na(guizar)) %>%
   {cor.test(.$ate_yr, .$guizar, method = "spearman")}
 
+
+# Bland Altman analysis
+comp_tab <- comp_meths_sub %>% filter(method==methnames$doubly_robust) %>%
+  filter(!is.na(guizar)) %>%
+  select(ate_yr, guizar)
+library(blandr)
+stats_out <- blandr::blandr.statistics(comp_tab$ate_yr, comp_tab$guizar, sig.level = 0.95)
+
+blandr::blandr.draw(comp_tab$ate_yr, comp_tab$guizar)
+
+plot(comp_tab$ate_yr, comp_tab$guizar)
+abline(0, 1)
+cor(comp_tab$ate_yr, comp_tab$guizar, method = "sp")
+
+
+
 # vera --
 spearman_corr <- comp_meths_sub %>% filter(method==methnames$doubly_robust) %>%
   filter(!is.na(avoided_verra)) %>% 

@@ -606,6 +606,44 @@
       "Repository": "CRAN",
       "Encoding": "UTF-8"
     },
+    "blandr": {
+      "Package": "blandr",
+      "Version": "0.6.0",
+      "Source": "Repository",
+      "Title": "Bland-Altman Method Comparison",
+      "Date": "2024-06-09",
+      "Description": "Carries out Bland Altman analyses (also known as a Tukey mean-difference plot) as described by JM Bland and DG Altman in 1986 <doi:10.1016/S0140-6736(86)90837-8>. This package was created in  2015 as existing Bland-Altman analysis functions did not calculate  confidence intervals. This package was created to rectify this,  and create reproducible plots. This package is also available as a module for the 'jamovi' statistical spreadsheet (see <https://www.jamovi.org> for more information).",
+      "Depends": [
+        "R (>= 3.2.0)"
+      ],
+      "Authors@R": "c(person(\"Deepankar\", \"Datta\", email = \"deepankar.datta@gmail.com\", role = c(\"aut\", \"cre\") ) ,  person(\"Jonathon\", \"Love\", email = \"jon@thon.cc\" , role = \"ctb\" ) )",
+      "License": "GPL-3",
+      "Encoding": "UTF-8",
+      "LazyData": "true",
+      "URL": "https://github.com/deepankardatta/blandr/",
+      "BugReports": "https://github.com/deepankardatta/blandr/issues",
+      "Imports": [
+        "glue",
+        "ggplot2",
+        "knitr",
+        "stringr",
+        "jmvcore (>= 0.8.5)",
+        "markdown",
+        "rmarkdown"
+      ],
+      "Suggests": [
+        "testthat"
+      ],
+      "SystemRequirements": "pandoc (>=1.12.3)",
+      "VignetteBuilder": "knitr",
+      "Collate": "'blandr.data.preparation.r' 'blandr.dataset.fibre.r' 'blandr.dataset.sbp.r' 'blandr.dataset.o2sats.r' 'blandr.dataset.pefr.r' 'blandr.dataset.load.r' 'blandr.plot.ggplot.r' 'blandr.plot.rplot.r' 'blandr.plot.limits.r' 'blandr.statistics.r' 'blandr.draw.r' 'blandr.output.text.r' 'blandr.display.and.draw.r' 'blandr.display.and.plot.r' 'blandr.method.comparison.r' 'blandr.output.report.r' 'blandr.plot.normality.r' 'blandr.plot.qq.r' 'blandr.plot.r' 'blandr.statistics.formula.R' 'jamovibaanalysis.b.R' 'jamovibaanalysis.h.R' 'jamovibaplothistogram.b.R' 'jamovibaplothistogram.h.R' 'jamovibaplotqq.b.R' 'jamovibaplotqq.h.R' 'jamovibastats.b.R' 'jamovibastats.h.R' 'print.blandr.R'",
+      "RoxygenNote": "7.3.1",
+      "Language": "en-GB",
+      "NeedsCompilation": "no",
+      "Author": "Deepankar Datta [aut, cre], Jonathon Love [ctb]",
+      "Maintainer": "Deepankar Datta <deepankar.datta@gmail.com>",
+      "Repository": "CRAN"
+    },
     "blob": {
       "Package": "blob",
       "Version": "1.2.4",
@@ -1159,6 +1197,30 @@
       "URL": "https://gitlab.com/luke-tierney/codetools",
       "License": "GPL",
       "NeedsCompilation": "no",
+      "Repository": "CRAN"
+    },
+    "commonmark": {
+      "Package": "commonmark",
+      "Version": "1.9.5",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "High Performance CommonMark and Github Markdown Rendering in R",
+      "Authors@R": "c( person(\"Jeroen\", \"Ooms\", ,\"jeroenooms@gmail.com\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-4035-0289\")), person(\"John MacFarlane\", role = \"cph\", comment = \"Author of cmark\"))",
+      "Description": "The CommonMark specification <https://github.github.com/gfm/> defines a rationalized version of markdown syntax. This package uses the 'cmark'  reference implementation for converting markdown text into various formats including html, latex and groff man. In addition it exposes the markdown parse tree in xml format. Also includes opt-in support for GFM extensions including tables, autolinks, and strikethrough text.",
+      "License": "BSD_2_clause + file LICENSE",
+      "URL": "https://docs.ropensci.org/commonmark/ https://ropensci.r-universe.dev/commonmark",
+      "BugReports": "https://github.com/r-lib/commonmark/issues",
+      "Suggests": [
+        "curl",
+        "testthat",
+        "xml2"
+      ],
+      "RoxygenNote": "7.3.2",
+      "Language": "en-US",
+      "Encoding": "UTF-8",
+      "NeedsCompilation": "yes",
+      "Author": "Jeroen Ooms [aut, cre] (<https://orcid.org/0000-0002-4035-0289>), John MacFarlane [cph] (Author of cmark)",
+      "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
       "Repository": "CRAN"
     },
     "conflicted": {
@@ -2692,6 +2754,44 @@
       "Repository": "CRAN",
       "Encoding": "UTF-8"
     },
+    "jmvcore": {
+      "Package": "jmvcore",
+      "Version": "2.6.3",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Dependencies for the 'jamovi' Framework",
+      "Date": "2024-09-07",
+      "Authors@R": "c(person(\"Jonathon\", \"Love\", role=c(\"aut\", \"cre\", \"cph\"), email=\"jon@thon.cc\"))",
+      "Maintainer": "Jonathon Love <jon@thon.cc>",
+      "Description": "A framework for creating rich interactive analyses for the jamovi platform (see <https://www.jamovi.org> for more information).",
+      "URL": "https://www.jamovi.org",
+      "BugReports": "https://github.com/jamovi/jmvcore/issues",
+      "License": "GPL (>= 2)",
+      "ByteCompile": "yes",
+      "Depends": [
+        "R (>= 3.2)"
+      ],
+      "Imports": [
+        "R6 (>= 1.0.1)",
+        "rlang (>= 0.3.0.1)",
+        "jsonlite",
+        "base64enc"
+      ],
+      "Suggests": [
+        "testthat (>= 1.0.2)",
+        "RProtoBuf",
+        "knitr",
+        "ggplot2",
+        "RColorBrewer",
+        "ragg",
+        "fastmap"
+      ],
+      "RoxygenNote": "6.1.1",
+      "NeedsCompilation": "no",
+      "Author": "Jonathon Love [aut, cre, cph]",
+      "Repository": "CRAN",
+      "Encoding": "UTF-8"
+    },
     "jquerylib": {
       "Package": "jquerylib",
       "Version": "0.1.4",
@@ -2908,6 +3008,38 @@
       "Maintainer": "Lionel Henry <lionel@posit.co>",
       "Repository": "CRAN"
     },
+    "litedown": {
+      "Package": "litedown",
+      "Version": "0.7",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "A Lightweight Version of R Markdown",
+      "Authors@R": "c( person(\"Yihui\", \"Xie\", role = c(\"aut\", \"cre\"), email = \"xie@yihui.name\", comment = c(ORCID = \"0000-0003-0645-5666\", URL = \"https://yihui.org\")), person(\"Tim\", \"Taylor\", role = \"ctb\", comment = c(ORCID = \"0000-0002-8587-7113\")), person() )",
+      "Description": "Render R Markdown to Markdown (without using 'knitr'), and Markdown to lightweight HTML or 'LaTeX' documents with the 'commonmark' package (instead of 'Pandoc'). Some missing Markdown features in 'commonmark' are also supported, such as raw HTML or 'LaTeX' blocks, 'LaTeX' math, superscripts, subscripts, footnotes, element attributes, and appendices, but not all 'Pandoc' Markdown features are (or will be) supported. With additional JavaScript and CSS, you can also create HTML slides and articles. This package can be viewed as a trimmed-down version of R Markdown and 'knitr'. It does not aim at rich Markdown features or a large variety of output formats (the primary formats are HTML and 'LaTeX'). Book and website projects of multiple input documents are also supported.",
+      "Depends": [
+        "R (>= 3.2.0)"
+      ],
+      "Imports": [
+        "utils",
+        "commonmark (>= 1.9.5)",
+        "xfun (>= 0.52)"
+      ],
+      "Suggests": [
+        "rbibutils",
+        "rstudioapi",
+        "tinytex"
+      ],
+      "License": "MIT + file LICENSE",
+      "URL": "https://github.com/yihui/litedown",
+      "BugReports": "https://github.com/yihui/litedown/issues",
+      "VignetteBuilder": "litedown",
+      "RoxygenNote": "7.3.2",
+      "Encoding": "UTF-8",
+      "NeedsCompilation": "no",
+      "Author": "Yihui Xie [aut, cre] (<https://orcid.org/0000-0003-0645-5666>, https://yihui.org), Tim Taylor [ctb] (<https://orcid.org/0000-0002-8587-7113>)",
+      "Maintainer": "Yihui Xie <xie@yihui.name>",
+      "Repository": "CRAN"
+    },
     "lubridate": {
       "Package": "lubridate",
       "Version": "1.9.4",
@@ -3021,6 +3153,38 @@
       "NeedsCompilation": "yes",
       "Author": "Stefan Milton Bache [aut, cph] (Original author and creator of magrittr), Hadley Wickham [aut], Lionel Henry [cre], RStudio [cph, fnd]",
       "Maintainer": "Lionel Henry <lionel@rstudio.com>",
+      "Repository": "CRAN"
+    },
+    "markdown": {
+      "Package": "markdown",
+      "Version": "2.0",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Render Markdown with 'commonmark'",
+      "Authors@R": "c( person(\"Yihui\", \"Xie\", role = c(\"aut\", \"cre\"), email = \"xie@yihui.name\", comment = c(ORCID = \"0000-0003-0645-5666\")), person(\"JJ\", \"Allaire\", role = \"aut\"), person(\"Jeffrey\", \"Horner\", role = \"aut\"), person(\"Henrik\", \"Bengtsson\", role = \"ctb\"), person(\"Jim\", \"Hester\", role = \"ctb\"), person(\"Yixuan\", \"Qiu\", role = \"ctb\"), person(\"Kohske\", \"Takahashi\", role = \"ctb\"), person(\"Adam\", \"November\", role = \"ctb\"), person(\"Nacho\", \"Caballero\", role = \"ctb\"), person(\"Jeroen\", \"Ooms\", role = \"ctb\"), person(\"Thomas\", \"Leeper\", role = \"ctb\"), person(\"Joe\", \"Cheng\", role = \"ctb\"), person(\"Andrzej\", \"Oles\", role = \"ctb\"), person(given = \"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
+      "Description": "Render Markdown to full and lightweight HTML/LaTeX documents with the 'commonmark' package. This package has been superseded by 'litedown'.",
+      "Depends": [
+        "R (>= 2.11.1)"
+      ],
+      "Imports": [
+        "utils",
+        "xfun",
+        "litedown (>= 0.6)"
+      ],
+      "Suggests": [
+        "knitr",
+        "rmarkdown (>= 2.18)",
+        "yaml",
+        "RCurl"
+      ],
+      "License": "MIT + file LICENSE",
+      "URL": "https://github.com/rstudio/markdown",
+      "BugReports": "https://github.com/rstudio/markdown/issues",
+      "RoxygenNote": "7.3.2",
+      "Encoding": "UTF-8",
+      "NeedsCompilation": "no",
+      "Author": "Yihui Xie [aut, cre] (<https://orcid.org/0000-0003-0645-5666>), JJ Allaire [aut], Jeffrey Horner [aut], Henrik Bengtsson [ctb], Jim Hester [ctb], Yixuan Qiu [ctb], Kohske Takahashi [ctb], Adam November [ctb], Nacho Caballero [ctb], Jeroen Ooms [ctb], Thomas Leeper [ctb], Joe Cheng [ctb], Andrzej Oles [ctb], Posit Software, PBC [cph, fnd]",
+      "Maintainer": "Yihui Xie <xie@yihui.name>",
       "Repository": "CRAN"
     },
     "memoise": {
