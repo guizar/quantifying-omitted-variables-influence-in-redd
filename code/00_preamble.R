@@ -13,6 +13,7 @@ library(rcartocolor)
 library(randomForest)
 library(monochromeR)
 library(boot)
+library(patchwork)
 
 # Set RNG kind and seed for reproducibility
 RNGkind(kind = "L'Ecuyer-CMRG")  # For reproducible parallel and sequential RNG
