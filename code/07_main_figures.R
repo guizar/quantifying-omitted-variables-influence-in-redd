@@ -605,17 +605,49 @@ spearman_corr <- comp_meths_sub %>% filter(method==methnames$doubly_robust) %>%
 
 
 # Bland Altman analysis
+library(blandr)
 comp_tab <- comp_meths_sub %>% filter(method==methnames$doubly_robust) %>%
   filter(!is.na(guizar)) %>%
   select(ate_yr, guizar)
-library(blandr)
+
 stats_out <- blandr::blandr.statistics(comp_tab$ate_yr, comp_tab$guizar, sig.level = 0.95)
 
-blandr::blandr.draw(comp_tab$ate_yr, comp_tab$guizar)
-
-plot(comp_tab$ate_yr, comp_tab$guizar)
-abline(0, 1)
+# blandr::blandr.draw(comp_tab$ate_yr, comp_tab$guizar)
 cor(comp_tab$ate_yr, comp_tab$guizar, method = "sp")
+
+# Compute means and differences
+means <- (comp_tab$ate_yr + comp_tab$guizar) / 2
+diffs <- comp_tab$ate_yr - comp_tab$guizar
+mean_diff <- mean(diffs, na.rm = TRUE)
+sd_diff <- sd(diffs, na.rm = TRUE)
+
+# Calculate limits of agreement
+loa_upper <- mean_diff + 1.96 * sd_diff
+loa_lower <- mean_diff - 1.96 * sd_diff
+
+# Create a data frame
+bland_df <- data.frame(means = means, diffs = diffs)
+
+# Create the ggplot
+ggp_cor <- ggplot(bland_df, aes(x = means, y = diffs)) +
+  geom_point(color = "black") +
+  geom_hline(yintercept = mean_diff, color = "red", linetype = "dashed") +
+  geom_hline(yintercept = mean_diff + 1.96 * sd_diff, color = "darkgreen", linetype = "dotted") +
+  geom_hline(yintercept = mean_diff - 1.96 * sd_diff, color = "darkgreen", linetype = "dotted") +
+  labs(
+    x = "Mean of Measurements",
+    y = "Difference Between Measurements"
+  ) + theme_classic() +
+    theme(panel.border = element_rect(fill='transparent', color='#23212A'),
+          axis.line = element_blank(),
+          legend.box = "vertical",
+          legend.position = "bottom",
+          legend.text = element_text(angle = 0, size=11),
+          plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
+          legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
+          legend.box.spacing = unit(0.001, "in"))
+
+ggsave(filename=file.path("figures", "bland-altman.png"), plot=ggp_cor, width=10, dpi=300)
 
 
 
