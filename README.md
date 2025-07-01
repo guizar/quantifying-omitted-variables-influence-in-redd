@@ -31,11 +31,11 @@ If you haven't already, install Docker from the official website:
 Copy and paste each of the following lines into your terminal:
 
 ``` bash
-docker pull deforestationreview/deforestation_image:anon
+docker pull georgenicholson/quantifying-omitted-variables-influence-in-redd:preprint
 ```
 
 ``` bash
-docker run -d -p 8787:8787 --name deforestation_container -e USER=rstudio -e PASSWORD=bayes deforestationreview/deforestation_image:anon
+docker run -d -p 8787:8787 --name deforestation_container -e USER=rstudio -e PASSWORD=bayes georgenicholson/quantifying-omitted-variables-influence-in-redd:preprint
 ```
 
 The first command downloads the image. The second starts the container and opens RStudio in your browser.
