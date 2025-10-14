@@ -23,6 +23,7 @@ combined_lm_adj_results <- readRDS(file = file.path(dir_output, "combined_lm_adj
 combined_lm_ps_weights_results <- readRDS(file = file.path(dir_output, "combined_lm_ps_weights_results.RDS"))
 combined_cat_quant_results <- readRDS(file = file.path(dir_output, "combined_cat_quant_results.RDS"))
 combined_lme_adj_results <- readRDS(file = file.path(dir_output, "combined_lme_adj_results.RDS"))
+combined_panel_results <- readRDS(file = file.path(dir_output, "combined_panel_results.RDS"))
 
 # Prepare data for plotting: categorical/quantitative model results
 plot_df <- combined_cat_quant_results %>%
@@ -42,11 +43,12 @@ methnames <- list(
   spatial = "Spatially autocorrelated LM",
   lm_simple = "Unadjusted LM on matched data",
   lm_simple_adjusted = "Adjusted LM on matched data",
-  lm_weight = "PS weighted LM on matched data"
+  lm_weight = "PS weighted LM on matched data",
+  panel = "Panel model on matched data"
 )
 
 # Order in which methods will be plotted
-order_methods <- c("lm_subclass", "cat_quant", "spatial", "lm_simple", "lm_simple_adjusted", "lm_weight", "doubly_robust")
+order_methods <- c("lm_subclass", "cat_quant", "spatial", "lm_simple", "lm_simple_adjusted", "lm_weight", "doubly_robust", "panel")
 
 # Combine results from different models into a single data frame for plotting
 comp_meths <- bind_rows(
@@ -84,7 +86,14 @@ comp_meths <- bind_rows(
     mutate(method = methnames$cat_quant, 
            ate_yr = ate * 100 / 5, 
            ate_yr_se = ate_se * 100 / 5) %>%
-    select(proj_id, method, ate_yr, ate_yr_se)
+    select(proj_id, method, ate_yr, ate_yr_se),
+  
+  combined_panel_results %>%
+    mutate(method = methnames$panel, 
+           ate_yr = ate * 100, 
+           ate_yr_se = ate_se * 100) %>%
+    select(proj_id, method, ate_yr, ate_yr_se),
+  
 )
 
 # Add spatial results if applicable
@@ -184,6 +193,6 @@ plot_out <- ggplot(comp_meths, aes(x = proj_id, y = ate_yr, color = method)) +
         )
 
 # export ggplot
-ggsave(file_meth_strat,plot_out, width=8, height=11, units='in', dpi=300)
+ggsave(file_meth_strat, plot_out, width=8, height=11, units='in', dpi=300)
 saveRDS(comp_meths, file = file.path(dir_analysis_outputs, "comp_meths.RDS"))
 

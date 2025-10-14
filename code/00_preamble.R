@@ -14,6 +14,8 @@ library(randomForest)
 library(monochromeR)
 library(boot)
 library(patchwork)
+library(tidyr)
+library(fixest)
 
 # Set RNG kind and seed for reproducibility
 RNGkind(kind = "L'Ecuyer-CMRG")  # For reproducible parallel and sequential RNG
@@ -31,6 +33,7 @@ filenames <- list.files(file.path("data", "matched_sets"), full.names = FALSE)
 filenames <- str_remove(filenames, "\\.csv")  # Remove .csv extension
 
 # define directories -- defining here as separate data paths for the server
+dir_panel_data <- file.path("data", "panel_data")
 design_out_dir <- file.path("data", "output", "design_out_dir")
 dir_qc_data <- file.path("data", "output", "post_qc_unmatched")
 dir_ps <- file.path("data", "output", "stage1_propensity_score_results")
@@ -63,6 +66,7 @@ dir.create(dir_figures, showWarnings = FALSE, recursive = TRUE)
 dir.create(dir_tables, showWarnings = FALSE, recursive = TRUE)
 dir.create(match_out_init_dir, showWarnings = FALSE, recursive = TRUE)
 dir.create(match_dd_dir, showWarnings = FALSE, recursive = TRUE)
+dir.create(dir_panel_data, showWarnings = FALSE, recursive = TRUE)
 
 # Set full data directory (update based on the version of data being used)
 full_data_dir <- file.path("data", "full_data_2024-08-11")
