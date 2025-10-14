@@ -8,7 +8,7 @@ panel_data_fit_one_project <- function(dat_i,
   rhs <- c("treat:post", xvars)
   # Fixed effects: plot (gid) and relative time (time_treat)
   fml <- as.formula(paste0(y, " ~ ", paste(rhs, collapse = " + "), " | ", paste(fixefs, collapse = " + ")))
-  m <- feols(
+  m <- fixest::feols(
     fml,
     data = dat_i,
     # finite-sample adjustments:

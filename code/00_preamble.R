@@ -16,9 +16,6 @@ library(boot)
 library(patchwork)
 library(tidyr)
 library(fixest)
-# Install directly from the maintainer’s GitHub
-# remotes::install_github("s3alfisc/fwildclusterboot")
-library(fwildclusterboot)
 
 # Set RNG kind and seed for reproducibility
 RNGkind(kind = "L'Ecuyer-CMRG")  # For reproducible parallel and sequential RNG

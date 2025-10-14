@@ -31,8 +31,6 @@ if (run_models) {
   # Iterate over each project ID using a simple for loop
   outl <- list()  # Initialize an empty list to store results
   
-  # proj_id_curr <- "SLE_1201" # proj_id_unique[11]
-  
   for (proj_id_curr in proj_id_unique) {
   
     # Print progress
