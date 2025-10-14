@@ -7,7 +7,10 @@ d <- readRDS(file = file.path(dir_output, paste0("all_dat_matched_alpha_", alpha
 
 # Set control flags for model running and spatial model fitting
 run_models <- TRUE
-fit_spatial <- TRUE
+fit_spatial <- FALSE
+
+# fit_spatial <- TRUE
+
 
 # Get unique project IDs
 proj_id_unique <- proj_tab$proj_id
@@ -27,7 +30,11 @@ mu_pri_sd <- sd(summs$mu_est, na.rm = TRUE)
 if (run_models) {
   # Iterate over each project ID using a simple for loop
   outl <- list()  # Initialize an empty list to store results
+  
+  # proj_id_curr <- "SLE_1201" # proj_id_unique[11]
+  
   for (proj_id_curr in proj_id_unique) {
+  
     # Print progress
     cat("Processing project ID:", proj_id_curr, "\n")
     
@@ -83,6 +90,39 @@ if (run_models) {
                                                       method = "ps_weights",
                                                       ps_weights = d_sub$ps_weights)
     
+    #########################################################
+    # Fit panel model
+    panel_data_file <- file.path(dir_panel_data, paste0("panel_", proj_id_curr, ".RDS"))
+    panel <- readRDS(panel_data_file)
+    panel %<>%
+      filter(gid %in% d_sub$gid)
+    
+    panel <- panel %>%
+      filter(!is.na(z), !is.na(gid), !is.na(time_treat), !is.na(treat), !is.na(post)) %>%
+      filter(time_treat >= -5) %>%
+      mutate(time_treat_fac = factor(time_treat)) %>%
+      mutate(gid_fac = factor(gid))
+
+    # Choose clustering: one-way by plot (serial corr.) or two-way (plot + time)
+    cluster_choice <- c("gid_fac", "time_treat_fac")[1:2]
+    fixefs <- c("gid_fac", "time_treat_fac")[1:2]
+    xvars <- c("dist_degra") # Time varying covariates
+    
+    if (all(panel$z == 0)) {
+      panel_result <- tibble(proj_id = proj_id_curr,
+                             ate = 0,
+                             ate_se = 0)
+    } else {
+      results <- panel_data_fit_one_project(panel,
+                                 y = "z",
+                                 xvars = xvars,
+                                 fixefs = fixefs,
+                                 cluster = cluster_choice)
+      panel_result <- results %>%
+        mutate(ate = att_hat, ate_se = se_cl) %>%
+        select(proj_id, ate, ate_se)
+    }    
+    
     # Compile all results into a list
     out <- list(cat_quant_result = cat_quant_result,
                 lm_result = lm_result,
@@ -90,7 +130,10 @@ if (run_models) {
                 lm_result_simple_adjusted = lm_result_simple_adjusted,
                 lm_adj_result = lm_adj_result,
                 lm_ps_weight_adj_result = lm_ps_weight_adj_result,
-                lm_result_ps_weights = lm_result_ps_weights)
+                lm_result_ps_weights = lm_result_ps_weights,
+                panel_result = panel_result)
+    
+    out
     
     # Optionally fit a spatial model if `fit_spatial` is TRUE
     if (fit_spatial) {
@@ -122,6 +165,8 @@ combined_lm_adj_results <- bind_rows(lapply(outl, function(x) x$lm_adj_result))
 combined_lm_ps_weight_adj_results <- bind_rows(lapply(outl, function(x) x$lm_ps_weight_adj_result))
 combined_lm_ps_weights_results <- bind_rows(lapply(outl, function(x) x$lm_result_ps_weights))
 combined_cat_quant_results <- bind_rows(lapply(outl, function(x) x$cat_quant_result))
+combined_panel_results <- bind_rows(lapply(outl, function(x) x$panel_result))
+print(combined_panel_results, n = 100)
 
 # Save combined model results
 saveRDS(combined_lm_results_simple, file = file.path(dir_output, "combined_lm_results_simple.RDS"))
@@ -131,6 +176,7 @@ saveRDS(combined_lm_adj_results, file = file.path(dir_output, "combined_lm_adj_r
 saveRDS(combined_lm_ps_weight_adj_results, file = file.path(dir_output, "combined_lm_ps_weight_adj_results.RDS"))
 saveRDS(combined_lm_ps_weights_results, file = file.path(dir_output, "combined_lm_ps_weights_results.RDS"))
 saveRDS(combined_cat_quant_results, file = file.path(dir_output, "combined_cat_quant_results.RDS"))
+saveRDS(combined_panel_results, file = file.path(dir_output, "combined_panel_results.RDS"))
 
 # If spatial models were fitted, combine and save those results as well
 if (fit_spatial) {
