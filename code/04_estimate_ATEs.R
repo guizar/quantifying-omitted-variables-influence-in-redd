@@ -7,10 +7,7 @@ d <- readRDS(file = file.path(dir_output, paste0("all_dat_matched_alpha_", alpha
 
 # Set control flags for model running and spatial model fitting
 run_models <- TRUE
-fit_spatial <- FALSE
-
-# fit_spatial <- TRUE
-
+fit_spatial <- TRUE
 
 # Get unique project IDs
 proj_id_unique <- proj_tab$proj_id
@@ -88,38 +85,16 @@ if (run_models) {
                                                       method = "ps_weights",
                                                       ps_weights = d_sub$ps_weights)
     
-    #########################################################
+    #######################################################
     # Fit panel model
-    panel_data_file <- file.path(dir_panel_data, paste0("panel_", proj_id_curr, ".RDS"))
-    panel <- readRDS(panel_data_file)
-    panel %<>%
-      filter(gid %in% d_sub$gid)
-    
-    panel <- panel %>%
-      filter(!is.na(z), !is.na(gid), !is.na(time_treat), !is.na(treat), !is.na(post)) %>%
-      filter(time_treat >= -5) %>%
-      mutate(time_treat_fac = factor(time_treat)) %>%
-      mutate(gid_fac = factor(gid))
-
-    # Choose clustering: one-way by plot (serial corr.) or two-way (plot + time)
-    cluster_choice <- c("gid_fac", "time_treat_fac")[1:2]
-    fixefs <- c("gid_fac", "time_treat_fac")[1:2]
-    xvars <- c("dist_degra") # Time varying covariates
-    
-    if (all(panel$z == 0)) {
-      panel_result <- tibble(proj_id = proj_id_curr,
-                             ate = 0,
-                             ate_se = 0)
-    } else {
-      results <- panel_data_fit_one_project(panel,
-                                 y = "z",
-                                 xvars = xvars,
-                                 fixefs = fixefs,
-                                 cluster = cluster_choice)
-      panel_result <- results %>%
-        mutate(ate = att_hat, ate_se = se_cl) %>%
-        select(proj_id, ate, ate_se)
-    }    
+    panel_results <- prepare_and_run_panel(
+      proj_id_curr,
+      dir_panel_data,
+      d_sub,
+      xvars = c("dist_degra"),
+      time_treat_min = -5,
+      cluster_choice = c("gid_fac", "time_treat_fac"),
+      fixefs = c("gid_fac", "time_treat_fac"))    
     
     # Compile all results into a list
     out <- list(cat_quant_result = cat_quant_result,
