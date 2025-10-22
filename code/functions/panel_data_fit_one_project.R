@@ -15,7 +15,11 @@ panel_data_fit_one_project <- function(dat_i,
     ssc = ssc(cluster.adj = TRUE, fixef.K = "nested"),
     cluster = cluster
   )
+}
 
+# Tidy panel model results
+
+tidy_panel_results <- function(dat_i,m) {
   # Tidy clustered inference
   vc <- vcov(m)
   tt <- broom::tidy(m, conf.int = TRUE) %>% filter(term == "treat:post")
@@ -32,38 +36,3 @@ panel_data_fit_one_project <- function(dat_i,
     p_cl    = tt$p.value
   )
 }
-
-# Load matched dataset and run panel regression
-prepare_and_run_panel <- function(proj_id_curr,
-                                  dir_panel_data,
-                                  d_sub,
-                                  xvars = c("dist_degra"),
-                                  time_treat_min = -5,
-                                  cluster_choice = c("gid_fac", "time_treat_fac"),
-                                  fixefs = c("gid_fac", "time_treat_fac")) {
-  panel_data_file <- file.path(dir_panel_data, paste0("panel_", proj_id_curr, ".RDS"))
-  panel <- readRDS(panel_data_file)
-  panel %<>% filter(gid %in% d_sub$gid)
-  
-  panel <- panel %>%
-    filter(!is.na(z), !is.na(gid), !is.na(time_treat), !is.na(treat), !is.na(post)) %>%
-    filter(time_treat >= time_treat_min) %>%
-    mutate(time_treat_fac = factor(time_treat),
-           gid_fac = factor(gid))
-  
-  if (all(panel$z == 0)) {
-    tibble::tibble(proj_id = proj_id_curr,
-                   ate = 0,
-                   ate_se = 0)
-  } else {
-    results <- panel_data_fit_one_project(panel,
-                                         y = "z",
-                                         xvars = xvars,
-                                         fixefs = fixefs,
-                                         cluster = cluster_choice)
-    results %>%
-      mutate(ate = att_hat, ate_se = se_cl) %>%
-      select(proj_id, ate, ate_se)
-  }
-}
-  
