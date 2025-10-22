@@ -1,21 +1,40 @@
 
 panel_data_fit_one_project <- function(dat_i,
-                            y = "z",
-                            xvars = xvars,
-                            fixefs,
-                            cluster = c("gid")) {
+                                       y = "z",
+                                       xvars,
+                                       fixefs,
+                                       cluster = c("gid"),
+                                       offset = NULL) {
   
   rhs <- c("treat:post", xvars)
-  # Fixed effects: plot (gid) and relative time (time_treat)
-  fml <- as.formula(paste0(y, " ~ ", paste(rhs, collapse = " + "), " | ", paste(fixefs, collapse = " + ")))
+  
+  # Add offset term to RHS if provided
+  if (!is.null(offset)) {
+    rhs <- c(rhs, paste0("offset(", offset, ")"))
+  }
+  
+  # Build full formula
+  fml <- as.formula(
+    paste0(
+      y, " ~ ",
+      paste(rhs, collapse = " + "),
+      " | ",
+      paste(fixefs, collapse = " + ")
+    )
+  )
+  
+  # Fit model
   m <- fixest::feols(
     fml,
     data = dat_i,
-    # finite-sample adjustments:
     ssc = ssc(cluster.adj = TRUE, fixef.K = "nested"),
     cluster = cluster
   )
+  
+  return(m)
 }
+
+
 
 # Tidy panel model results
 
