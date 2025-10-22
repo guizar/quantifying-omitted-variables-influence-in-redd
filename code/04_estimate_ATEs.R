@@ -27,7 +27,7 @@ mu_pri_sd <- sd(summs$mu_est, na.rm = TRUE)
 if (run_models) {
   # Iterate over each project ID using a simple for loop
   outl <- list()  # Initialize an empty list to store results
-  
+  # proj_id_curr = "BRA_1115"
   for (proj_id_curr in proj_id_unique) {
   
     # Print progress
@@ -87,14 +87,44 @@ if (run_models) {
     
     #######################################################
     # Fit panel model
-    panel_results <- prepare_and_run_panel(
-      proj_id_curr,
-      dir_panel_data,
-      d_sub,
-      xvars = c("dist_degra"),
-      time_treat_min = -5,
-      cluster_choice = c("gid_fac", "time_treat_fac"),
-      fixefs = c("gid_fac", "time_treat_fac"))    
+    #######################################################
+
+    # Define key panel model params
+    xvars = c("dist_degra")
+    time_treat_min = -5
+    cluster_choice = c("gid_fac", "time_treat_fac")
+    fixefs = c("gid_fac", "time_treat_fac")
+
+    # Load panel data
+    panel_data_file <- file.path(dir_panel_data, paste0("panel_", proj_id_curr, ".RDS"))
+    panel <- readRDS(panel_data_file)
+    panel %<>% filter(gid %in% d_sub$gid)
+  
+    panel <- panel %>%
+      filter(!is.na(z), !is.na(gid), !is.na(time_treat), !is.na(treat), !is.na(post)) %>%
+      filter(time_treat >= time_treat_min) %>%
+      mutate(time_treat_fac = factor(time_treat),
+              gid_fac = factor(gid))
+
+    # Run panel models (if data is available)
+     if (all(panel$z == 0)) {
+    panel_results =  tibble::tibble(proj_id = proj_id_curr,
+                   ate = 0,
+                   ate_se = 0)
+    } else {
+    # fit panel model
+    m <- panel_data_fit_one_project(panel,
+                                         y = "z",
+                                         xvars = xvars,
+                                         fixefs = fixefs,
+                                         cluster = cluster_choice)
+    # tidy results
+    results <- tidy_panel_results(panel, m)
+
+    panel_results = results %>%
+      mutate(ate = att_hat, ate_se = se_cl) %>%
+      select(proj_id, ate, ate_se)
+    }
     
     # Compile all results into a list
     out <- list(cat_quant_result = cat_quant_result,

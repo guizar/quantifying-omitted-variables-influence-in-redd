@@ -5,7 +5,7 @@ source(file.path("code", "00_preamble.R"), echo = FALSE)
 # -------------------------------------------------------------------
 # Config
 # -------------------------------------------------------------------
-scale_covars <- TRUE              # Standardise selected covariates (store unscaled copies too)
+scale_covars <- TRUE              # Standardise selected     covariates (store unscaled copies too)
 multi_core   <- TRUE              # Parallelise per-project builds
 
 n_cores <- if (multi_core) min(20, parallel::detectCores()) else 1
