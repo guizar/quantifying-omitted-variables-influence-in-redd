@@ -27,7 +27,7 @@ mu_pri_sd <- sd(summs$mu_est, na.rm = TRUE)
 if (run_models) {
   # Iterate over each project ID using a simple for loop
   outl <- list()  # Initialize an empty list to store results
-  # proj_id_curr = "BRA_1115"
+  
   for (proj_id_curr in proj_id_unique) {
   
     # Print progress
