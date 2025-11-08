@@ -72,10 +72,20 @@ ate_yr_to_compare <- proj_tab %>%
     mutate(time_treat_fac = factor(time_treat),
                 gid = as.integer(gid))
  
+# Identify GIDs where z exceeds 1 at any time point and remove all observations for those GIDs
+gids_to_remove <- panel %>%
+  filter(z > 1) %>%
+  distinct(gid) %>%
+  pull(gid)
+
+panel <- panel %>%
+  filter(!gid %in% gids_to_remove)
+
  # to %/year
  panel$z_perc = panel$z * 100
  # Add offset parameter
 panel$offset_yr <- ifelse(panel$treat == "1", ate_yr_to_compare, 0)
+
 
 # Create subset panel dataset to the matched GIDs
 panel_sub <- panel %>% filter(gid %in% d_sub$gid)
@@ -100,7 +110,7 @@ panel_sub <- panel_sub %>% mutate(gid_fac = factor(gid))
  # FIT PANEL MODELS ---
                             
 # Define panel analysis parameters
-xvars = c("dist_degra" )
+xvars = NULL 
 cluster_choice = c("gid_fac", "time_treat_fac")
 fixefs = c("gid_fac", "time_treat_fac")
 

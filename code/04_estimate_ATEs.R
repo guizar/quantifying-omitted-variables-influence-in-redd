@@ -11,6 +11,7 @@ fit_spatial <- TRUE
 
 # Get unique project IDs
 proj_id_unique <- proj_tab$proj_id
+proj_id_unique <- proj_id_unique[!proj_id_unique %in% c('IDN_1477')] # remove problematic ID: ERROR : in fixest::feols(fml, data = dat_i, ssc = ssc(cluste...:  The only variable, 'treat:post', is collinear with the fixed effects. Without doubt, your model is misspecified.
 
 # Summarize pi (proportion of non-zero outcomes) and mu (mean of non-zero outcomes) for each project
 summs <- d %>%
@@ -90,7 +91,7 @@ if (run_models) {
     #######################################################
 
     # Define key panel model params
-    xvars = c("dist_degra")
+    xvars = NULL 
     time_treat_min = -5
     cluster_choice = c("gid_fac", "time_treat_fac")
     fixefs = c("gid_fac", "time_treat_fac")
@@ -134,7 +135,7 @@ if (run_models) {
                 lm_adj_result = lm_adj_result,
                 lm_ps_weight_adj_result = lm_ps_weight_adj_result,
                 lm_result_ps_weights = lm_result_ps_weights,
-                panel_result = panel_result)
+                panel_result = panel_results)
     
     out
     
