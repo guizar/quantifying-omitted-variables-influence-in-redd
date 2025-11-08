@@ -748,3 +748,105 @@ mp = ggplot() +
           legend.box.spacing = unit(0.001, "in"))
 
 ggsave(filename=file.path("figures", "sites-map-moll.png"), plot=mp, width=10, dpi=300)
+
+# --------------------------------------------------
+# PROJECT SELECTION SUMMARIES
+# ---------------------------------------------------
+
+forest_classes <- proj_info %>% 
+    select(proj_id, area_ha, syear, inclusion_status, undisturbed, degraded, deforested, regrowth, water, other) %>% 
+    rowwise() %>% 
+    mutate(total = sum(undisturbed, degraded, deforested, regrowth, water, other, na.rm = TRUE)) %>% 
+    mutate(
+        area_ha = round(area_ha, 2),
+        Undisturbed = round(undisturbed/total * 100, 2), 
+        Degraded = round(degraded/total * 100, 2), 
+        Deforested = round(deforested/total * 100, 2), 
+        Regrowth = round(regrowth/total * 100, 2), 
+        Water = round(water/total * 100, 2), 
+        Other = round(other/total * 100, 2),
+    ) %>%
+    select(-c(total,undisturbed,degraded,deforested,regrowth,water,other) ) %>%
+    filter(inclusion_status != 'Insufficient temporal\n records') %>%
+    mutate(inclusion_status = case_when(
+        inclusion_status %in% c('Included', '<80% of plots matched') ~ 'Included for matching',
+        TRUE ~ inclusion_status
+    )) %>%
+    mutate(inclusion_status = factor(inclusion_status, levels = c('<80% evergreen forest cover','Included for matching'))) %>%
+    arrange(inclusion_status, area_ha)
+
+cls = c('Project ID','Area (Ha)',"Starting year","Inclusion status", "Undisturbed %", "Degraded %", "Deforested %", "Regrowth %", "Water %", "Other %")
+out_print = forest_classes
+colnames(out_print) = cls
+
+# Render table to MD
+md_table <- capture.output(pandoc.table(out_print, style='multiline', split.table = Inf, digits=3, missing='-'))
+writeLines(md_table, file.path("tables", "project_selection_summaries.md"))
+
+tex_table <- capture.output(kable(out_print, format = "latex", booktabs = TRUE, caption = ""))
+writeLines(tex_table, file.path("tables", "project_selection_summaries.tex"))
+
+system(paste0("pandoc ", file.path("tables", "project_selection_summaries.md"), " -o ", file.path("tables", "SuppTable_4.docx")))
+
+# ----------------------------------------------
+# Project summaries by filtering levels (area, ISO3, methodology)
+# ----------------------------------------------
+
+proj_info <- read_csv(file = file.path("data", "vcs-info.csv")) %>% filter(inclusion_status!= 'Unavailable\ngeospatial data') %>% 
+mutate(proj_id = paste0(iso3, "_", vcs_id))
+
+
+# Helper to summarise a dataframe into one row
+summarise_proj_group <- function(label, df) {
+  # Mean and IQR of area_ha
+  area_mean <- mean(df$area_ha, na.rm = TRUE)
+  qs <- stats::quantile(df$area_ha, probs = c(0.25, 0.75), na.rm = TRUE, type = 7)
+  area_str <- paste0(round(area_mean, 2), " (", round(qs[1], 2), "–", round(qs[2], 2), ")")
+
+  # ISO3 counts
+  iso_vals <- df$iso3
+  iso_vals <- iso_vals[!is.na(iso_vals) & iso_vals != ""]
+  iso_tab <- sort(table(iso_vals), decreasing = TRUE)
+  iso_str <- if (length(iso_tab)) paste0(names(iso_tab), ": ", as.integer(iso_tab), collapse = ", ") else "-"
+
+  # VCS methodology counts (robust to multiple codes separated by , ; / |)
+  if ("vcs_methodology" %in% names(df)) {
+    vcsm_split <- strsplit(df$vcs_methodology, "[,;/|]+")
+    vcsm_flat <- unlist(lapply(vcsm_split, function(x) trimws(x)))
+    vcsm_flat <- vcsm_flat[!is.na(vcsm_flat) & vcsm_flat != ""]
+    vcsm_tab <- sort(table(vcsm_flat), decreasing = TRUE)
+    vcsm_str <- if (length(vcsm_tab)) paste0(names(vcsm_tab), ": ", as.integer(vcsm_tab), collapse = ", ") else "-"
+  } else {
+    vcsm_str <- "-"
+  }
+
+  tibble::tibble(
+    Filter = label,
+    `Area (Ha) mean (IQR)` = area_str,
+    `ISO3 (count)` = iso_str,
+    `VCS methodology (count)` = vcsm_str
+  )
+}
+
+# Define groups
+summ_all <- summarise_proj_group(
+  label = "All projects",
+  df = proj_info
+)
+
+summ_no_temporal <- summarise_proj_group(
+  label = "Excl. insufficient temporal records",
+  df = proj_info %>% dplyr::filter(inclusion_status %in% c("<80% evergreen forest cover", "Included", "<80% of plots matched"))
+)
+
+summ_no_temporal_undist <- summarise_proj_group(
+  label = "Excl. insufficient temporal and <80% evergreen cover",
+  df = proj_info %>% dplyr::filter(inclusion_status %in% c("Included", "<80% of plots matched"))
+)
+
+proj_filter_summaries <- dplyr::bind_rows(summ_all, summ_no_temporal, summ_no_temporal_undist)
+
+# Export table (MD and LaTeX), consistent with other exports above
+md_table <- capture.output(pandoc.table(proj_filter_summaries, style='multiline', split.table = Inf, digits=3, missing='-'))
+writeLines(md_table, file.path("tables", "project_filter_summaries.md"))
+system(paste0("pandoc ", file.path("tables", "project_filter_summaries.md"), " -o ", file.path("tables", "SuppTable_5.docx")))
