@@ -42,15 +42,6 @@ outl <- foreach::foreach(
   # Define post window length: 5 normally, 4 for KHM_PL1748
   n_post <- if (proj_curr == "KHM_PL1748") 4L else 5L
   
-  # ---- Symmetric series-length QC ----------------------------------
-  # Require 12 or 13 rows per gid (e.g., -6..5 or similar); drop bad-length gids for BOTH treat & control
-  dup_long  <- long %>% count(gid, name = "n_long")
-  gid_remove <- dup_long %>% filter(!n_long %in% 12:13) %>% pull(gid)
-  if (length(gid_remove)) {
-    long  <- long  %>% filter(!gid %in% gid_remove)
-    short <- short %>% filter(!gid %in% gid_remove)
-  }
-  
   # ---- Project identifiers -----------------------------------------
   long <- long %>%
     mutate(country = proj_tab$country[j],
@@ -59,7 +50,7 @@ outl <- foreach::foreach(
   
   # ---- Join static covariates and select working columns -----------
   panel <- long %>%
-    left_join(short %>% select(gid, any_of(panel_vars_static)), by = "gid") %>%
+    left_join(short %>% select(gid, treat, any_of(panel_vars_static)), by = c("treat","gid")) %>%
     select(all_of(panel_vars_keys), any_of(panel_vars_tv), any_of(panel_vars_static))
   
   # ---- Basic QC & cleaning -----------------------------------------

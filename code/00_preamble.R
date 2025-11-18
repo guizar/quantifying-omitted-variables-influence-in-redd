@@ -220,7 +220,7 @@ proj_tab %>% write_csv(file.path("data", "proj_tab.csv"))
 # -----------------------------------------------------------------
 # Declare project labels according to project's inclusion in this study
 # -----------------------------------------------------------------
-inclusion_lab = c('<80% evergreen forest cover','Insufficient temporal\n records', '<80% of plots matched','Included')
+inclusion_lab = c('<80% undisturbed','Insufficient temporal\n records', '<80% of plots matched','Included')
 under_80_label <- inclusion_lab[3]
 included_label <- inclusion_lab[4]
 
