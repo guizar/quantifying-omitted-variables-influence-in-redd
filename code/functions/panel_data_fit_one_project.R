@@ -29,10 +29,9 @@ panel_data_fit_one_project <- function(dat_i,
     )
   )
   
-  # Fit model with comprehensive error handling
+  # Fit model with error handling
   m <- NULL
   tryCatch({
-    # First, try with suppressWarnings in case it's a warning converted to error
     m <- suppressWarnings(
       try({
         fixest::feols(
@@ -53,7 +52,7 @@ panel_data_fit_one_project <- function(dat_i,
     
   }, error = function(e) {
     warning(paste("Model fitting failed for project", dat_i$proj_id[1], ":", e$message))
-    m <<- NULL
+    m <- NULL
   })
   
   return(m)
