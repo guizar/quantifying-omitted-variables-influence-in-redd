@@ -81,7 +81,7 @@ geom_point(position = position_dodge(width = dodge_width)) +
 
  geom_point(aes(proj_id,guizar), color=guizar_colour, shape=3, size=1, alpha=0.6) + # Adds Guizar
 xlab ("") +
-ylab("Difference in forest loss (%"~yr^-1*')') +
+ylab("Diff. in forest loss (%"~yr^-1*')') +
   theme_bw() +  
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
         axis.text.x = element_text(angle = 90, hjust = 1),  
@@ -125,7 +125,7 @@ geom_point(position = position_dodge(width = dodge_width)) +  # Points for ATE
 
 geom_point(aes(proj_id,guizar_ha), color=guizar_colour, shape=3, size=1, alpha=0.6) + # Adds Guizar
 xlab ("") +
-ylab("Difference in forest loss (Ha)") +
+ylab("Diff. in forest loss (Ha)") +
   theme_bw() +  
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
         axis.text.x = element_text(angle = 90, hjust = 1),  # Rotate x-axis labels
@@ -168,7 +168,7 @@ bottom_left <- ggplot(comp_meths %>% filter(method==methnames$lm_simple), aes(x 
                 width = 0.2, position = position_dodge(width = dodge_width), color=grey_color) +  
  geom_point(aes(proj_id,implied_ate), color=red_color, shape=19, size=1) + # Adds 4C
 xlab ("") +
-ylab("Difference in forest loss (%"~yr^-1*')') +
+ylab("Diff. in forest loss (%"~yr^-1*')') +
 # scale_y_break(c(-14, -95)) +
 
 # Custom coloring for the x-axis labels
@@ -212,7 +212,7 @@ bottom_right <- ggplot(comp_meths %>% filter(method==methnames$lm_simple), aes(x
                 width = 0.2, position = position_dodge(width = dodge_width), color=grey_color) +  
  geom_point(aes(proj_id,avoided_verra), color=red_color, shape=19, size=1) + # Adds 4C
 xlab ("") +
-ylab("Difference in forest loss (Ha)") +
+ylab("Diff. in forest loss (Ha)") +
 
 # Custom coloring for the x-axis labels
 scale_x_discrete(limits = order_vcs,  # Maintain project order on x-axis
@@ -278,7 +278,7 @@ top_panel <- ggplot(comp_meths_sub, aes(x = proj_id, y = ate_yr, color = method)
 geom_point(position = position_dodge(width = dodge_width)) +  # Points for ATE
  geom_point(aes(proj_id,guizar), color=guizar_colour, shape=3, size=1, alpha=0.6) + # Adds Guizar
 xlab ("") +
-ylab("Difference in forest loss (%"~yr^-1*')') +
+ylab("Diff. in forest loss (%"~yr^-1*')') +
   theme_bw() +  
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
         axis.text.x = element_text(angle = 90, hjust = 1, face = "bold"),  # Rotate x-axis labels
@@ -310,7 +310,7 @@ middle_panel <- ggplot(comp_meths_sub, aes(x = proj_id, y = ate_ha, color = meth
 geom_point(position = position_dodge(width = dodge_width)) +  # Points for ATE
 geom_point(aes(proj_id,guizar_ha), color=guizar_colour, shape=3, size=1, alpha=0.6) + # Adds Guizar
 xlab ("") +
-ylab("Difference in forest loss (Ha)") +
+ylab("Diff. in forest loss (Ha)") +
   theme_bw() +  
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
         axis.text.x = element_text(angle = 90, hjust = 1, face = "bold"),  # Rotate x-axis labels
@@ -344,7 +344,7 @@ bottom_left <- ggplot(comp_meths_sub %>% filter(method==methnames$lm_simple), ae
                 width = 0.2, position = position_dodge(width = dodge_width), color=grey_color) +  
  geom_point(aes(proj_id,implied_ate), color=red_color, shape=19, size=1) + # Adds 4C
 xlab ("") +
-ylab("Difference in forest loss (%"~yr^-1*')') +
+ylab("Diff. in forest loss (%"~yr^-1*')') +
 # scale_y_break(c(-14, -95)) +
   
 scale_x_discrete(limits = order_vcs) +
@@ -382,7 +382,7 @@ bottom_right <- ggplot(comp_meths_sub %>% filter(method==methnames$lm_simple), a
                 width = 0.2, position = position_dodge(width = dodge_width), color=grey_color) +  
  geom_point(aes(proj_id,avoided_verra), color=red_color, shape=19, size=1) + # Adds 4C
 xlab ("") +
-ylab("Difference in forest loss (Ha)") +
+ylab("Diff. in forest loss (Ha)") +
 
 scale_x_discrete(limits = order_vcs) +
 
@@ -687,8 +687,6 @@ out_print = out_table %>%
       left_join(proj_samples) %>%
       arrange(country) %>%
     select(proj_id,project_name,km,estimate_char,samples_str,perc_matched,guizar_2022, vcs_methodology)
-out_print$proj_id <- factor(out_print$proj_id, levels=orders)
-out_print <- out_print %>% arrange(proj_id)
 colnames(out_print) = cls
 
 
