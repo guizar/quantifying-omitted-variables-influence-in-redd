@@ -11,7 +11,6 @@ fit_spatial <- TRUE
 
 # Get unique project IDs
 proj_id_unique <- proj_tab$proj_id
-proj_id_unique <- proj_id_unique[!proj_id_unique %in% c('IDN_1477')] # remove problematic ID: ERROR : in fixest::feols(fml, data = dat_i, ssc = ssc(cluste...:  The only variable, 'treat:post', is collinear with the fixed effects. Without doubt, your model is misspecified.
 
 # Summarize pi (proportion of non-zero outcomes) and mu (mean of non-zero outcomes) for each project
 summs <- d %>%
