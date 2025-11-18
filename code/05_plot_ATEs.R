@@ -48,7 +48,7 @@ methnames <- list(
 )
 
 # Order in which methods will be plotted
-order_methods <- c("lm_subclass", "cat_quant", "spatial", "lm_simple", "lm_simple_adjusted", "lm_weight", "doubly_robust", "panel")
+order_methods <- c("panel", "lm_subclass", "cat_quant", "spatial", "lm_simple", "lm_simple_adjusted", "lm_weight", "doubly_robust")
 
 # Combine results from different models into a single data frame for plotting
 comp_meths <- bind_rows(
