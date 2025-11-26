@@ -1,13 +1,14 @@
 
 panel_data_fit_one_project <- function(dat_i,
                                        y = "z",
+                                      rhs = "treat:post",
                                        xvars=NULL,
                                        fixefs,
                                        cluster = c("gid"),
                                        offset = NULL) {
   
-  # Start with treatment effect
-  rhs <- "treat:post"
+  # Start with base RHS provided as argument (default treat:post)
+  rhs <- rhs
   
   # Add additional variables if provided
   if (!is.null(xvars) && length(xvars) > 0) {

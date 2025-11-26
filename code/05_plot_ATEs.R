@@ -24,6 +24,7 @@ combined_lm_ps_weights_results <- readRDS(file = file.path(dir_output, "combined
 combined_cat_quant_results <- readRDS(file = file.path(dir_output, "combined_cat_quant_results.RDS"))
 combined_lme_adj_results <- readRDS(file = file.path(dir_output, "combined_lme_adj_results.RDS"))
 combined_panel_results <- readRDS(file = file.path(dir_output, "combined_panel_results.RDS"))
+combined_panel_interaction_results <- readRDS(file = file.path(dir_output, "combined_panel_interaction_results.RDS"))
 
 # Prepare data for plotting: categorical/quantitative model results
 plot_df <- combined_cat_quant_results %>%
@@ -44,11 +45,12 @@ methnames <- list(
   lm_simple = "Unadjusted LM on matched data",
   lm_simple_adjusted = "Adjusted LM on matched data",
   lm_weight = "PS weighted LM on matched data",
-  panel = "Panel model on matched data"
+  panel = "FE panel on matched data",
+  panel_interaction = "FE panel on matched data (year:ADM2)"
 )
 
 # Order in which methods will be plotted
-order_methods <- c("panel", "lm_subclass", "cat_quant", "spatial", "lm_simple", "lm_simple_adjusted", "lm_weight", "doubly_robust")
+order_methods <- c("panel", "panel_interaction" ,"lm_subclass", "cat_quant", "spatial", "lm_simple", "lm_simple_adjusted", "lm_weight", "doubly_robust")
 
 # Combine results from different models into a single data frame for plotting
 comp_meths <- bind_rows(
@@ -94,6 +96,12 @@ comp_meths <- bind_rows(
            ate_yr_se = ate_se * 100) %>%
     select(proj_id, method, ate_yr, ate_yr_se),
   
+  combined_panel_interaction_results %>%
+    mutate(method = methnames$panel_interaction, 
+           ate_yr = ate * 100, 
+           ate_yr_se = ate_se * 100) %>%
+    select(proj_id, method, ate_yr, ate_yr_se),
+  
 )
 
 # Add spatial results if applicable
@@ -125,8 +133,6 @@ projects_with_low_matched_prop <- match_prop_tab %>%
 not_matched <- match_prop_tab %>%
   filter( match_prop_tab[, paste0("prop_matched_alpha_", alpha_use), drop = T] ==0) %>%
   pull(proj_id)
-
-
 
 # Set dodge width for separating error bars
 dodge_width <- 0.75

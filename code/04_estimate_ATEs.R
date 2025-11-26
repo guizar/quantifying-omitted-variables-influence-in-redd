@@ -111,6 +111,9 @@ if (run_models) {
     panel_results =  tibble::tibble(proj_id = proj_id_curr,
                    ate = 0,
                    ate_se = 0)
+    panel_interaction_results =  tibble::tibble(proj_id = proj_id_curr,
+                   ate = 0,
+                   ate_se = 0)
     } else {
     # fit panel model
     m <- panel_data_fit_one_project(panel,
@@ -124,8 +127,29 @@ if (run_models) {
     panel_results = results %>%
       mutate(ate = att_hat, ate_se = se_cl) %>%
       select(proj_id, ate, ate_se)
+
+    ## RUN  PANEL WITH INTERACTION
+     rhs = c("treat:post",
+          "time_treat",
+          "adm_2",
+          "time_treat:adm_2")
+
+    m <- panel_data_fit_one_project(panel,
+                                         y = "z",
+                                         xvars = xvars,
+                                         fixefs = fixefs,
+                                         rhs =rhs,
+                                         cluster = cluster_choice)
+    # tidy results
+    results <- tidy_panel_results(panel, m)
+
+    panel_interaction_results = results %>%
+      mutate(ate = att_hat, ate_se = se_cl) %>%
+      select(proj_id, ate, ate_se)
     }
     
+    
+
     # Compile all results into a list
     out <- list(cat_quant_result = cat_quant_result,
                 lm_result = lm_result,
@@ -134,9 +158,10 @@ if (run_models) {
                 lm_adj_result = lm_adj_result,
                 lm_ps_weight_adj_result = lm_ps_weight_adj_result,
                 lm_result_ps_weights = lm_result_ps_weights,
-                panel_result = panel_results)
+                panel_result = panel_results,
+                panel_interaction_result = panel_interaction_results)
     
-    out
+    # out
     
     # Optionally fit a spatial model if `fit_spatial` is TRUE
     if (fit_spatial) {
@@ -169,7 +194,8 @@ combined_lm_ps_weight_adj_results <- bind_rows(lapply(outl, function(x) x$lm_ps_
 combined_lm_ps_weights_results <- bind_rows(lapply(outl, function(x) x$lm_result_ps_weights))
 combined_cat_quant_results <- bind_rows(lapply(outl, function(x) x$cat_quant_result))
 combined_panel_results <- bind_rows(lapply(outl, function(x) x$panel_result))
-print(combined_panel_results, n = 100)
+combined_panel_interaction_results <- bind_rows(lapply(outl, function(x) x$panel_interaction_result))
+# print(combined_panel_results, n = 100)
 
 # Save combined model results
 saveRDS(combined_lm_results_simple, file = file.path(dir_output, "combined_lm_results_simple.RDS"))
@@ -179,7 +205,9 @@ saveRDS(combined_lm_adj_results, file = file.path(dir_output, "combined_lm_adj_r
 saveRDS(combined_lm_ps_weight_adj_results, file = file.path(dir_output, "combined_lm_ps_weight_adj_results.RDS"))
 saveRDS(combined_lm_ps_weights_results, file = file.path(dir_output, "combined_lm_ps_weights_results.RDS"))
 saveRDS(combined_cat_quant_results, file = file.path(dir_output, "combined_cat_quant_results.RDS"))
+saveRDS(combined_panel_interaction_results, file = file.path(dir_output, "combined_panel_interaction_results.RDS"))
 saveRDS(combined_panel_results, file = file.path(dir_output, "combined_panel_results.RDS"))
+
 
 # If spatial models were fitted, combine and save those results as well
 if (fit_spatial) {

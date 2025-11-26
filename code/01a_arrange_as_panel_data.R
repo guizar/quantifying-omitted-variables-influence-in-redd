@@ -5,14 +5,14 @@ source(file.path("code", "00_preamble.R"), echo = FALSE)
 # -------------------------------------------------------------------
 # Config
 # -------------------------------------------------------------------
-scale_covars <- TRUE              # Standardise selected     covariates (store unscaled copies too)
+scale_covars <- TRUE              # Standardise selected covariates (store unscaled copies too)
 multi_core   <- TRUE              # Parallelise per-project builds
 
 n_cores <- if (multi_core) min(20, parallel::detectCores()) else 1
 doParallel::registerDoParallel(cores = n_cores)
 
 # Columns we’ll carry through
-panel_vars_static <- c("mean_slp", "mean_access", "mean_ele") # static covariates from `short`
+panel_vars_static <- c("mean_slp", "mean_access", "mean_ele", "adm_2") # static covariates from `short`
 panel_vars_keys   <- c("country","project","proj_id","gid","year","time_treat","treat")
 panel_vars_tv     <- c("arealoss","areaforest","lag_arealoss","lag_areadegraded","dist_degra")
 
