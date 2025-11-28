@@ -69,7 +69,7 @@ dir.create(match_dd_dir, showWarnings = FALSE, recursive = TRUE)
 dir.create(dir_panel_data, showWarnings = FALSE, recursive = TRUE)
 
 # Set full data directory (update based on the version of data being used)
-full_data_dir <- file.path("data", "full_data_2024-08-11")
+full_data_dir <- file.path("data", "full_data_2025-11-28")
 proj_tab_file <- file.path("data", "proj_tab.RDS")
 
 # If project table does not exist, create it from full data

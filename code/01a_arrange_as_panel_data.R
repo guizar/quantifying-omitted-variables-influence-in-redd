@@ -8,7 +8,7 @@ source(file.path("code", "00_preamble.R"), echo = FALSE)
 scale_covars <- TRUE              # Standardise selected covariates (store unscaled copies too)
 multi_core   <- TRUE              # Parallelise per-project builds
 
-n_cores <- if (multi_core) min(20, parallel::detectCores()) else 1
+n_cores <- if (multi_core) min(5, parallel::detectCores()) else 1
 doParallel::registerDoParallel(cores = n_cores)
 
 # Columns we’ll carry through
@@ -73,13 +73,13 @@ outl <- foreach::foreach(
   # Denominator: per-gid forest area at event time -6 (fixed across years)
   denom <- panel %>%
     filter(time_treat == -6) %>%
-    transmute(gid, base_forest = areaforest)
+    transmute(treat,gid, base_forest = areaforest)
   
   # Annual proportion outcome: z_t = lag_arealoss_t / base_forest
   # No clipping; inappropriate ratios become NA and will be dropped at fit time 
   #             (when we only include GIDs in panel data analysis that have passed QC in the summary data analysis)
   panel <- panel %>%
-    left_join(denom, by = "gid") %>%
+    left_join(denom, by = c("treat","gid")) %>%
     mutate(
       base_forest = if_else(is.finite(base_forest) & base_forest > 0, base_forest, NA_real_),
       z = if_else(is.finite(lag_arealoss) & is.finite(base_forest), lag_arealoss / base_forest, NA_real_)
@@ -95,7 +95,7 @@ outl <- foreach::foreach(
   stopifnot(
     all(
       panel %>%
-        group_by(proj_id, gid) %>%
+        group_by(proj_id, treat, gid) %>%
         summarise(n_treat = n_distinct(treat), .groups = "drop") %>%
         pull(n_treat) == 1
     )

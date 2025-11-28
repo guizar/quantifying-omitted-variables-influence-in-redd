@@ -4,7 +4,7 @@ source(file.path("code", "00_preamble.R"), echo = TRUE)
 
 # Set up multi-core processing
 multi_core <- TRUE
-n_cores <- if (multi_core) min(20, parallel::detectCores()) else 1 # Use max cores available (or 25 max) if multi_core is TRUE, otherwise 1 core
+n_cores <- if (multi_core) min(5, parallel::detectCores()) else 1 # Use max cores available (or 5 max) if multi_core is TRUE, otherwise 1 core
 registerDoParallel(cores = n_cores)
 
 # Perform parallel processing over all projects in proj_tab
@@ -19,10 +19,10 @@ outl <- foreach::foreach(j = 1:nrow(proj_tab),
   file_name <- paste0("qc_data_", proj_tab$proj_id[j], ".RDS")
 
   # Check if output files exist,
-  if (file.exists(file.path(dir_qc_data, file_name))) {
-  cat(sprintf("File exists for project %s. Skipping.\n", proj_curr))
-    return(NULL)
-  }
+  # if (file.exists(file.path(dir_qc_data, file_name))) {
+  # cat(sprintf("File exists for project %s. Skipping.\n", proj_curr))
+  #   return(NULL)
+  # }
   
   # Create an n_years_post object to account for proj's 'PL1748' reduce n years
   n_years_post <- ifelse(proj_curr!='KHM_PL1748',5,4)

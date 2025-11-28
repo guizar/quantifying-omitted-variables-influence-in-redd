@@ -4,7 +4,7 @@ source(file.path("code", "00_preamble.R"), echo = TRUE)
 
 # Set multi-core processing option and create a parallel cluster
 multi_core <- TRUE
-n_cores <- if (multi_core) min(20, parallel::detectCores()) else 1 # Use max cores available (or 20 max) if multi_core is TRUE, otherwise 1 core
+n_cores <- if (multi_core) min(5, parallel::detectCores()) else 1 # Use max cores available (or 5 max) if multi_core is TRUE, otherwise 1 core
 registerDoParallel(cores = n_cores)
 
 # Perform parallel processing on rows of do_tab
