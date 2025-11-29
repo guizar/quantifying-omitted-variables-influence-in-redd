@@ -42,11 +42,11 @@ methnames <- list(
   doubly_robust = "Doubly robust LM in\nPS subclasses",
   cat_quant = "Categorical/quantitative model in\nPS subclasses",
   spatial = "Spatially autocorrelated LM",
-  lm_simple = "Unadjusted LM on matched data",
-  lm_simple_adjusted = "Adjusted LM on matched data",
-  lm_weight = "PS weighted LM on matched data",
+  lm_simple = "Unadjusted LM on\nmatched data",
+  lm_simple_adjusted = "Adjusted LM on\nmatched data",
+  lm_weight = "PS weighted LM on\nmatched data",
   panel = "FE panel on matched data",
-  panel_interaction = "FE panel on matched data (year:ADM2)"
+  panel_interaction = "FE panel on matched data\nyear:ADM2)"
 )
 
 # Order in which methods will be plotted
@@ -151,7 +151,6 @@ order_vcs <- plot_df %>%
   pull(proj_id)
 
 # Define text colour for projs <80% matched
-# axis_text_color_dimmed <- '#99C945'
 
 # Create the plot: ATE estimates by method across projects
 library(ggplot2)
@@ -176,7 +175,7 @@ plot_out <- ggplot(comp_meths, aes(x = proj_id, y = ate_yr, color = method)) +
                             paste0(proj_id), proj_id)  # Label with project ID
                    }) +
   
-  scale_color_brewer(palette = "Set1", name = "Method") +
+  scale_color_manual(values = c(RColorBrewer::brewer.pal(8, "Set1"), "black"), name = "Method") +
 
   theme_bw() + 
   theme(panel.border = element_rect(fill=NA, colour = "black", size=1),
@@ -185,8 +184,8 @@ plot_out <- ggplot(comp_meths, aes(x = proj_id, y = ate_yr, color = method)) +
         # axis.text.y = element_text(margin = margin(r = 1)),
         axis.line = element_blank(), 
         legend.position = "bottom",
-        legend.box = "vertical",
-        legend.direction = "vertical",
+        legend.box = "horizontal",
+        legend.direction = "horizontal",
         legend.spacing.x = unit(0.2, "cm"),
         axis.title.x = element_text(margin = ggplot2::margin(t = 1)),
         axis.title.y = element_text(margin = ggplot2::margin(r = 1)),
@@ -196,8 +195,9 @@ plot_out <- ggplot(comp_meths, aes(x = proj_id, y = ate_yr, color = method)) +
             color = ifelse(order_vcs %in% projects_with_low_matched_prop, axis_text_color_dimmed, "black"),
             angle = 90, hjust = 1
             )
-        )
+        ) +
+  guides(color = guide_legend(nrow = 2, ncol = 5, byrow = TRUE))
 
 # export ggplot
-ggsave(file_meth_strat, plot_out, width=12, height=11, units='in', dpi=300)
+ggsave(file_meth_strat, plot_out, width=12.5, height=8, units='in', dpi=300)
 saveRDS(comp_meths, file = file.path(dir_analysis_outputs, "comp_meths.RDS"))
