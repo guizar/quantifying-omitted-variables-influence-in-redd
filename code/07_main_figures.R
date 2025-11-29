@@ -51,6 +51,12 @@ comp_meths_sub <- comp_meths %>% filter(!proj_id %in% projects_with_low_matched_
 base_col= carto_pal(7, "Temps")[c(3,1,5,7)] # c("#38293", "#3B5249", "#519872", "#A4B494")
 col_palette = generate_palette(base_col[1], modification = "go_darker", n_colours = length(levels(comp_meths$method)), view_palette = F)
 
+# for the two panelmodels
+col_palette = c("#de700fff", "#c78c58ff", col_palette[3:length(col_palette)])
+
+# plot DR as black
+col_palette[length(col_palette)] <- "#000000"
+
 #  -- maps colors
 # Loaded in 00_preamble.R: Declare project labels according to project's inclusion in this study
 # scales::show_col(map_cols)

@@ -98,10 +98,18 @@ if (run_models) {
     # Load panel data
     panel_data_file <- file.path(dir_panel_data, paste0("panel_", proj_id_curr, ".RDS"))
     panel <- readRDS(panel_data_file)
-    panel %<>% filter(gid %in% d_sub$gid)
+    panel <- panel %>% mutate (gid_treat = paste0(gid,'_',treat))
+    d_sub <- d_sub %>% mutate (gid_treat = paste0(gid,'_',treat))
+    panel %<>% filter(gid_treat %in% d_sub$gid_treat)
+    # panel %<>% filter(gid %in% d_sub$gid)
+  
+    # Join with CSVs to obtain adm 2
+    f = proj_tab$summ_file[proj_tab$proj_id==proj_id_curr]  
+    tmp <- read_csv(paste0(full_data_dir,'/data_a2/',f)) %>% select(gid, treat, adm_2)
+    panel <- panel %>% left_join(tmp)
   
     panel <- panel %>%
-      filter(!is.na(z), !is.na(gid), !is.na(time_treat), !is.na(treat), !is.na(post)) %>%
+      filter(!is.na(z), !is.na(gid), !is.na(time_treat), !is.na(treat), !is.na(post), !is.na(adm_2)) %>%
       filter(time_treat >= time_treat_min) %>%
       mutate(time_treat_fac = factor(time_treat),
               gid_fac = factor(gid))
