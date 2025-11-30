@@ -779,12 +779,12 @@ forest_classes <- proj_info %>%
     select(proj_id, area_ha, syear, inclusion_status, undisturbed, degraded, deforested, regrowth, water, other) %>% 
     mutate(
         area_ha = round(area_ha, 2),
-        Undisturbed = round(undisturbed *100, 2), 
-        Degraded = round(degraded *100, 2), 
-        Deforested = round(deforested *100, 2), 
-        Regrowth = round(regrowth *100, 2), 
-        Water = round(water *100, 2), 
-        Other = round(other *100, 2),
+        Undisturbed = round((undisturbed / area_ha)*100,2),
+        Degraded = round((degraded / area_ha)*100,2),
+        Deforested = round((deforested / area_ha)*100,2),
+        Regrowth = round((regrowth / area_ha)*100,2),
+        Water = round((water / area_ha)*100,2),
+        Other = round((other / area_ha)*100,2)
     ) %>%
     select(-c(undisturbed,degraded,deforested,regrowth,water,other) ) %>%
     filter(inclusion_status != 'Insufficient temporal\n records') %>%
