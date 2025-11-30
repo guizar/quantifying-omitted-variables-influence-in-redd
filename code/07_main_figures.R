@@ -777,18 +777,16 @@ writeLines(tex_table, file.path("tables", "Covariate_differences.tex"))
 
 forest_classes <- proj_info %>% 
     select(proj_id, area_ha, syear, inclusion_status, undisturbed, degraded, deforested, regrowth, water, other) %>% 
-    rowwise() %>% 
-    mutate(total = sum(undisturbed, degraded, deforested, regrowth, water, other, na.rm = TRUE)) %>% 
     mutate(
         area_ha = round(area_ha, 2),
-        Undisturbed = round(undisturbed/total * 100, 2), 
-        Degraded = round(degraded/total * 100, 2), 
-        Deforested = round(deforested/total * 100, 2), 
-        Regrowth = round(regrowth/total * 100, 2), 
-        Water = round(water/total * 100, 2), 
-        Other = round(other/total * 100, 2),
+        Undisturbed = round(undisturbed *100, 2), 
+        Degraded = round(degraded *100, 2), 
+        Deforested = round(deforested *100, 2), 
+        Regrowth = round(regrowth *100, 2), 
+        Water = round(water *100, 2), 
+        Other = round(other *100, 2),
     ) %>%
-    select(-c(total,undisturbed,degraded,deforested,regrowth,water,other) ) %>%
+    select(-c(undisturbed,degraded,deforested,regrowth,water,other) ) %>%
     filter(inclusion_status != 'Insufficient temporal\n records') %>%
     mutate(inclusion_status = case_when(
         inclusion_status %in% c(under_80_label, included_label) ~ 'Included for matching',
