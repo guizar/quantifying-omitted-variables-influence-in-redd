@@ -28,10 +28,10 @@ if (repop_do_tab) {
     # Load matching results for the current project
     file_name <- paste0("design_proj_", proj_curr, "_caliper_", caliper_val, "_dist_", dist_use, "_replace_", match_w_replacement, ".RDS")
     # try, if not break:
-     if (!file.exists(file.path(d_matched_dir, file_name))) {
-    message("RDS file does not exist:", file_name)
-    next  # Move to the next iteration of the loop
-  }
+  #    if (!file.exists(file.path(d_matched_dir, file_name))) {
+  #   message("RDS file does not exist:", file_name)
+  #   next  # Move to the next iteration of the loop
+  # }
     design_in <- readRDS(file = file.path(d_matched_dir, file_name))
     d_matched <- design_in$d_matched  # Matched dataset
     
@@ -122,17 +122,3 @@ str(all_dat)
 
 # Save the final dataset with all matched data
 saveRDS(all_dat, file = file.path(dir_output, paste0("all_dat_matched_alpha_", alpha_use, ".RDS")))
-
-
-
-
-
-
-
-
-
-
-
-
-
-

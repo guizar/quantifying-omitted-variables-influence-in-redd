@@ -24,6 +24,7 @@ combined_lm_ps_weights_results <- readRDS(file = file.path(dir_output, "combined
 combined_cat_quant_results <- readRDS(file = file.path(dir_output, "combined_cat_quant_results.RDS"))
 combined_lme_adj_results <- readRDS(file = file.path(dir_output, "combined_lme_adj_results.RDS"))
 combined_panel_results <- readRDS(file = file.path(dir_output, "combined_panel_results.RDS"))
+combined_panel_interaction_results <- readRDS(file = file.path(dir_output, "combined_panel_interaction_results.RDS"))
 
 # Prepare data for plotting: categorical/quantitative model results
 plot_df <- combined_cat_quant_results %>%
@@ -41,14 +42,15 @@ methnames <- list(
   doubly_robust = "Doubly robust LM in\nPS subclasses",
   cat_quant = "Categorical/quantitative model in\nPS subclasses",
   spatial = "Spatially autocorrelated LM",
-  lm_simple = "Unadjusted LM on matched data",
-  lm_simple_adjusted = "Adjusted LM on matched data",
-  lm_weight = "PS weighted LM on matched data",
-  panel = "Panel model on matched data"
+  lm_simple = "Unadjusted LM on\nmatched data",
+  lm_simple_adjusted = "Adjusted LM on\nmatched data",
+  lm_weight = "PS weighted LM on\nmatched data",
+  panel = "FE panel on matched data",
+  panel_interaction = "FE panel on matched data\nyear:ADM2)"
 )
 
 # Order in which methods will be plotted
-order_methods <- c("lm_subclass", "cat_quant", "spatial", "lm_simple", "lm_simple_adjusted", "lm_weight", "doubly_robust", "panel")
+order_methods <- c("panel", "panel_interaction" ,"lm_subclass", "cat_quant", "spatial", "lm_simple", "lm_simple_adjusted", "lm_weight", "doubly_robust")
 
 # Combine results from different models into a single data frame for plotting
 comp_meths <- bind_rows(
@@ -94,6 +96,12 @@ comp_meths <- bind_rows(
            ate_yr_se = ate_se * 100) %>%
     select(proj_id, method, ate_yr, ate_yr_se),
   
+  combined_panel_interaction_results %>%
+    mutate(method = methnames$panel_interaction, 
+           ate_yr = ate * 100, 
+           ate_yr_se = ate_se * 100) %>%
+    select(proj_id, method, ate_yr, ate_yr_se),
+  
 )
 
 # Add spatial results if applicable
@@ -126,8 +134,6 @@ not_matched <- match_prop_tab %>%
   filter( match_prop_tab[, paste0("prop_matched_alpha_", alpha_use), drop = T] ==0) %>%
   pull(proj_id)
 
-
-
 # Set dodge width for separating error bars
 dodge_width <- 0.75
 
@@ -145,7 +151,6 @@ order_vcs <- plot_df %>%
   pull(proj_id)
 
 # Define text colour for projs <80% matched
-# axis_text_color_dimmed <- '#99C945'
 
 # Create the plot: ATE estimates by method across projects
 library(ggplot2)
@@ -170,7 +175,7 @@ plot_out <- ggplot(comp_meths, aes(x = proj_id, y = ate_yr, color = method)) +
                             paste0(proj_id), proj_id)  # Label with project ID
                    }) +
   
-  scale_color_brewer(palette = "Set1", name = "Method") +
+  scale_color_manual(values = c(RColorBrewer::brewer.pal(8, "Set1"), "black"), name = "Method") +
 
   theme_bw() + 
   theme(panel.border = element_rect(fill=NA, colour = "black", size=1),
@@ -179,8 +184,8 @@ plot_out <- ggplot(comp_meths, aes(x = proj_id, y = ate_yr, color = method)) +
         # axis.text.y = element_text(margin = margin(r = 1)),
         axis.line = element_blank(), 
         legend.position = "bottom",
-        legend.box = "vertical",
-        legend.direction = "vertical",
+        legend.box = "horizontal",
+        legend.direction = "horizontal",
         legend.spacing.x = unit(0.2, "cm"),
         axis.title.x = element_text(margin = ggplot2::margin(t = 1)),
         axis.title.y = element_text(margin = ggplot2::margin(r = 1)),
@@ -190,9 +195,9 @@ plot_out <- ggplot(comp_meths, aes(x = proj_id, y = ate_yr, color = method)) +
             color = ifelse(order_vcs %in% projects_with_low_matched_prop, axis_text_color_dimmed, "black"),
             angle = 90, hjust = 1
             )
-        )
+        ) +
+  guides(color = guide_legend(nrow = 2, ncol = 5, byrow = TRUE))
 
 # export ggplot
-ggsave(file_meth_strat, plot_out, width=8, height=11, units='in', dpi=300)
+ggsave(file_meth_strat, plot_out, width=12.5, height=8, units='in', dpi=300)
 saveRDS(comp_meths, file = file.path(dir_analysis_outputs, "comp_meths.RDS"))
-

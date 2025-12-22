@@ -7,10 +7,7 @@ d <- readRDS(file = file.path(dir_output, paste0("all_dat_matched_alpha_", alpha
 
 # Set control flags for model running and spatial model fitting
 run_models <- TRUE
-fit_spatial <- FALSE
-
-# fit_spatial <- TRUE
-
+fit_spatial <- TRUE
 
 # Get unique project IDs
 proj_id_unique <- proj_tab$proj_id
@@ -88,39 +85,79 @@ if (run_models) {
                                                       method = "ps_weights",
                                                       ps_weights = d_sub$ps_weights)
     
-    #########################################################
+    #######################################################
     # Fit panel model
+    #######################################################
+
+    # Define key panel model params
+    xvars = NULL 
+    time_treat_min = -5
+    cluster_choice = c("gid_fac", "time_treat_fac")
+    fixefs = c("gid_fac", "time_treat_fac")
+
+    # Load panel data
     panel_data_file <- file.path(dir_panel_data, paste0("panel_", proj_id_curr, ".RDS"))
     panel <- readRDS(panel_data_file)
-    panel %<>%
-      filter(gid %in% d_sub$gid)
-    
+    panel <- panel %>% mutate (gid_treat = paste0(gid,'_',treat))
+    d_sub <- d_sub %>% mutate (gid_treat = paste0(gid,'_',treat))
+    panel %<>% filter(gid_treat %in% d_sub$gid_treat)
+    # panel %<>% filter(gid %in% d_sub$gid)
+  
+    # Join with CSVs to obtain adm 2
+    f = proj_tab$summ_file[proj_tab$proj_id==proj_id_curr]  
+    tmp <- read_csv(paste0(full_data_dir,'/data_a2/',f)) %>% select(gid, treat, adm_2)
+    panel <- panel %>% left_join(tmp)
+  
     panel <- panel %>%
-      filter(!is.na(z), !is.na(gid), !is.na(time_treat), !is.na(treat), !is.na(post)) %>%
-      filter(time_treat >= -5) %>%
-      mutate(time_treat_fac = factor(time_treat)) %>%
-      mutate(gid_fac = factor(gid))
+      filter(!is.na(z), !is.na(gid), !is.na(time_treat), !is.na(treat), !is.na(post), !is.na(adm_2)) %>%
+      filter(time_treat >= time_treat_min) %>%
+      mutate(time_treat_fac = factor(time_treat),
+              gid_fac = factor(gid))
 
-    # Choose clustering: one-way by plot (serial corr.) or two-way (plot + time)
-    cluster_choice <- c("gid_fac", "time_treat_fac")[1:2]
-    fixefs <- c("gid_fac", "time_treat_fac")[1:2]
-    xvars <- c("dist_degra") # Time varying covariates
-    
-    if (all(panel$z == 0)) {
-      panel_result <- tibble(proj_id = proj_id_curr,
-                             ate = 0,
-                             ate_se = 0)
+    # Run panel models (if data is available)
+     if (all(panel$z == 0)) {
+    panel_results =  tibble::tibble(proj_id = proj_id_curr,
+                   ate = 0,
+                   ate_se = 0)
+    panel_interaction_results =  tibble::tibble(proj_id = proj_id_curr,
+                   ate = 0,
+                   ate_se = 0)
     } else {
-      results <- panel_data_fit_one_project(panel,
-                                 y = "z",
-                                 xvars = xvars,
-                                 fixefs = fixefs,
-                                 cluster = cluster_choice)
-      panel_result <- results %>%
-        mutate(ate = att_hat, ate_se = se_cl) %>%
-        select(proj_id, ate, ate_se)
-    }    
+    # fit panel model
+    m <- panel_data_fit_one_project(panel,
+                                         y = "z",
+                                         xvars = xvars,
+                                         fixefs = fixefs,
+                                         cluster = cluster_choice)
+    # tidy results
+    results <- tidy_panel_results(panel, m)
+
+    panel_results = results %>%
+      mutate(ate = att_hat, ate_se = se_cl) %>%
+      select(proj_id, ate, ate_se)
+
+    ## RUN  PANEL WITH INTERACTION
+     rhs = c("treat:post",
+          "time_treat",
+          "adm_2",
+          "time_treat:adm_2")
+
+    m <- panel_data_fit_one_project(panel,
+                                         y = "z",
+                                         xvars = xvars,
+                                         fixefs = fixefs,
+                                         rhs =rhs,
+                                         cluster = cluster_choice)
+    # tidy results
+    results <- tidy_panel_results(panel, m)
+
+    panel_interaction_results = results %>%
+      mutate(ate = att_hat, ate_se = se_cl) %>%
+      select(proj_id, ate, ate_se)
+    }
     
+    
+
     # Compile all results into a list
     out <- list(cat_quant_result = cat_quant_result,
                 lm_result = lm_result,
@@ -129,9 +166,10 @@ if (run_models) {
                 lm_adj_result = lm_adj_result,
                 lm_ps_weight_adj_result = lm_ps_weight_adj_result,
                 lm_result_ps_weights = lm_result_ps_weights,
-                panel_result = panel_result)
+                panel_result = panel_results,
+                panel_interaction_result = panel_interaction_results)
     
-    out
+    # out
     
     # Optionally fit a spatial model if `fit_spatial` is TRUE
     if (fit_spatial) {
@@ -164,7 +202,8 @@ combined_lm_ps_weight_adj_results <- bind_rows(lapply(outl, function(x) x$lm_ps_
 combined_lm_ps_weights_results <- bind_rows(lapply(outl, function(x) x$lm_result_ps_weights))
 combined_cat_quant_results <- bind_rows(lapply(outl, function(x) x$cat_quant_result))
 combined_panel_results <- bind_rows(lapply(outl, function(x) x$panel_result))
-print(combined_panel_results, n = 100)
+combined_panel_interaction_results <- bind_rows(lapply(outl, function(x) x$panel_interaction_result))
+# print(combined_panel_results, n = 100)
 
 # Save combined model results
 saveRDS(combined_lm_results_simple, file = file.path(dir_output, "combined_lm_results_simple.RDS"))
@@ -174,7 +213,9 @@ saveRDS(combined_lm_adj_results, file = file.path(dir_output, "combined_lm_adj_r
 saveRDS(combined_lm_ps_weight_adj_results, file = file.path(dir_output, "combined_lm_ps_weight_adj_results.RDS"))
 saveRDS(combined_lm_ps_weights_results, file = file.path(dir_output, "combined_lm_ps_weights_results.RDS"))
 saveRDS(combined_cat_quant_results, file = file.path(dir_output, "combined_cat_quant_results.RDS"))
+saveRDS(combined_panel_interaction_results, file = file.path(dir_output, "combined_panel_interaction_results.RDS"))
 saveRDS(combined_panel_results, file = file.path(dir_output, "combined_panel_results.RDS"))
+
 
 # If spatial models were fitted, combine and save those results as well
 if (fit_spatial) {

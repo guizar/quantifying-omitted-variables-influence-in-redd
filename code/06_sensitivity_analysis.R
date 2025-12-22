@@ -189,23 +189,32 @@ for (proj in proj_comp$proj_id) {
 }
 
 # Plot settings and preparation for output
-min_y <- -8
-claimed_ate_thresh <- -7.5
 order_proj <- proj_tab %>%
   arrange(-implied_ate) %>%
   pull(proj_id)
 
 res_plot_filt2 <- res_plot2 %>%
   mutate(k = as.character(k)) %>%
-  mutate(mn_plot = adjusted_est_no_offset) %>% # ifelse(adjusted_est_no_offset < min_y, min_y, adjusted_est_no_offset)) %>%
+  mutate(mn_plot = adjusted_est_no_offset) %>% 
   mutate(proj_id = factor(proj_id, levels = order_proj)) %>%
   mutate(Covariate = factor(covariate, levels = var_benchmark_plot_order)) %>%
-  mutate(out_of_scale = as.numeric(mn_plot <= min_y)) %>%
-  mutate(`Point type` = factor(ifelse(mn_plot <= min_y, paste0("y < ", min_y), "y value plotted"), levels = c("y value plotted", paste0("y < ", min_y))))
+  mutate(Covariate = factor(Covariate, labels=c("None", "Distance to degradation", "Slope", "Elevation", "Accessibility"))) # Edit labels
 
-# Edit labels
-res_plot_filt2 <- res_plot_filt2  %>% 
-  mutate(Covariate = factor(Covariate, labels=c("None", "Distance to degradation", "Slope", "Elevation", "Accessibility")))
+# Adjust for plotting "-Inf" values
+res_plot_filt2 <- res_plot_filt2 %>%
+  group_by(proj_id) %>%
+  mutate(
+    finite_min = min(mn_plot[is.finite(mn_plot)], adjusted_ci_low[is.finite(adjusted_ci_low)], na.rm = TRUE),
+    pad = 0.05 * abs(finite_min),
+    mn_plot_display = ifelse(is.infinite(mn_plot) & mn_plot < 0,
+                             ifelse((finite_min - pad) < claimed_ate,finite_min - pad, claimed_ate), 
+                             mn_plot),
+    is_neg_inf = is.infinite(mn_plot) & mn_plot < 0
+  ) %>%
+  ungroup()
+
+dodge <- position_dodge(width = 0.5)
+
 
 # -----------------------------------
 # Fig 6 - sensitivity plots
@@ -243,19 +252,48 @@ plt_1 <- ggplot(
   ) +
   ylim(0, 100)
 
-# Plot 2
+# -----------------------------------
+# Bottom panel
+# -----------------------------------
+
 pl_out <- ggplot(
   res_plot_filt2 %>%
     filter(!proj_id %in% projects_with_low_matched_prop) %>%
     mutate(k_label = factor(paste0(k, "x"), levels = paste0(0:3, "x"))),
-  aes(x = k_label, y = mn_plot, fill = Covariate, color = Covariate)
+  aes(x = k_label, y = mn_plot_display, fill = Covariate, color = Covariate)
 ) +
-  geom_point(position = position_dodge(width = 0.5), size = 2) +
-  geom_errorbar(aes(ymin = adjusted_ci_low, ymax = adjusted_ci_upp), width = 0, position = position_dodge(width = 0.5)) +
+
+  # single geom_point for all points
+  geom_point(
+    aes(shape = is_neg_inf),
+    size = 2.5,
+    position = dodge,
+    stroke = 0.3,
+    show.legend = TRUE
+  ) +
+
+  # error bars
+  geom_errorbar(
+    aes(ymin = adjusted_ci_low, ymax = adjusted_ci_upp),
+    width = 0,
+    position = dodge
+  ) +
+
+  # horizontal lines claimed ATE
   geom_hline(aes(yintercept = claimed_ate), colour = "red", linetype = "dashed") +
   geom_hline(yintercept = 0, colour = "black") +
-  scale_color_manual(values = col_palette, name = "") +
+
+  # shapes: FALSE = normal circle, TRUE = triangle-down filled
+  scale_shape_manual(
+    values = c(`FALSE` = 21, `TRUE` = 25),  # 21 = circle, 25 = triangle-down
+    labels = c("Estimated", "−∞"),
+    name = ""
+  ) +
+
+  # fill for normal points, triangle gets a fill too
   scale_fill_manual(values = col_palette, name = "") +
+  scale_color_manual(values = col_palette, name = "") +
+
   xlab("Strength of hidden confounder\n(x times strength of observed covariate)") +
   ylab(expression("Difference in forest loss (% " * yr^{-1} * ")")) +
   theme_bw() +
@@ -265,11 +303,12 @@ pl_out <- ggplot(
     strip.text = element_text(face = "bold"),
     plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
     legend.position = "bottom",
-    plot.margin = unit(c(0.01, 0.01, 0.01, 0.01), "in"),
+    plot.margin = ggplot2::margin(1, 1, 3, 1),
     legend.box.spacing = unit(0.001, "in"),
     axis.text.x.top = element_blank(),
     axis.ticks.x.top = element_blank()
   )
+
 
 # Combine
 gg_out <- plt_1 / pl_out +
@@ -318,28 +357,57 @@ plt_1 <- ggplot(
   ) +
   ylim(0, 100)
 
-# Bottom panel: project-wise estimates
+# -------
+# Bottom panel
+# -------
+
 pl_out <- ggplot(
   res_plot_filt2 %>%
     mutate(k_label = factor(paste0(k, "x"), levels = paste0(0:3, "x"))),
-  aes(x = k_label, y = mn_plot, fill = Covariate, color = Covariate)
+  aes(x = k_label, y = mn_plot_display, fill = Covariate, color = Covariate)
 ) +
-  geom_point(position = position_dodge(width = 0.5), size = 2) +
-  geom_errorbar(aes(ymin = adjusted_ci_low, ymax = adjusted_ci_upp), width = 0, position = position_dodge(width = 0.5)) +
+
+  # single geom_point for all points
+  geom_point(
+    aes(shape = is_neg_inf),
+    size = 2.5,
+    position = dodge,
+    stroke = 0.3,
+    show.legend = TRUE
+  ) +
+
+  # error bars
+  geom_errorbar(
+    aes(ymin = adjusted_ci_low, ymax = adjusted_ci_upp),
+    width = 0,
+    position = dodge
+  ) +
+
+  # horizontal lines claimed ATE
   geom_hline(aes(yintercept = claimed_ate), colour = "red", linetype = "dashed") +
   geom_hline(yintercept = 0, colour = "black") +
-  scale_color_manual(values = col_palette, name = "") +
+
+  # shapes: FALSE = normal circle, TRUE = triangle-down filled
+  scale_shape_manual(
+    values = c(`FALSE` = 21, `TRUE` = 25),  # 21 = circle, 25 = triangle-down
+    labels = c("Estimated", "−∞"),
+    name = ""
+  ) +
+
+  # fill for normal points, triangle gets a fill too
   scale_fill_manual(values = col_palette, name = "") +
+  scale_color_manual(values = col_palette, name = "") +
+
   xlab("Strength of hidden confounder\n(x times strength of observed covariate)") +
   ylab(expression("Difference in forest loss (% " * yr^{-1} * ")")) +
   theme_bw() +
-  facet_wrap(~proj_id, ncol = 5, scales = 'free_y') +
+  facet_wrap(~proj_id, ncol = 5, scales = "free_y") +
   theme(
     strip.background = element_blank(),
     strip.text = element_text(face = "bold"),
     plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
     legend.position = "bottom",
-    plot.margin = unit(c(0.01, 0.01, 0.01, 0.01), "in"),
+    plot.margin = ggplot2::margin(1, 1, 3, 1),
     legend.box.spacing = unit(0.001, "in"),
     axis.text.x.top = element_blank(),
     axis.ticks.x.top = element_blank()
@@ -416,6 +484,9 @@ ggsave(
 # Produce individual plots, stored in a list object for patchwork
 # ---------------------------------------------------
 
+# Plot settings and preparation for output
+# min_y <- -8
+# claimed_ate_thresh <- -7.5
 # plots_ls <- list()
 
 # plt_1 <- ggplot(df_plot_sensitivity, aes(x = factor(paste0(k, "x")), y = perc_is_larger, fill = Covariate, color = Covariate)) +
