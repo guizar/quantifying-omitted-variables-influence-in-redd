@@ -3,6 +3,7 @@
 # ------------------------------------------------
 
 source(file.path("code", "01_import_full_data.R"), echo = TRUE)
+source(file.path("code", "01a_arrange_as_panel_data.R"), echo = TRUE)
 # OPTIONAL: exploratory matching not needed to reproduce the results. Set to TRUE to run. WARNING: resource intensive!
 run_exploratory_matching <- FALSE
 if (run_exploratory_matching) {

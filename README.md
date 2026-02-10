@@ -1,62 +1,20 @@
 # Quantifying Omitted Variables Influence in REDD+
 
-This project accompanies the article: *Quantifying the potential influence of omitted variables is essential for robust causal inference: an illustration using the controversy concerning REDD+ project impacts*.
+This project accompanies the article: *Unobserved confounders cannot explain over-crediting in avoided deforestation carbon projects*.
 
-## Quick Start with Docker (All Platforms)
+## Code 
 
-This setup works on **Windows**, **macOS**, and **Linux**.
+All the analytical steps, from selecting controls from the pool of observations to the final analyses, are provided at:
+https://github.com/guizar/quantifying-omitted-variables-influence-in-redd/
 
-------------------------------------------------------------------------
+## Data
 
-### Step 1: Install Docker
-
-If you haven't already, install Docker from the official website:
-
- <https://docs.docker.com/get-docker/>
-
--   On **Windows**, install "Docker Desktop".
--   After installation, **restart your computer** if prompted.
-
-------------------------------------------------------------------------
-
-### Step 2: Start Docker and open a Terminal or Command Line
-
--   On **Windows**: Open **Command Prompt** or **PowerShell** (press `Win + R`, type `cmd`, or search for PowerShell).
--   On **macOS/Linux**: Open the **Terminal** app.
-
-------------------------------------------------------------------------
-
-### Step 3: Run These Commands
-
-Copy and paste each of the following lines into your terminal:
-
-``` bash
-docker pull georgenicholson/quantifying-omitted-variables-influence-in-redd:preprint
-```
-
-``` bash
-docker run -d -p 8787:8787 --name deforestation_container -e USER=rstudio -e PASSWORD=bayes georgenicholson/quantifying-omitted-variables-influence-in-redd:preprint
-```
-
-The first command downloads the image. The second starts the container and opens RStudio in your browser.
-
-------------------------------------------------------------------------
-
-### Step 4: Access RStudio
-
-Open your browser and go to:
-
-<http://localhost:8787>
-
-You now have a fully configured RStudio environment with all dependencies pre-loaded.
-
-------------------------------------------------------------------------
+Available at https://osf.io/r9ygh
 
 ## Running the Analysis
 
-Once logged into RStudio:
-
-1.  In the **Files** pane (bottom left), click on the folder called `code`.
+1.  Make sure to unzip the `full_data_2024-08-11.zip` file in the `data` folder
+2.  In the **Files** pane (bottom left), click on the folder called `code`.
 2.  Click on the file `00_wrapper.R`.
 3.  Click `Source` (top-right of the editor) to run the full analysis.
 
@@ -94,3 +52,7 @@ source("code/00_wrapper.R")
 ```
 
 ------------------------------------------------------------------------
+
+## Reproducible code + data with Docker
+
+We will update this repo with a Docker image with standardised code, data and computing environment to reproduce the paper's analyses
