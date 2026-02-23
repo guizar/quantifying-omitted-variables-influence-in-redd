@@ -410,6 +410,30 @@ theme_bw() +
             )
         ) 
 
+
+top_panel <- top_panel +
+  labs(tag = "a") +
+  theme(
+    plot.tag.position = c(0.05, 0.84) 
+  )
+
+middle_panel <- middle_panel +
+  labs(tag = "b") +
+  theme(
+    plot.tag.position = c(0.05, 1.05) 
+  )
+bottom_left <- bottom_left +
+  labs(tag = "c") +
+  theme(
+    plot.tag.position = c(0.1, 1.025) 
+  )
+
+bottom_right <- bottom_right +
+  labs(tag = "d") +
+  theme(
+    plot.tag.position = c(0.1, 1.025) 
+  )
+
 #  --------- PLOT OUT ---------
   gg_out <- top_panel / middle_panel / (bottom_left | bottom_right)   +  plot_layout(
     guides = "collect", 
@@ -417,10 +441,12 @@ theme_bw() +
     ncol = 1,  
     nrow = 3   
   ) & 
-  plot_annotation(tag_levels = 'a') &  # Add tags to panels
+  # plot_annotation(tag_levels = 'a') &  # Add tags to panels
   theme(
     plot.title = element_text(size = 10, face = "bold", hjust = 0.5), 
-    legend.position = "bottom",
+    legend.position = "top",
+    # plot.tag.position = c(0.01, 0.92),
+    legend.box.margin = ggplot2::margin(b = 10),
     plot.margin = unit(c(0.01,0.01,0.01,0.01), "in"),
           legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
           legend.box.spacing = unit(0.001, "in"),
