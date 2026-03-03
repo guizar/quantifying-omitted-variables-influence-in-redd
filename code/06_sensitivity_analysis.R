@@ -258,7 +258,7 @@ plt_1 <- ggplot(
   geom_bar(stat = "identity", position = position_dodge2(width = 0.9, preserve = "single"), width = 0.8) +
   scale_color_manual(values = col_palette, name = "") +
   scale_fill_manual(values = col_palette, name = "") +
-  xlab("Strength of hidden confounder\n(x times strength of observed covariate)") +
+  xlab("Strength of hidden confounder\n(x times strength of observed confounder)") +
   ylab("Projects exceeding\nVCS claimed ATE (%)") +
   # theme_bw() +
   theme(
@@ -395,7 +395,7 @@ plt_1 <- ggplot(
   geom_bar(stat = 'identity', position = position_dodge2(width = 0.9, preserve = "single"), width = 0.8) +
   scale_color_manual(values = col_palette, name = "") +
   scale_fill_manual(values = col_palette, name = "") +
-  xlab("Strength of hidden confounder\n(x times strength of observed covariate)") +
+  xlab("Strength of hidden confounder\n(x times strength of observed confounder)") +
   ylab("Projects exceeding\nVCS claimed ATE (%)") +
   theme_bw() +
   theme(
@@ -446,7 +446,7 @@ pl_out <- ggplot(
   scale_fill_manual(values = col_palette, name = "") +
   scale_color_manual(values = col_palette, name = "") +
 
-  xlab("Strength of hidden confounder\n(x times strength of observed covariate)") +
+  xlab("Strength of hidden confounder\n(x times strength of observed confounder)") +
   ylab(expression("Difference in forest loss (% " * yr^{-1} * ")")) +
   theme_bw() +
   facet_wrap(~proj_id, ncol = 5, scales = "free_y") +
