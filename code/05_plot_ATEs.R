@@ -46,7 +46,7 @@ methnames <- list(
   lm_simple_adjusted = "Adjusted LM on\nmatched data",
   lm_weight = "PS weighted LM on\nmatched data",
   panel = "FE panel on matched data",
-  panel_interaction = "FE panel on matched data\nyear:ADM2)"
+  panel_interaction = "FE panel on matched data\nyear:ADM2"
 )
 
 # Order in which methods will be plotted
