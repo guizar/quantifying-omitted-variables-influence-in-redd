@@ -350,7 +350,6 @@ geom_point(position = position_dodge(width = dodge_width), size = pt_main) +  # 
   geom_point(aes(y = guizar, colour = "Guizar"),
              shape = 3, size = pt_small, alpha = 0.6) +
   
-  #####
   scale_color_manual(
     name   = "Method",
     breaks = c(methods_keep,
@@ -361,7 +360,7 @@ geom_point(position = position_dodge(width = dodge_width), size = pt_main) +  # 
       col_palette,
       Guizar = guizar_colour,
       "Doubly robust LM in\nPS subclasses" = "black",
-      "Claimed avoided deforestation"      = "red" 
+      "Claimed avoided deforestation"      = red_color 
     ),
     labels = c(setNames(methods_keep, methods_keep), 
                Guizar = guizar_lab,
@@ -382,10 +381,10 @@ geom_errorbar(
   
   # adds red filled point key to the existing colour legend
   geom_point(
-    data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = 0),
+    data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = Inf),
     aes(x = proj_id, y = ate_yr, colour = "Claimed avoided deforestation"),
     inherit.aes = FALSE, shape = 16, size = pt_main,
-    alpha = 0
+    alpha = 1
   ) +
 
 
@@ -434,7 +433,7 @@ scale_color_manual(
     col_palette,
     Guizar = guizar_colour,
     "Doubly robust LM in\nPS subclasses" = "black",
-    "Claimed avoided deforestation"      = "red" 
+    "Claimed avoided deforestation"      = red_color 
   ),
   labels = c(setNames(methods_keep, methods_keep), 
              Guizar = guizar_lab,
@@ -452,14 +451,13 @@ geom_errorbar(
     inherit.aes = FALSE, size = pt_main
   ) +
   
-  # adds red filled point key to the existing colour legend
   geom_point(
-    data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = 0),
+    data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = Inf),
     aes(x = proj_id, y = ate_yr, colour = "Claimed avoided deforestation"),
     inherit.aes = FALSE, shape = 16, size = pt_main,
-    alpha = 0
+    alpha = 1
   ) +
-
+  
   
 xlab ("") +
 ylab("Diff. in forest loss (Ha)") +
