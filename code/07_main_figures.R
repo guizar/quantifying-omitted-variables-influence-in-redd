@@ -72,37 +72,68 @@ dodge_width <- 0.7
 #  ----------- SI PLOT ---------
 #############################################
 
+theme_set(theme_bw(base_size = 7))
+
+names(col_palette) <- levels(droplevels(comp_meths_sub$method))
+guizar_lab <- "Guizar-Coutiño \net al. (2022)"
+claimed_lab <- "Claimed avoided \ndeforestation (panels c-d)"
+doubly_lab <- "Doubly robust LM in\nPS subclasses (panels a-d)"
+sf <- 0.5
+
+# points
+pt_main   <- 1.5 * sf     
+pt_small  <- 1.0 * sf     
+
+# lines / errorbars / borders
+lwd_hline   <- 0.5 * sf   
+lwd_err     <- 0.1 * sf   
+lwd_border  <- 1.0 * sf   
+
+methods_keep <- levels(droplevels(comp_meths_sub$method))  # only methods actually present 
+
+
 # Output file params
-filename_out <- "SI_effect_sizes_fig.png"
+filename_out <- "SI_effect_sizes_fig.pdf"
 file_main_plot <- file.path("figures", filename_out)
 
 # TOP -----------
 
 # Create the plot: ATE estimates by method across projects
 top_panel <- ggplot(comp_meths, aes(x = proj_id, y = ate_yr, color = method)) +
-  geom_hline(lwd = 0.5, yintercept = 0) +  
-  geom_errorbar(aes(ymin = ate_yr - 2 * ate_yr_se, ymax = ate_yr + 2 * ate_yr_se), 
-                width = 0.2, position = position_dodge(width = dodge_width)) +  
-  geom_point(position = position_dodge(width = dodge_width)) +  
-  
-  geom_point(aes(proj_id,guizar), color=guizar_colour, shape=3, size=1, alpha=0.6) + # Adds Guizar
+  geom_hline(lwd = 0.5, yintercept = 0) +
+  # adds red filled point key 
+  geom_point(
+    data = data.frame(proj_id = comp_meths$proj_id[1], ate_yr = Inf),
+    aes(x = proj_id, y = ate_yr, colour = "Claimed avoided deforestation"),
+    inherit.aes = FALSE, shape = 16, size = 1
+  ) +
+  geom_errorbar(aes(ymin = ate_yr - 2 * ate_yr_se, ymax = ate_yr + 2 * ate_yr_se),
+                width = 0.2, position = position_dodge(width = dodge_width)) +
+  geom_point(position = position_dodge(width = dodge_width)) +
+
+  geom_point(aes(proj_id, guizar, colour = "Guizar"), shape=3, size=1, alpha=0.6) + # Adds Guizar
   xlab ("") +
   ylab("Diff. in forest loss (%"~yr^-1*')') +
-  theme_bw() +  
+  theme_bw() +
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
-        axis.text.x = element_text(angle = 90, hjust = 1),  
+        axis.text.x = element_text(angle = 90, hjust = 1),
         legend.title=element_blank(),
-        axis.line = element_blank(), 
-        legend.position = "bottom", 
+        axis.line = element_blank(),
+        legend.position = "bottom",
         axis.title.x = element_text(margin = ggplot2::margin(t = 1)),
         axis.title.y = element_text(margin = ggplot2::margin(r = 1)),
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
         legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
         legend.box.spacing = unit(0.001, "in"),
-  ) +  
-  
-  scale_color_manual(values=col_palette, name="Method") +
-  
+  ) +
+
+  scale_color_manual(
+    values = c(col_palette, Guizar = guizar_colour, "Claimed avoided deforestation" = red_color),
+    breaks = c(levels(droplevels(comp_meths$method)), "Guizar", "Claimed avoided deforestation"),
+    labels = c(levels(droplevels(comp_meths$method)), Guizar = guizar_lab, "Claimed avoided deforestation" = "Claimed avoided \ndeforestation (panels c-d)"),
+    name = "Method"
+  ) +
+
   # Custom colouring for the x-axis labels
   scale_x_discrete(limits = order_vcs,  # Maintain project order on x-axis
                    labels = function(proj_id) {
@@ -124,28 +155,39 @@ order_vcs <- comp_meths %>%
   pull(proj_id)  %>% as.character()
 
 middle_panel <- ggplot(comp_meths, aes(x = proj_id, y = ate_ha, color = method)) +
-  geom_hline(lwd = 0.5, yintercept = 0) +  
-  geom_errorbar(aes(ymin = ate_ha - 2 * ate_se_ha, ymax = ate_ha + 2 * ate_se_ha), 
-                width = 0.2, position = position_dodge(width = dodge_width)) +  
+  geom_hline(lwd = 0.5, yintercept = 0) +
+  # adds red filled point key 
+  geom_point(
+    data = data.frame(proj_id = comp_meths$proj_id[1], ate_ha = 0),
+    aes(x = proj_id, y = ate_ha, colour = "Claimed avoided deforestation"),
+    inherit.aes = FALSE, shape = 16, size = 1
+  ) +
+  geom_errorbar(aes(ymin = ate_ha - 2 * ate_se_ha, ymax = ate_ha + 2 * ate_se_ha),
+                width = 0.2, position = position_dodge(width = dodge_width)) +
   geom_point(position = position_dodge(width = dodge_width)) +  # Points for ATE
-  
-  geom_point(aes(proj_id,guizar_ha), color=guizar_colour, shape=3, size=1, alpha=0.6) + # Adds Guizar
+
+  geom_point(aes(proj_id, guizar_ha, colour = "Guizar"), shape=3, size=1, alpha=0.6) + # Adds Guizar
   xlab ("") +
   ylab("Diff. in forest loss (Ha)") +
-  theme_bw() +  
+  theme_bw() +
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
         axis.text.x = element_text(angle = 90, hjust = 1),  # Rotate x-axis labels
         legend.title=element_blank(),
-        axis.line = element_blank(), 
-        legend.position = "bottom", 
+        axis.line = element_blank(),
+        legend.position = "bottom",
         axis.title.x = element_text(margin = ggplot2::margin(t = 1)),
         axis.title.y = element_text(margin = ggplot2::margin(r = 1)),
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
         legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
         legend.box.spacing = unit(0.001, "in"),
-  ) +  
-  
-  scale_color_manual(values=col_palette, name="Method") +
+  ) +
+
+  scale_color_manual(
+    values = c(col_palette, Guizar = guizar_colour, "Claimed avoided deforestation" = red_color),
+    breaks = c(levels(droplevels(comp_meths$method)), "Guizar", "Claimed avoided deforestation"),
+    labels = c(levels(droplevels(comp_meths$method)), Guizar = guizar_lab, "Claimed avoided deforestation" = "Claimed avoided \ndeforestation (panels c-d)"),
+    name = "Method"
+  ) +
   
   scale_x_discrete(limits = order_vcs,  # Maintain project order on x-axis
                    labels = function(proj_id) {
@@ -246,90 +288,60 @@ bottom_right <- ggplot(comp_meths %>% filter(method==methnames$lm_simple), aes(x
         )
   ) 
 
-#  --------- PLOT OUT ---------
-gg_out <- top_panel / middle_panel / (bottom_left | bottom_right)   +  plot_layout(
-  guides = "collect", 
-  heights = c(0.8, 0.8, 1.5),
-  ncol = 1,  
-  nrow = 3   
-) & 
-  plot_annotation(tag_levels = 'a') &  # Add tags to panels
+top_panel <- top_panel +
+  labs(tag = "a") +
   theme(
-    plot.title = element_text(size = 10, face = "bold", hjust = 0.5), 
-    legend.position = "bottom",
-    plot.margin = unit(c(0.01,0.01,0.01,0.01), "in"),
-    legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
-    legend.box.spacing = unit(0.001, "in"),
-    axis.text.x.top = element_blank(),  # Remove top x-axis text
-    axis.ticks.x.top = element_blank()
+    plot.tag.position = c(0.05, 0.71) 
   )
 
-ggsave(file_main_plot, gg_out, width=12, height=12, units='in', dpi=300)
+middle_panel <- middle_panel +
+  labs(tag = "b") +
+  theme(
+    plot.tag.position = c(0.05, 1.05) 
+  )
+bottom_left <- bottom_left +
+  labs(tag = "c") +
+  theme(
+    plot.tag.position = c(0.1, 1.025) 
+  )
+
+bottom_right <- bottom_right +
+  labs(tag = "d") +
+  theme(
+    plot.tag.position = c(0.1, 1.025) 
+  )
 
 
+#  --------- PLOT OUT ---------
 
+  gg_out <- top_panel / middle_panel / (bottom_left | bottom_right) +
+  plot_layout(
+    guides = "collect",
+    heights = c(0.8, 0.8, 1.5),
+    ncol = 1,
+    nrow = 3
+  ) &
 
+  
+    # plot_annotation(tag_levels = 'a') &  # Add tags to panels
+  theme(
+    plot.title = element_text(size = 10, face = "bold", hjust = 0.5), 
+    legend.position = "top",
+    # plot.tag.position = c(0.01, 0.92),
+    legend.box.margin = ggplot2::margin(b = 10),
+    plot.margin = unit(c(0.01,0.01,0.01,0.01), "in"),
+          legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
+          legend.box.spacing = unit(0.001, "in"),
+          axis.text.x.top = element_blank(),  # Remove top x-axis text
+          axis.ticks.x.top = element_blank()
+  )
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ggsave(file_main_plot, gg_out, width = 180, height = 210, units='mm', dpi=300)
 
 
 #############################################
 #  ----------- MAIN PLOT ---------
 #############################################
-
-theme_set(theme_bw(base_size = 7))
-
-names(col_palette) <- levels(droplevels(comp_meths_sub$method))
-guizar_lab <- "Guizar-Coutiño \net al. (2022)"
-claimed_lab <- "Claimed avoided \ndeforestation (panels c-d)"
-doubly_lab <- "Doubly robust LM in\nPS subclasses (panels a-d)"
-sf <- 0.5
-
-# points
-pt_main   <- 1.5 * sf     
-pt_small  <- 1.0 * sf     
-
-# lines / errorbars / borders
-lwd_hline   <- 0.5 * sf   
-lwd_err     <- 0.1 * sf   
-lwd_border  <- 1.0 * sf   
-
-methods_keep <- levels(droplevels(comp_meths_sub$method))  # only methods actually present 
 
 # Output file params
 filename_out <- "Main_effect_sizes_fig.pdf"
@@ -344,12 +356,19 @@ file_main_plot <- file.path("figures", filename_out)
 
 top_panel <- ggplot(comp_meths_sub, aes(x = proj_id, y = ate_yr, color = method)) +
   geom_hline(lwd = lwd_hline, yintercept = 0) +
+   # adds red filled point key to the existing colour legend
+  geom_point(
+    data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = Inf),
+    aes(x = proj_id, y = ate_yr, colour = "Claimed avoided deforestation"),
+    inherit.aes = FALSE, shape = 16, size = pt_main
+  ) +
   geom_errorbar(aes(ymin = ate_yr - 2 * ate_yr_se, ymax = ate_yr + 2 * ate_yr_se),
                 width = lwd_err, position = position_dodge(width = dodge_width)) +
 geom_point(position = position_dodge(width = dodge_width), size = pt_main) +  # Points for ATT
   geom_point(aes(y = guizar, colour = "Guizar"),
              shape = 3, size = pt_small, alpha = 0.6) +
   
+  #####
   scale_color_manual(
     name   = "Method",
     breaks = c(methods_keep,
@@ -360,14 +379,24 @@ geom_point(position = position_dodge(width = dodge_width), size = pt_main) +  # 
       col_palette,
       Guizar = guizar_colour,
       "Doubly robust LM in\nPS subclasses" = "black",
-      "Claimed avoided deforestation"      = red_color 
+      "Claimed avoided deforestation"      = red_color
     ),
     labels = c(setNames(methods_keep, methods_keep), 
                Guizar = guizar_lab,
                "Doubly robust LM in\nPS subclasses" = doubly_lab,
                "Claimed avoided deforestation"      = claimed_lab)
   ) +
+  ###
+  
+  # scale_color_manual(
+  #   values = c(col_palette, Guizar = guizar_colour),
+  #   breaks = c(methods_keep, "Guizar"),
+  #   labels = c(setNames(methods_keep, methods_keep), Guizar = guizar_lab),
+  #   name = "Method"
+  # ) +
 
+  
+####################
 geom_errorbar(
   data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = 0, ymin = -0.2, ymax = 0.2),
   aes(x = proj_id, y = ate_yr, ymin = ymin, ymax = ymax, colour = "Doubly robust LM in\nPS subclasses"),
@@ -378,15 +407,8 @@ geom_errorbar(
     aes(x = proj_id, y = ate_yr, colour = "Doubly robust LM in\nPS subclasses"),
     inherit.aes = FALSE, size = pt_main
   ) +
+######################
   
-  # adds red filled point key to the existing colour legend
-  geom_point(
-    data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = Inf),
-    aes(x = proj_id, y = ate_yr, colour = "Claimed avoided deforestation"),
-    inherit.aes = FALSE, shape = 16, size = pt_main,
-    alpha = 1
-  ) +
-
 
 xlab ("") +
 ylab("Diff. in forest loss (%"~yr^-1*')') +
@@ -407,7 +429,6 @@ ylab("Diff. in forest loss (%"~yr^-1*')') +
   # Define color for x-axis labels: Change for problematic sites
   theme(face = "bold")
 
-
 ###################################################################
 # --- Middle panel ---
 ###################################################################
@@ -418,45 +439,56 @@ order_vcs <- comp_meths %>%
 
 middle_panel <- ggplot(comp_meths_sub, aes(x = proj_id, y = ate_ha, color = method)) +
   geom_hline(lwd = lwd_hline, yintercept = 0) +
+  # adds red filled point key 
+  geom_point(
+    data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_ha = 0),
+    aes(x = proj_id, y = ate_ha, colour = "Claimed avoided deforestation"),
+    inherit.aes = FALSE, shape = 16, size = pt_main
+  ) +
   geom_errorbar(aes(ymin = ate_ha - 2 * ate_se_ha, ymax = ate_ha + 2 * ate_se_ha),
                 width = lwd_err, position = position_dodge(width = dodge_width)) +
-geom_point(position = position_dodge(width = dodge_width), size = pt_main) +  # Points for ATE
-geom_point(aes(y = guizar_ha, colour = "Guizar"),
-           shape = 3, size = pt_small, alpha = 0.6) +
-scale_color_manual(
-  name   = "Method",
-  breaks = c(methods_keep,
-             "Guizar",
-             "Doubly robust LM in\nPS subclasses",
-             "Claimed avoided deforestation"),
-  values = c(
-    col_palette,
-    Guizar = guizar_colour,
-    "Doubly robust LM in\nPS subclasses" = "black",
-    "Claimed avoided deforestation"      = red_color 
-  ),
-  labels = c(setNames(methods_keep, methods_keep), 
-             Guizar = guizar_lab,
-             "Doubly robust LM in\nPS subclasses" = doubly_lab,
-             "Claimed avoided deforestation"      = claimed_lab)
-) +
-geom_errorbar(
-  data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = 0, ymin = -0.2, ymax = 0.2),
-  aes(x = proj_id, y = ate_yr, ymin = ymin, ymax = ymax, colour = "Doubly robust LM in\nPS subclasses"),
-  inherit.aes = FALSE, width = 0
-) +
+  geom_point(position = position_dodge(width = dodge_width), size = pt_main) +  # Points for ATE
+
+  geom_point(aes(y = guizar_ha, colour = "Guizar"),
+             shape = 3, size = pt_small, alpha = 0.6) +
+
+  scale_color_manual(
+    name   = "Method",
+    breaks = c(methods_keep,
+               "Guizar",
+               "Doubly robust LM in\nPS subclasses",
+               "Claimed avoided deforestation"),
+    values = c(
+      col_palette,
+      Guizar = guizar_colour,
+      "Doubly robust LM in\nPS subclasses" = "black",
+      "Claimed avoided deforestation"      = red_color
+    ),
+    labels = c(setNames(methods_keep, methods_keep),
+               Guizar = guizar_lab,
+               "Doubly robust LM in\nPS subclasses" = doubly_lab,
+               "Claimed avoided deforestation"      = claimed_lab)
+  ) +
+  geom_errorbar(
+    data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_ha = 0, ymin = -0.2, ymax = 0.2),
+    aes(x = proj_id, y = ate_ha, ymin = ymin, ymax = ymax, colour = "Doubly robust LM in\nPS subclasses"),
+    inherit.aes = FALSE, width = 0
+  ) +
   geom_point(
-    data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = 0),
-    aes(x = proj_id, y = ate_yr, colour = "Doubly robust LM in\nPS subclasses"),
+    data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_ha = 0),
+    aes(x = proj_id, y = ate_ha, colour = "Doubly robust LM in\nPS subclasses"),
     inherit.aes = FALSE, size = pt_main
   ) +
   
-  geom_point(
-    data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = Inf),
-    aes(x = proj_id, y = ate_yr, colour = "Claimed avoided deforestation"),
-    inherit.aes = FALSE, shape = 16, size = pt_main,
-    alpha = 1
-  ) +
+  
+  
+  # scale_color_manual(
+  #   values = c(col_palette, Guizar = guizar_colour),
+  #   breaks = c(methods_keep, "Guizar"),
+  #   labels = c(setNames(methods_keep, methods_keep), Guizar = guizar_lab),
+  #   name = "Method"
+  # ) +
+
   
   
 xlab ("") +
@@ -605,49 +637,6 @@ bottom_right <- bottom_right +
   )
 
 ggsave(file_main_plot, gg_out, width = 180, height = 210, units='mm', dpi=300)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

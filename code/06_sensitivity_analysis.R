@@ -217,19 +217,6 @@ dodge <- position_dodge(width = 0.5)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 # -----------------------------------
 # Fig 6 - sensitivity plots
 # -----------------------------------
@@ -306,18 +293,22 @@ pl_out <- ggplot(
 
   # horizontal lines claimed ATE
   geom_hline(aes(yintercept = claimed_ate, linetype = "Claimed avoided deforestation"),
-             colour = "red", linetype = "dashed", linewidth = hline_lwd) +
-  
+             colour = "red", linewidth = hline_lwd) +
+
   geom_hline(yintercept = 0, colour = "black", linewidth = hline_lwd)  +
+
+  scale_linetype_manual(
+    values = c("Claimed avoided deforestation" = "dashed"),
+    name = ""
+  ) +
+
   # shapes: FALSE = normal circle, TRUE = triangle-down filled
   scale_shape_manual(
-    values = c(`FALSE` = 21, `TRUE` = 25),  # 21 = circle, 25 = triangle-down
+    values = c(`FALSE` = 21, `TRUE` = 25),  
     labels = c("Estimated", expression(-infinity)),
     name = ""
   ) + 
 
-  
-  
   
   # fill for normal points, triangle gets a fill too
   scale_fill_manual(values = col_palette, name = "") +
@@ -351,24 +342,6 @@ ggsave(
 )
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # -----------------------------------
 # Suppl. - sensitivity plots
 # -----------------------------------
@@ -397,7 +370,6 @@ plt_1 <- ggplot(
   scale_fill_manual(values = col_palette, name = "") +
   xlab("Strength of hidden confounder\n(x times strength of observed confounder)") +
   ylab("Projects exceeding\nVCS claimed ATE (%)") +
-  theme_bw() +
   theme(
     strip.background = element_blank(),
     strip.text = element_text(face = "bold"),
@@ -418,9 +390,9 @@ pl_out <- ggplot(
   # single geom_point for all points
   geom_point(
     aes(shape = is_neg_inf),
-    size = 2.5,
+    size = pt_size,
     position = dodge,
-    stroke = 0.3,
+    stroke = pt_stroke,
     show.legend = TRUE
   ) +
 
@@ -428,17 +400,24 @@ pl_out <- ggplot(
   geom_errorbar(
     aes(ymin = adjusted_ci_low, ymax = adjusted_ci_upp),
     width = 0,
-    position = dodge
+    position = dodge,
+    linewidth = err_lwd
   ) +
 
   # horizontal lines claimed ATE
-  geom_hline(aes(yintercept = claimed_ate), colour = "red", linetype = "dashed") +
-  geom_hline(yintercept = 0, colour = "black") +
+  geom_hline(aes(yintercept = claimed_ate, linetype = "Claimed avoided deforestation"),
+             colour = "red", linewidth = hline_lwd) +
+  geom_hline(yintercept = 0, colour = "black", linewidth = hline_lwd) +
+
+  scale_linetype_manual(
+    values = c("Claimed avoided deforestation" = "dashed"),
+    name = ""
+  ) +
 
   # shapes: FALSE = normal circle, TRUE = triangle-down filled
   scale_shape_manual(
     values = c(`FALSE` = 21, `TRUE` = 25),  # 21 = circle, 25 = triangle-down
-    labels = c("Estimated", "−∞"),
+    labels = c("Estimated", expression(-infinity)),
     name = ""
   ) +
 
@@ -448,7 +427,6 @@ pl_out <- ggplot(
 
   xlab("Strength of hidden confounder\n(x times strength of observed confounder)") +
   ylab(expression("Difference in forest loss (% " * yr^{-1} * ")")) +
-  theme_bw() +
   facet_wrap(~proj_id, ncol = 5, scales = "free_y") +
   theme(
     strip.background = element_blank(),
@@ -467,8 +445,11 @@ gg_out <- plt_1 / pl_out +
   plot_annotation(tag_levels = 'a')
 
 # Save output
-file_curr <- file.path(dir_figures, "sensitivity_analysis_SI.png")
-ggsave(file_curr, gg_out, width = 12, height = 12, units = 'in', dpi = 300)
+ggsave(
+  filename = file.path(dir_figures, "sensitivity_analysis_SI.pdf"),
+  plot = gg_out,
+  width = 180, height = 210, units = "mm", dpi = 300
+)
 
 
 # ------------------------------------------------

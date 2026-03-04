@@ -29,7 +29,7 @@ outl <- foreach::foreach(j = 1:nrow(proj_tab),
 
   # Read in the long and short dataset for the current project
   long <- read_csv(file = file.path(full_data_dir, proj_tab$long_file[j]))  # Read long format data
-  short <- read_csv(file = file.path(full_data_dir, proj_tab$summ_file[j]))  %>% select(-adm_2)# Read short summary data
+  short <- read_csv(file = file.path(full_data_dir, proj_tab$summ_file[j])) # Read short summary data
   
   # Add country and project identifiers to the long dataset
   long %<>% 
@@ -96,6 +96,15 @@ outl <- foreach::foreach(j = 1:nrow(proj_tab),
 
 doParallel::stopImplicitCluster()
 gc()
+
+# Inspect any errors from the parallel loop
+errors <- outl[sapply(outl, inherits, "error")]
+if (length(errors) > 0) {
+  message(sprintf("%d iteration(s) failed:", length(errors)))
+  print(errors)
+} else {
+  message("All iterations completed successfully.")
+}
 
 # --------------------------------------
 # Summarise project-level covar values 

@@ -10,6 +10,7 @@ registerDoParallel(cores = n_cores)
 # Perform parallel processing on rows of do_tab
 ps_subclass_outl <- foreach::foreach(
   j = 1:nrow(do_tab),  # Loop through each row of the do_tab dataset
+  # j =1, # TEST
   .verbose = TRUE,  # Print progress information during execution
   .packages = c("tidyverse", "dplyr", "magrittr", "qqplotr", "ggplot2", "randomForest", "ranger"),  # Load necessary packages
   .errorhandling = "pass"  # Continue execution even if an error occurs
@@ -248,7 +249,7 @@ ps_subclass_outl <- foreach::foreach(
           subclass_remove <- unique(c(subclass_remove, unique(z_stats_remaining$subclass[outside_band])))
         }
       }
-      print(plt)
+      # print(plt)
       subclass_remove_list[[as.character(alpha_curr)]] <- subclass_remove
     }
     
@@ -265,7 +266,9 @@ ps_subclass_outl <- foreach::foreach(
     saveRDS(sm, file = file.path(match_out_dir, file_name))
   })
   
-  return(NULL)  # Return the result of the try block
+  # return(NULL)  # Return the result of the try block
+  return(try_output) 
+
 }
 doParallel::stopImplicitCluster()
 gc()
