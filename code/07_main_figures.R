@@ -368,17 +368,7 @@ geom_point(position = position_dodge(width = dodge_width), size = pt_main) +  # 
                "Doubly robust LM in\nPS subclasses" = doubly_lab,
                "Claimed avoided deforestation"      = claimed_lab)
   ) +
-  ###
-  
-  # scale_color_manual(
-  #   values = c(col_palette, Guizar = guizar_colour),
-  #   breaks = c(methods_keep, "Guizar"),
-  #   labels = c(setNames(methods_keep, methods_keep), Guizar = guizar_lab),
-  #   name = "Method"
-  # ) +
 
-  
-####################
 geom_errorbar(
   data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = 0, ymin = -0.2, ymax = 0.2),
   aes(x = proj_id, y = ate_yr, ymin = ymin, ymax = ymax, colour = "Doubly robust LM in\nPS subclasses"),
@@ -394,10 +384,10 @@ geom_errorbar(
   geom_point(
     data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = 0),
     aes(x = proj_id, y = ate_yr, colour = "Claimed avoided deforestation"),
-    inherit.aes = FALSE, shape = 16, size = pt_main
+    inherit.aes = FALSE, shape = 16, size = pt_main,
+    alpha = 0
   ) +
-######################
-  
+
 
 xlab ("") +
 ylab("Diff. in forest loss (%"~yr^-1*')') +
@@ -419,11 +409,6 @@ ylab("Diff. in forest loss (%"~yr^-1*')') +
   theme(face = "bold")
 
 
-
-
-
-
-
 ###################################################################
 # --- Middle panel ---
 ###################################################################
@@ -437,16 +422,8 @@ middle_panel <- ggplot(comp_meths_sub, aes(x = proj_id, y = ate_ha, color = meth
   geom_errorbar(aes(ymin = ate_ha - 2 * ate_se_ha, ymax = ate_ha + 2 * ate_se_ha),
                 width = lwd_err, position = position_dodge(width = dodge_width)) +
 geom_point(position = position_dodge(width = dodge_width), size = pt_main) +  # Points for ATE
-  
-  
-  
-  ##################
-
-geom_point(aes(y = guizar, colour = "Guizar"),
+geom_point(aes(y = guizar_ha, colour = "Guizar"),
            shape = 3, size = pt_small, alpha = 0.6) +
-  
-  
-  #####
 scale_color_manual(
   name   = "Method",
   breaks = c(methods_keep,
@@ -464,8 +441,6 @@ scale_color_manual(
              "Doubly robust LM in\nPS subclasses" = doubly_lab,
              "Claimed avoided deforestation"      = claimed_lab)
 ) +
-  ###
-  ####################
 geom_errorbar(
   data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = 0, ymin = -0.2, ymax = 0.2),
   aes(x = proj_id, y = ate_yr, ymin = ymin, ymax = ymax, colour = "Doubly robust LM in\nPS subclasses"),
@@ -481,20 +456,10 @@ geom_errorbar(
   geom_point(
     data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = 0),
     aes(x = proj_id, y = ate_yr, colour = "Claimed avoided deforestation"),
-    inherit.aes = FALSE, shape = 16, size = pt_main
+    inherit.aes = FALSE, shape = 16, size = pt_main,
+    alpha = 0
   ) +
-  ######################
-  
-  
-  
-  # scale_color_manual(
-  #   values = c(col_palette, Guizar = guizar_colour),
-  #   breaks = c(methods_keep, "Guizar"),
-  #   labels = c(setNames(methods_keep, methods_keep), Guizar = guizar_lab),
-  #   name = "Method"
-  # ) +
 
-  
   
 xlab ("") +
 ylab("Diff. in forest loss (Ha)") +
