@@ -327,7 +327,8 @@ pl_out <- ggplot(
     legend.box.spacing = unit(0.001, "in"),
     axis.text.x.top = element_blank(),
     axis.ticks.x.top = element_blank()
-  )
+  ) +
+  guides(linetype = guide_legend(override.aes = list(shape = NA)))
 
 
 # Combine
@@ -437,7 +438,8 @@ pl_out <- ggplot(
     legend.box.spacing = unit(0.001, "in"),
     axis.text.x.top = element_blank(),
     axis.ticks.x.top = element_blank()
-  )
+  ) +
+  guides(linetype = guide_legend(override.aes = list(shape = NA)))
 
 # Combine panels using patchwork
 gg_out <- plt_1 / pl_out +
@@ -496,7 +498,10 @@ pl_out <- ggplot(df_r2_plot, aes(x = r2yz_dx, y = r2dz_x, colour = strength_col)
     axis.text.x.top = element_blank(),  
     axis.ticks.x.top = element_blank()
   ) +
-  guides(colour = guide_legend(nrow = 2, byrow = TRUE)) 
+  guides(
+    colour = guide_legend(nrow = 2, byrow = TRUE),
+    linetype = guide_legend(override.aes = list(shape = NA))
+  )
 
 # Save the plot
 ggsave(

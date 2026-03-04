@@ -336,7 +336,7 @@ bottom_right <- bottom_right +
           axis.ticks.x.top = element_blank()
   )
 
-ggsave(file_main_plot, gg_out, width = 180, height = 210, units='mm', dpi=300)
+ggsave(file_main_plot, gg_out, width = 280, height = 250, units='mm', dpi=300)
 
 
 #############################################
