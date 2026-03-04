@@ -32,7 +32,7 @@ comp_meths <-  comp_meths %>% left_join(proj_comp %>% select(vcs_id=project, imp
 
 # Loads project info
 proj_info <- read_csv(file = file.path("data", "vcs-info.csv")) %>% filter(inclusion_status!= 'Unavailable\ngeospatial data') %>% 
-mutate(proj_id = paste0(iso3, "_", vcs_id))
+  mutate(proj_id = paste0(iso3, "_", vcs_id))
 
 # Select the design table for the chosen distance metric and alpha
 design_tab <- ordl[[dist_use]][[as.character(alpha_use)]]
@@ -83,11 +83,11 @@ top_panel <- ggplot(comp_meths, aes(x = proj_id, y = ate_yr, color = method)) +
   geom_hline(lwd = 0.5, yintercept = 0) +  
   geom_errorbar(aes(ymin = ate_yr - 2 * ate_yr_se, ymax = ate_yr + 2 * ate_yr_se), 
                 width = 0.2, position = position_dodge(width = dodge_width)) +  
-geom_point(position = position_dodge(width = dodge_width)) +  
-
- geom_point(aes(proj_id,guizar), color=guizar_colour, shape=3, size=1, alpha=0.6) + # Adds Guizar
-xlab ("") +
-ylab("Diff. in forest loss (%"~yr^-1*')') +
+  geom_point(position = position_dodge(width = dodge_width)) +  
+  
+  geom_point(aes(proj_id,guizar), color=guizar_colour, shape=3, size=1, alpha=0.6) + # Adds Guizar
+  xlab ("") +
+  ylab("Diff. in forest loss (%"~yr^-1*')') +
   theme_bw() +  
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
         axis.text.x = element_text(angle = 90, hjust = 1),  
@@ -99,10 +99,10 @@ ylab("Diff. in forest loss (%"~yr^-1*')') +
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
         legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
         legend.box.spacing = unit(0.001, "in"),
-        ) +  
+  ) +  
   
   scale_color_manual(values=col_palette, name="Method") +
-
+  
   # Custom colouring for the x-axis labels
   scale_x_discrete(limits = order_vcs,  # Maintain project order on x-axis
                    labels = function(proj_id) {
@@ -112,8 +112,8 @@ ylab("Diff. in forest loss (%"~yr^-1*')') +
   
   # Define color for x-axis labels: Change for problematic sites
   theme(axis.text.x = element_text(color = ifelse(order_vcs %in% projects_with_low_matched_prop, axis_text_color_dimmed, "black"),
-    face = ifelse(order_vcs %in% projects_with_low_matched_prop, "bold", "bold")
-    )
+                                   face = ifelse(order_vcs %in% projects_with_low_matched_prop, "bold", "bold")
+  )
   ) 
 
 # --- Middle panel ---
@@ -127,11 +127,11 @@ middle_panel <- ggplot(comp_meths, aes(x = proj_id, y = ate_ha, color = method))
   geom_hline(lwd = 0.5, yintercept = 0) +  
   geom_errorbar(aes(ymin = ate_ha - 2 * ate_se_ha, ymax = ate_ha + 2 * ate_se_ha), 
                 width = 0.2, position = position_dodge(width = dodge_width)) +  
-geom_point(position = position_dodge(width = dodge_width)) +  # Points for ATE
-
-geom_point(aes(proj_id,guizar_ha), color=guizar_colour, shape=3, size=1, alpha=0.6) + # Adds Guizar
-xlab ("") +
-ylab("Diff. in forest loss (Ha)") +
+  geom_point(position = position_dodge(width = dodge_width)) +  # Points for ATE
+  
+  geom_point(aes(proj_id,guizar_ha), color=guizar_colour, shape=3, size=1, alpha=0.6) + # Adds Guizar
+  xlab ("") +
+  ylab("Diff. in forest loss (Ha)") +
   theme_bw() +  
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
         axis.text.x = element_text(angle = 90, hjust = 1),  # Rotate x-axis labels
@@ -143,10 +143,10 @@ ylab("Diff. in forest loss (Ha)") +
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
         legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
         legend.box.spacing = unit(0.001, "in"),
-        ) +  
+  ) +  
   
   scale_color_manual(values=col_palette, name="Method") +
-
+  
   scale_x_discrete(limits = order_vcs,  # Maintain project order on x-axis
                    labels = function(proj_id) {
                      ifelse(proj_id %in% projects_with_low_matched_prop, 
@@ -155,9 +155,9 @@ ylab("Diff. in forest loss (Ha)") +
   
   # Define color for x-axis labels: Change for problematic sites
   theme(axis.text.x = element_text(color = ifelse(order_vcs %in% projects_with_low_matched_prop, axis_text_color_dimmed, "black"),
-    face = ifelse(order_vcs %in% projects_with_low_matched_prop, "bold", "bold")
-    )
-) 
+                                   face = ifelse(order_vcs %in% projects_with_low_matched_prop, "bold", "bold")
+  )
+  ) 
 
 # Bottom LEFT ------
 order_vcs <- comp_meths %>% 
@@ -172,20 +172,20 @@ bottom_left <- ggplot(comp_meths %>% filter(method==methnames$lm_simple), aes(x 
   geom_point(position = position_dodge(width = dodge_width), color=grey_color) +  # Points for ATE
   geom_errorbar(aes(ymin = ate_yr - 2 * ate_yr_se, ymax = ate_yr + 2 * ate_yr_se), 
                 width = 0.2, position = position_dodge(width = dodge_width), color=grey_color) +  
- geom_point(aes(proj_id,implied_ate), color=red_color, shape=19, size=1) + # Adds 4C
-xlab ("") +
-ylab("Diff. in forest loss (%"~yr^-1*')') +
-# scale_y_break(c(-14, -95)) +
-
-# Custom coloring for the x-axis labels
-scale_x_discrete(limits = order_vcs,  # Maintain project order on x-axis
+  geom_point(aes(proj_id,implied_ate), color=red_color, shape=19, size=1) + # Adds 4C
+  xlab ("") +
+  ylab("Diff. in forest loss (%"~yr^-1*')') +
+  # scale_y_break(c(-14, -95)) +
+  
+  # Custom coloring for the x-axis labels
+  scale_x_discrete(limits = order_vcs,  # Maintain project order on x-axis
                    labels = function(proj_id) {
                      ifelse(proj_id %in% projects_with_low_matched_prop, 
                             paste0(proj_id), proj_id)  # Label with project ID
                    }) +
   
-# Define color for x-axis labels: Change for problematic projects
-theme_bw() + 
+  # Define color for x-axis labels: Change for problematic projects
+  theme_bw() + 
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
         legend.title=element_blank(),
@@ -197,11 +197,11 @@ theme_bw() +
         axis.text.x.top = element_blank(),  # Remove top x-axis text
         axis.ticks.x.top = element_blank(),
         axis.text.x = element_text(
-            color = ifelse(order_vcs %in% projects_with_low_matched_prop, axis_text_color_dimmed, "black"),
-            face = ifelse(order_vcs %in% projects_with_low_matched_prop, "bold", "bold"),
-            angle = 90, hjust = 1
-            )
-        ) 
+          color = ifelse(order_vcs %in% projects_with_low_matched_prop, axis_text_color_dimmed, "black"),
+          face = ifelse(order_vcs %in% projects_with_low_matched_prop, "bold", "bold"),
+          angle = 90, hjust = 1
+        )
+  ) 
 
 # Bottom RIGHT ------
 order_vcs <- comp_meths %>% 
@@ -216,19 +216,19 @@ bottom_right <- ggplot(comp_meths %>% filter(method==methnames$lm_simple), aes(x
   geom_point(position = position_dodge(width = dodge_width), color=grey_color) +  # Points for ATE
   geom_errorbar(aes(ymin = ate_ha - 2 * ate_se_ha, ymax = ate_ha + 2 * ate_se_ha), 
                 width = 0.2, position = position_dodge(width = dodge_width), color=grey_color) +  
- geom_point(aes(proj_id,avoided_verra), color=red_color, shape=19, size=1) + # Adds 4C
-xlab ("") +
-ylab("Diff. in forest loss (Ha)") +
-
-# Custom coloring for the x-axis labels
-scale_x_discrete(limits = order_vcs,  # Maintain project order on x-axis
+  geom_point(aes(proj_id,avoided_verra), color=red_color, shape=19, size=1) + # Adds 4C
+  xlab ("") +
+  ylab("Diff. in forest loss (Ha)") +
+  
+  # Custom coloring for the x-axis labels
+  scale_x_discrete(limits = order_vcs,  # Maintain project order on x-axis
                    labels = function(proj_id) {
                      ifelse(proj_id %in% projects_with_low_matched_prop, 
                             paste0(proj_id), proj_id)  # Label with project ID
                    }) +
   
-# Define color for x-axis labels: Change for problematic projects
-theme_bw() + 
+  # Define color for x-axis labels: Change for problematic projects
+  theme_bw() + 
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
         legend.title=element_blank(),
@@ -240,99 +240,280 @@ theme_bw() +
         axis.text.x.top = element_blank(),  # Remove top x-axis text
         axis.ticks.x.top = element_blank(),
         axis.text.x = element_text(
-            color = ifelse(order_vcs %in% projects_with_low_matched_prop, axis_text_color_dimmed, "black"),
-            face = ifelse(order_vcs %in% projects_with_low_matched_prop, "bold", "bold"),
-            angle = 90, hjust = 1
-            )
-        ) 
+          color = ifelse(order_vcs %in% projects_with_low_matched_prop, axis_text_color_dimmed, "black"),
+          face = ifelse(order_vcs %in% projects_with_low_matched_prop, "bold", "bold"),
+          angle = 90, hjust = 1
+        )
+  ) 
 
 #  --------- PLOT OUT ---------
-  gg_out <- top_panel / middle_panel / (bottom_left | bottom_right)   +  plot_layout(
-    guides = "collect", 
-    heights = c(0.8, 0.8, 1.5),
-    ncol = 1,  
-    nrow = 3   
-  ) & 
+gg_out <- top_panel / middle_panel / (bottom_left | bottom_right)   +  plot_layout(
+  guides = "collect", 
+  heights = c(0.8, 0.8, 1.5),
+  ncol = 1,  
+  nrow = 3   
+) & 
   plot_annotation(tag_levels = 'a') &  # Add tags to panels
   theme(
     plot.title = element_text(size = 10, face = "bold", hjust = 0.5), 
     legend.position = "bottom",
     plot.margin = unit(c(0.01,0.01,0.01,0.01), "in"),
-          legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
-          legend.box.spacing = unit(0.001, "in"),
-          axis.text.x.top = element_blank(),  # Remove top x-axis text
-          axis.ticks.x.top = element_blank()
+    legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
+    legend.box.spacing = unit(0.001, "in"),
+    axis.text.x.top = element_blank(),  # Remove top x-axis text
+    axis.ticks.x.top = element_blank()
   )
 
 ggsave(file_main_plot, gg_out, width=12, height=12, units='in', dpi=300)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #############################################
 #  ----------- MAIN PLOT ---------
 #############################################
 
+theme_set(theme_bw(base_size = 7))
+
+names(col_palette) <- levels(droplevels(comp_meths_sub$method))
+guizar_lab <- "Guizar-Coutiño \net al. (2022)"
+claimed_lab <- "Claimed avoided \ndeforestation (panels c-d)"
+doubly_lab <- "Doubly robust LM in\nPS subclasses (panels a-d)"
+sf <- 0.5
+
+# points
+pt_main   <- 1.5 * sf     
+pt_small  <- 1.0 * sf     
+
+# lines / errorbars / borders
+lwd_hline   <- 0.5 * sf   
+lwd_err     <- 0.1 * sf   
+lwd_border  <- 1.0 * sf   
+
+methods_keep <- levels(droplevels(comp_meths_sub$method))  # only methods actually present 
+
 # Output file params
-filename_out <- "Main_effect_sizes_fig.png"
+filename_out <- "Main_effect_sizes_fig.pdf"
 file_main_plot <- file.path("figures", filename_out)
 
+
+###################################################################
 # TOP -----------
-# Create the plot: ATE estimates by method across projects
+###################################################################
+
+# Create the plot: ATT estimates by method across projects
 
 top_panel <- ggplot(comp_meths_sub, aes(x = proj_id, y = ate_yr, color = method)) +
-  geom_hline(lwd = 0.5, yintercept = 0) +  
-  geom_errorbar(aes(ymin = ate_yr - 2 * ate_yr_se, ymax = ate_yr + 2 * ate_yr_se), 
-                width = 0.2, position = position_dodge(width = dodge_width)) +  
-geom_point(position = position_dodge(width = dodge_width)) +  # Points for ATE
- geom_point(aes(proj_id,guizar), color=guizar_colour, shape=3, size=1, alpha=0.6) + # Adds Guizar
+  geom_hline(lwd = lwd_hline, yintercept = 0) +
+  geom_errorbar(aes(ymin = ate_yr - 2 * ate_yr_se, ymax = ate_yr + 2 * ate_yr_se),
+                width = lwd_err, position = position_dodge(width = dodge_width)) +
+geom_point(position = position_dodge(width = dodge_width), size = pt_main) +  # Points for ATT
+  geom_point(aes(y = guizar, colour = "Guizar"),
+             shape = 3, size = pt_small, alpha = 0.6) +
+  
+  #####
+  scale_color_manual(
+    name   = "Method",
+    breaks = c(methods_keep,
+               "Guizar",
+               "Doubly robust LM in\nPS subclasses",
+               "Claimed avoided deforestation"),
+    values = c(
+      col_palette,
+      Guizar = guizar_colour,
+      "Doubly robust LM in\nPS subclasses" = "black",
+      "Claimed avoided deforestation"      = "red" 
+    ),
+    labels = c(setNames(methods_keep, methods_keep), 
+               Guizar = guizar_lab,
+               "Doubly robust LM in\nPS subclasses" = doubly_lab,
+               "Claimed avoided deforestation"      = claimed_lab)
+  ) +
+  ###
+  
+  # scale_color_manual(
+  #   values = c(col_palette, Guizar = guizar_colour),
+  #   breaks = c(methods_keep, "Guizar"),
+  #   labels = c(setNames(methods_keep, methods_keep), Guizar = guizar_lab),
+  #   name = "Method"
+  # ) +
+
+  
+####################
+geom_errorbar(
+  data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = 0, ymin = -0.2, ymax = 0.2),
+  aes(x = proj_id, y = ate_yr, ymin = ymin, ymax = ymax, colour = "Doubly robust LM in\nPS subclasses"),
+  inherit.aes = FALSE, width = 0
+) +
+  geom_point(
+    data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = 0),
+    aes(x = proj_id, y = ate_yr, colour = "Doubly robust LM in\nPS subclasses"),
+    inherit.aes = FALSE, size = pt_main
+  ) +
+  
+  # adds red filled point key to the existing colour legend
+  geom_point(
+    data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = 0),
+    aes(x = proj_id, y = ate_yr, colour = "Claimed avoided deforestation"),
+    inherit.aes = FALSE, shape = 16, size = pt_main
+  ) +
+######################
+  
+
 xlab ("") +
 ylab("Diff. in forest loss (%"~yr^-1*')') +
-  theme_bw() +  
+  # theme_bw() +
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
         axis.text.x = element_text(angle = 90, hjust = 1, face = "bold"),  # Rotate x-axis labels
         legend.title=element_blank(),
-        axis.line = element_blank(), 
-        legend.position = "bottom", 
+        axis.line = element_blank(),
+        legend.position = "bottom",
         axis.title.x = element_text(margin = ggplot2::margin(t = 1)),
         axis.title.y = element_text(margin = ggplot2::margin(r = 1)),
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
         legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
         legend.box.spacing = unit(0.001, "in"),
-        ) +  
-  
-  scale_color_manual(values=col_palette, name="Method") +
-  
+        ) +
+
+  # scale_color_manual(values=col_palette, name="Method") +
   # Define color for x-axis labels: Change for problematic sites
   theme(face = "bold")
 
+
+
+
+
+
+
+###################################################################
 # --- Middle panel ---
+###################################################################
 order_vcs <- comp_meths %>%
   select(proj_id, ate_ha) %>%
   group_by(proj_id) %>%  summarise(ate_ha = mean(ate_ha)) %>%
-  arrange(ate_ha) %>% mutate(proj_id = as.character(proj_id)) %>% filter(!proj_id %in% projects_with_low_matched_prop) %>%  pull(proj_id)  %>% as.character() 
+  arrange(ate_ha) %>% mutate(proj_id = as.character(proj_id)) %>% filter(!proj_id %in% projects_with_low_matched_prop) %>%  pull(proj_id)  %>% as.character()
 
 middle_panel <- ggplot(comp_meths_sub, aes(x = proj_id, y = ate_ha, color = method)) +
-  geom_hline(lwd = 0.5, yintercept = 0) +  
-  geom_errorbar(aes(ymin = ate_ha - 2 * ate_se_ha, ymax = ate_ha + 2 * ate_se_ha), 
-                width = 0.2, position = position_dodge(width = dodge_width)) +  
-geom_point(position = position_dodge(width = dodge_width)) +  # Points for ATE
-geom_point(aes(proj_id,guizar_ha), color=guizar_colour, shape=3, size=1, alpha=0.6) + # Adds Guizar
+  geom_hline(lwd = lwd_hline, yintercept = 0) +
+  geom_errorbar(aes(ymin = ate_ha - 2 * ate_se_ha, ymax = ate_ha + 2 * ate_se_ha),
+                width = lwd_err, position = position_dodge(width = dodge_width)) +
+geom_point(position = position_dodge(width = dodge_width), size = pt_main) +  # Points for ATE
+  
+  
+  
+  ##################
+
+geom_point(aes(y = guizar, colour = "Guizar"),
+           shape = 3, size = pt_small, alpha = 0.6) +
+  
+  
+  #####
+scale_color_manual(
+  name   = "Method",
+  breaks = c(methods_keep,
+             "Guizar",
+             "Doubly robust LM in\nPS subclasses",
+             "Claimed avoided deforestation"),
+  values = c(
+    col_palette,
+    Guizar = guizar_colour,
+    "Doubly robust LM in\nPS subclasses" = "black",
+    "Claimed avoided deforestation"      = "red" 
+  ),
+  labels = c(setNames(methods_keep, methods_keep), 
+             Guizar = guizar_lab,
+             "Doubly robust LM in\nPS subclasses" = doubly_lab,
+             "Claimed avoided deforestation"      = claimed_lab)
+) +
+  ###
+  ####################
+geom_errorbar(
+  data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = 0, ymin = -0.2, ymax = 0.2),
+  aes(x = proj_id, y = ate_yr, ymin = ymin, ymax = ymax, colour = "Doubly robust LM in\nPS subclasses"),
+  inherit.aes = FALSE, width = 0
+) +
+  geom_point(
+    data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = 0),
+    aes(x = proj_id, y = ate_yr, colour = "Doubly robust LM in\nPS subclasses"),
+    inherit.aes = FALSE, size = pt_main
+  ) +
+  
+  # adds red filled point key to the existing colour legend
+  geom_point(
+    data = data.frame(proj_id = comp_meths_sub$proj_id[1], ate_yr = 0),
+    aes(x = proj_id, y = ate_yr, colour = "Claimed avoided deforestation"),
+    inherit.aes = FALSE, shape = 16, size = pt_main
+  ) +
+  ######################
+  
+  
+  
+  # scale_color_manual(
+  #   values = c(col_palette, Guizar = guizar_colour),
+  #   breaks = c(methods_keep, "Guizar"),
+  #   labels = c(setNames(methods_keep, methods_keep), Guizar = guizar_lab),
+  #   name = "Method"
+  # ) +
+
+  
+  
 xlab ("") +
 ylab("Diff. in forest loss (Ha)") +
-  theme_bw() +  
+  # theme_bw() +
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
         axis.text.x = element_text(angle = 90, hjust = 1, face = "bold"),  # Rotate x-axis labels
         legend.title=element_blank(),
-        axis.line = element_blank(), 
-        legend.position = "bottom", 
+        axis.line = element_blank(),
+        legend.position = "bottom",
         axis.title.x = element_text(margin = ggplot2::margin(t = 1)),
         axis.title.y = element_text(margin = ggplot2::margin(r = 1)),
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
         legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
         legend.box.spacing = unit(0.001, "in"),
-        ) +  
-  
-  scale_color_manual(values=col_palette, name="Method") +
+        ) +
+
+  # scale_color_manual(values=col_palette, name="Method") +
   scale_x_discrete(limits = order_vcs) +
-  
+
   # Define color for x-axis labels: Change for problematic sites
   theme(face = "bold")
 
@@ -343,12 +524,13 @@ order_vcs <- comp_meths_sub %>%
   group_by(proj_id) %>%  summarise(ate_yr = mean(ate_yr)) %>%
   arrange(ate_yr) %>% mutate(proj_id = as.character(proj_id)) %>% filter(!proj_id %in% projects_with_low_matched_prop) %>%  pull(proj_id)  %>% as.character() 
 
-bottom_left <- ggplot(comp_meths_sub %>% filter(method==methnames$lm_simple), aes(x = proj_id, y = ate_yr)) +
-  geom_hline(lwd = 0.5, yintercept = 0) +  
-  geom_point(position = position_dodge(width = dodge_width), color=grey_color) +  # Points for ATE
-  geom_errorbar(aes(ymin = ate_yr - 2 * ate_yr_se, ymax = ate_yr + 2 * ate_yr_se), 
-                width = 0.2, position = position_dodge(width = dodge_width), color=grey_color) +  
- geom_point(aes(proj_id,implied_ate), color=red_color, shape=19, size=1) + # Adds 4C
+bottom_left <- ggplot(comp_meths_sub %>% filter(method==methnames$lm_simple), aes(x = proj_id, y = ate_yr), color = method) +
+  geom_hline(lwd = lwd_hline, yintercept = 0) +  
+
+  geom_point(position = position_dodge(width = dodge_width), color=grey_color, size = pt_main) +  # Points for ATE
+  geom_errorbar(aes(ymin = ate_yr - 2 * ate_yr_se, ymax = ate_yr + 2 * ate_yr_se),
+                width = lwd_err, position = position_dodge(width = dodge_width), color=grey_color) +
+ geom_point(aes(proj_id,implied_ate), color=red_color, shape=19, size = pt_small) + # Adds 4C
 xlab ("") +
 ylab("Diff. in forest loss (%"~yr^-1*')') +
 # scale_y_break(c(-14, -95)) +
@@ -356,7 +538,7 @@ ylab("Diff. in forest loss (%"~yr^-1*')') +
 scale_x_discrete(limits = order_vcs) +
 
 # Define color for x-axis labels: Change for problematic projects
-theme_bw() + 
+# theme_bw() + 
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
         legend.title=element_blank(),
@@ -371,8 +553,8 @@ theme_bw() +
             face = "bold",
             angle = 90, hjust = 1
             )
-        ) 
-
+        )  
+  
 # Bottom RIGHT ------
 order_vcs <- comp_meths_sub %>% 
   filter(method==methnames$lm_simple) %>%
@@ -382,18 +564,18 @@ order_vcs <- comp_meths_sub %>%
   pull(proj_id)  %>% as.character()
 
 bottom_right <- ggplot(comp_meths_sub %>% filter(method==methnames$lm_simple), aes(x = proj_id, y = ate_ha)) +
-  geom_hline(lwd = 0.5, yintercept = 0) +  
-  geom_point(position = position_dodge(width = dodge_width), color=grey_color) +  # Points for ATE
+  geom_hline(lwd = lwd_hline, yintercept = 0) +  
+  geom_point(position = position_dodge(width = dodge_width), color=grey_color, size = pt_main) +  # Points for ATE
   geom_errorbar(aes(ymin = ate_ha - 2 * ate_se_ha, ymax = ate_ha + 2 * ate_se_ha), 
-                width = 0.2, position = position_dodge(width = dodge_width), color=grey_color) +  
- geom_point(aes(proj_id,avoided_verra), color=red_color, shape=19, size=1) + # Adds 4C
+                width = lwd_err, position = position_dodge(width = dodge_width), color=grey_color) +  
+ geom_point(aes(proj_id,avoided_verra), color=red_color, shape=19, size = pt_small) + # Adds 4C
 xlab ("") +
 ylab("Diff. in forest loss (Ha)") +
 
 scale_x_discrete(limits = order_vcs) +
 
 # Define color for x-axis labels: Change for problematic projects
-theme_bw() + 
+# theme_bw() + 
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
         plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
         legend.title=element_blank(),
@@ -410,17 +592,48 @@ theme_bw() +
             )
         ) 
 
+
+top_panel <- top_panel +
+  labs(tag = "a") +
+  theme(
+    plot.tag.position = c(0.05, 0.71) 
+  )
+
+middle_panel <- middle_panel +
+  labs(tag = "b") +
+  theme(
+    plot.tag.position = c(0.05, 1.05) 
+  )
+bottom_left <- bottom_left +
+  labs(tag = "c") +
+  theme(
+    plot.tag.position = c(0.1, 1.025) 
+  )
+
+bottom_right <- bottom_right +
+  labs(tag = "d") +
+  theme(
+    plot.tag.position = c(0.1, 1.025) 
+  )
+
+
 #  --------- PLOT OUT ---------
-  gg_out <- top_panel / middle_panel / (bottom_left | bottom_right)   +  plot_layout(
-    guides = "collect", 
+
+  gg_out <- top_panel / middle_panel / (bottom_left | bottom_right) +
+  plot_layout(
+    guides = "collect",
     heights = c(0.8, 0.8, 1.5),
-    ncol = 1,  
-    nrow = 3   
-  ) & 
-  plot_annotation(tag_levels = 'a') &  # Add tags to panels
+    ncol = 1,
+    nrow = 3
+  ) &
+
+  
+    # plot_annotation(tag_levels = 'a') &  # Add tags to panels
   theme(
     plot.title = element_text(size = 10, face = "bold", hjust = 0.5), 
-    legend.position = "bottom",
+    legend.position = "top",
+    # plot.tag.position = c(0.01, 0.92),
+    legend.box.margin = ggplot2::margin(b = 10),
     plot.margin = unit(c(0.01,0.01,0.01,0.01), "in"),
           legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
           legend.box.spacing = unit(0.001, "in"),
@@ -428,7 +641,51 @@ theme_bw() +
           axis.ticks.x.top = element_blank()
   )
 
-ggsave(file_main_plot, gg_out, width=10, height=10, units='in', dpi=300)
+ggsave(file_main_plot, gg_out, width = 180, height = 210, units='mm', dpi=300)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # ---------------------------------------------------------------------------
@@ -569,10 +826,24 @@ comp_meths_sub %>% filter(method==methnames$doubly_robust) %>%
 # ---------------------------------------------------------------------------------
 
 
-centroids = proj_info %>%
-  filter(inclusion_status != 'Unavailable\ngeospatial data') %>%
-  st_as_sf(., coords = c("lon", "lat"), crs = 4326, agr = "constant") %>% rename(pt_4326 = geometry) %>%
-  mutate(inclusion_status = factor(inclusion_status,levels=names(map_cols)))
+
+theme_set(theme_classic(base_size = 7))
+
+ centroids = proj_info %>%
+   filter(inclusion_status != 'Unavailable\ngeospatial data') %>%
+   st_as_sf(., coords = c("lon", "lat"), crs = 4326, agr = "constant") %>% 
+  rename(pt_4326 = geometry) %>%
+   mutate(inclusion_status = factor(inclusion_status,levels=names(map_cols)))
+
+
+# #####
+# centroids <- proj_info %>%
+#   filter(inclusion_status != "Unavailable\ngeospatial data") %>%
+#   # mutate(inclusion_status = dplyr::coalesce(inclusion_status, "Insufficient temporal\r\n records")) %>%
+#   st_as_sf(coords = c("lon", "lat"), crs = 4326, agr = "constant") %>%
+#   rename(pt_4326 = geometry) %>%
+#   mutate(inclusion_status = factor(inclusion_status, levels = names(map_cols)))
+# ######
 
 world <- ne_countries(scale = "medium", returnclass = "sf")
 world = st_transform(world, crs = st_crs(4326))
@@ -590,21 +861,27 @@ bbox['ymax'] = 3000000
 
 mp = ggplot() +
     geom_sf(data = world.moll, fill='#dedede', lwd=0.1) +
-    geom_sf(data = st_transform(centroids, crs = "+proj=moll"),aes(fill=inclusion_status), shape=21, color='black',alpha=0.7, size=2) + 
+    geom_sf(data = st_transform(centroids, crs = "+proj=moll"),aes(fill=inclusion_status), shape=21, color='black',alpha=1, size=1) + 
     coord_sf(xlim = c(bbox['xmin'], bbox['xmax']), ylim = c(bbox['ymin'], bbox['ymax']), expand = FALSE) +
     # scale_fill_viridis_d(option = "plasma","") +
     scale_fill_manual(values=map_cols, name="") +
-    theme_classic() +
+    # theme_classic() +
     theme(panel.border = element_rect(fill='transparent', color='#23212A'),
           axis.line = element_blank(),
           legend.box = "vertical",
           legend.position = "bottom",
-          legend.text = element_text(angle = 0, size=11),
+          legend.text = element_text(angle = 0, size=6),
           plot.margin = unit(c(0.1,0.1,0.1,0.1), "in"),
           legend.margin=ggplot2::margin(0.1,0.1,0.1,0.1),
           legend.box.spacing = unit(0.001, "in"))
 
-ggsave(filename=file.path("figures", "sites-map-moll.png"), plot=mp, width=10, dpi=300)
+# ggsave(filename=file.path("figures", "sites-map-moll.png"), plot=mp, width=10, dpi=300)
+
+ggsave(filename=file.path("figures", "sites-map-moll.pdf"), plot = mp, width = 180, units='mm')
+
+
+# ggsave(file_main_plot, gg_out, width = 180, height = 210, units='mm', dpi=300)
+
 
 # --------------------------------------------------------------------------------------------------------
 # Figure S2
