@@ -171,7 +171,7 @@ middle_panel <- ggplot(comp_meths, aes(x = proj_id, y = ate_ha, color = method))
   ylab("Diff. in forest loss (Ha)") +
   theme_bw() +
   theme(panel.border = element_rect( fill=NA, colour = "black", size=1),
-        axis.text.x = element_text(angle = 90, hjust = 1),  # Rotate x-axis labels
+        axis.text.x = element_text(angle = 90, hjust = 1),  
         legend.title=element_blank(),
         axis.line = element_blank(),
         legend.position = "bottom",
@@ -480,17 +480,6 @@ middle_panel <- ggplot(comp_meths_sub, aes(x = proj_id, y = ate_ha, color = meth
     inherit.aes = FALSE, size = pt_main
   ) +
   
-  
-  
-  # scale_color_manual(
-  #   values = c(col_palette, Guizar = guizar_colour),
-  #   breaks = c(methods_keep, "Guizar"),
-  #   labels = c(setNames(methods_keep, methods_keep), Guizar = guizar_lab),
-  #   name = "Method"
-  # ) +
-
-  
-  
 xlab ("") +
 ylab("Diff. in forest loss (Ha)") +
   # theme_bw() +
@@ -646,7 +635,6 @@ ggsave(file_main_plot, gg_out, width = 180, height = 210, units='mm', dpi=300)
 
 
 comp_meths %>% filter(method==methnames$lm_simple)  %>% filter(!is.na(avoided_verra)) %>% tally()
-# n=26
 
 comp_meths %>% 
   filter(method==methnames$lm_simple)  %>% 
@@ -654,8 +642,6 @@ comp_meths %>%
   select(vcs_id) %>% distinct() %>%
   left_join(proj_info %>% select(vcs_id, inclusion_status)) %>% group_by(inclusion_status) %>% tally()
 
-# 1 <80% of plots matched     3
-# 2 Included                 23
 
 proj_info %>% group_by(inclusion_status) %>% tally()
 #   inclusion_status                      n
@@ -778,7 +764,6 @@ comp_meths_sub %>% filter(method==methnames$doubly_robust) %>%
 # ---------------------------------------------------------------------------------
 
 
-
 theme_set(theme_classic(base_size = 7))
 
  centroids = proj_info %>%
@@ -791,7 +776,7 @@ theme_set(theme_classic(base_size = 7))
 # #####
 # centroids <- proj_info %>%
 #   filter(inclusion_status != "Unavailable\ngeospatial data") %>%
-#   # mutate(inclusion_status = dplyr::coalesce(inclusion_status, "Insufficient temporal\r\n records")) %>%
+#   mutate(inclusion_status = dplyr::coalesce(inclusion_status, "Insufficient temporal\r\n records")) %>%
 #   st_as_sf(coords = c("lon", "lat"), crs = 4326, agr = "constant") %>%
 #   rename(pt_4326 = geometry) %>%
 #   mutate(inclusion_status = factor(inclusion_status, levels = names(map_cols)))
@@ -830,7 +815,6 @@ mp = ggplot() +
 # ggsave(filename=file.path("figures", "sites-map-moll.png"), plot=mp, width=10, dpi=300)
 
 ggsave(filename=file.path("figures", "sites-map-moll.pdf"), plot = mp, width = 180, units='mm')
-
 
 # ggsave(file_main_plot, gg_out, width = 180, height = 210, units='mm', dpi=300)
 
