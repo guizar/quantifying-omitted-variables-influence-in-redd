@@ -1,11 +1,6 @@
 # Quantifying Omitted Variables Influence in REDD+
 
-This project accompanies the article: *Unobserved confounders cannot explain over-crediting in avoided deforestation carbon projects*.
-
-## Code 
-
-All the analytical steps, from selecting controls from the pool of observations to the final analyses, are provided at:
-https://github.com/guizar/quantifying-omitted-variables-influence-in-redd/
+Code repository for the article: *[Unobserved confounders cannot explain over-crediting in avoided deforestation carbon projects*](https://www.nature.com/articles/s41559-026-03049-7).
 
 ## Data
 
