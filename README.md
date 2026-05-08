@@ -67,7 +67,7 @@ docker pull georgenicholson/quantifying-omitted-variables-influence-in-redd:publ
 ```bash
 docker run -d \
   -p 8787:8787 \
-  --name deforestation_container \
+  --name redd_container \
   -e USER=rstudio \
   georgenicholson/quantifying-omitted-variables-influence-in-redd:published
 ```
@@ -87,12 +87,12 @@ source("code/00_wrapper.R")
 To stop the container:
 
 ```bash
-docker stop deforestation_container
+docker stop redd_container
 ```
 
 To restart it later:
 
 ```bash
-docker start deforestation_container
+docker start redd_container
 ```
 
