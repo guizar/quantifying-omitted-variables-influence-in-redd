@@ -49,4 +49,50 @@ source("code/00_wrapper.R")
 
 ## Reproducible code + data with Docker
 
-We will update this repo with a Docker image with standardised code, data and computing environment to reproduce the paper's analyses.
+A prebuilt Docker image containing the code, data dependencies, and computing environment used for the paper is available on Docker Hub.
+
+### Step-by-step instructions
+
+1. Install Docker Desktop:
+   https://docs.docker.com/get-docker/
+
+2. Pull the published Docker image:
+
+```bash
+docker pull georgenicholson/quantifying-omitted-variables-influence-in-redd:published
+```
+
+3. Start the container:
+
+```bash
+docker run -d \
+  -p 8787:8787 \
+  --name deforestation_container \
+  -e USER=rstudio \
+  georgenicholson/quantifying-omitted-variables-influence-in-redd:published
+```
+
+4. Open RStudio in your browser:
+
+```text
+http://localhost:8787
+```
+
+5. In the RStudio console, run:
+
+```r
+source("code/00_wrapper.R")
+```
+
+To stop the container:
+
+```bash
+docker stop deforestation_container
+```
+
+To restart it later:
+
+```bash
+docker start deforestation_container
+```
+
